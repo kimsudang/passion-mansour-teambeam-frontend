@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: passion-mansour-teambeam-frontend
+spec:
+  selector:
+    matchLabels:
+      app: passion-mansour-teambeam-frontend
+  template:
+    metadata:
+      labels:
+        app: passion-mansour-teambeam-frontend
+    spec:
+      containers:
+        - name: passion-mansour-teambeam-frontend
+          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_d1a08ae3ee73
+          imagePullPolicy: Always
