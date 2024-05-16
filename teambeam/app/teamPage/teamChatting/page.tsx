@@ -3,14 +3,15 @@ import Header from '../../../components/header/Header';
 import Sidebar from '../../../components/sidebar/Sidebar';
 import ChatList from './components/ChatList';
 import MessageInput from './components/MessageInput';
+import './styles/main.scss';
 
-const teamChatting: React.FC = () => {
+const TeamChatting: React.FC = () => {
   return (
-    <div className="chatting-page">
+    <div className="container">
       <Header />
-      <div className="chatting-container">
+      <div className="main-content">
         <Sidebar />
-        <div className="chatting-content">
+        <div className="chat-area">
           <ChatList />
           <MessageInput />
         </div>
@@ -19,4 +20,4 @@ const teamChatting: React.FC = () => {
   );
 };
 
-export default teamChatting;
+export default TeamChatting;

@@ -1,0 +1,99 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #F1F1F1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  background: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.sidebar {
+  width: 200px;
+  background: #f4f4f4;
+  padding: 20px;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+.chat-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message-input {
+  display: flex;
+  padding: 10px;
+  // background: #eee;
+
+  input {
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+}
+
+.message-thread {
+  margin-bottom: 15px;
+  
+  .message {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px;
+    // background-color: #fff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    // box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .message-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .username {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .timestamp {
+    font-size: 0.85em;
+    color: #464646;
+  }
+
+  .message-text {
+    margin-top: 5px;
+  }
+}
