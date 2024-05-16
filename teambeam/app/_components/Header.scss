@@ -1,0 +1,34 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84px;
+  padding: 0 28px;
+  border-bottom: 1px solid #d5d5d5;
+  background: #f1f1f1;
+}
+
+.right_menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  & a {
+    color: #242424;
+    font-size: 18px;
+  }
+}
+
+.channel_menu {
+  display: flex;
+  align-items: center;
+  margin-right: 28px;
+}
+
+.channel_menu a {
+  margin-right: 28px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
