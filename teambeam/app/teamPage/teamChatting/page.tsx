@@ -5,6 +5,7 @@ import './styles/main.scss';
 const TeamChatting: React.FC = () => {
   return (
     <div className="container">
+      <h2 className="chatTitle">채팅</h2>
         <div className="chat-area">
           <ChatList />
         </div>
