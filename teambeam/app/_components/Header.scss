@@ -8,7 +8,7 @@ header {
   background: #f1f1f1;
 }
 
-.right_menu {
+.right-menu {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,19 +16,25 @@ header {
   & a {
     color: #242424;
     font-size: 18px;
+    font-weight: 600;
   }
 }
 
-.channel_menu {
+.channel-menu {
   display: flex;
   align-items: center;
   margin-right: 28px;
 }
 
-.channel_menu a {
+.channel-menu a {
   margin-right: 28px;
 
   &:last-child {
     margin-right: 0;
   }
+}
+
+.img-profile {
+  display: block;
+  border-radius: 48px;
 }

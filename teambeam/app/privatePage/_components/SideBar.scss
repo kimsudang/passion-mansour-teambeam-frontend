@@ -1,11 +1,53 @@
 nav {
   min-width: 240px;
   height: 100dvh;
-  background: #f1f1f1;
+  background: var(--bg);
   border-right: 1px solid #d5d5d5;
   padding: 40px 24px;
 }
 
-h1 {
-  font-size: 24px;
+.top-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid #d5d5d5;
+
+  h2 {
+    font-size: 24px;
+  }
+}
+
+.side-menu {
+  li {
+    margin: 0 -8px 8px;
+
+    a {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #242424;
+      padding: 0 8px;
+      border-radius: 10px;
+
+      &:hover {
+        background: #e0e0e0;
+      }
+
+      .icon-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 28px;
+        height: 28px;
+      }
+
+      span {
+        display: block;
+        margin-left: 4px;
+      }
+    }
+  }
 }
