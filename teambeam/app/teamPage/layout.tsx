@@ -14,7 +14,7 @@ export default function TeamLayout({ children }: props) {
   return (
     <>
       <Header />
-      <div className='layout_wrap'>
+      <div className='layout-wrap'>
         <SideBar />
         <div className='container'>{children}</div>
       </div>

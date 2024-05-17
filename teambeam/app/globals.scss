@@ -1,5 +1,10 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
+:root {
+  --primary: #ffc300;
+  --bg: #f1f1f1;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +16,7 @@ body {
   width: 100dvw;
   height: 100dvh;
   font-family: "pretendard", "sans-serif";
-  background: var(--html-bg);
+  background: var(--bg);
   overflow-y: scroll;
   overflow-x: hidden;
   background: #f1f1f1;

@@ -4,6 +4,8 @@ import "./Header.scss";
 import { useRouter } from "next/navigation";
 import { Logo } from "./Icons";
 import Link from "next/link";
+import Image from "next/image";
+import profileDefault from "../../public/img/profile_default.png";
 
 export default function Header() {
   const router = useRouter();
@@ -18,13 +20,21 @@ export default function Header() {
         <Logo size={88}></Logo>
       </Link>
 
-      <div className='right_menu'>
-        <div className='channel_menu'>
+      <div className='right-menu'>
+        <div className='channel-menu'>
           <Link href='/privatePage/main'>개인채널</Link>
           <Link href='/teamPage/teamMain'>팀채널</Link>
         </div>
-        <div className='setting_menu'>
-          <Link href='/privatePage/mySetting'>환경설정</Link>
+        <div className='setting-menu'>
+          <Link href='/privatePage/mySetting'>
+            <Image
+              src={profileDefault}
+              alt='마이 프로필'
+              className='img-profile'
+              width={48}
+              height={48}
+            />
+          </Link>
         </div>
       </div>
     </header>
