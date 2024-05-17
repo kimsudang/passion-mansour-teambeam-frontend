@@ -1,0 +1,70 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  background-color: #f1f1f1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  margin-bottom: 30px; 
+}
+
+.calendarContainer {
+  flex: 1;
+  padding: 20px;
+}
+
+.calendarTitle {
+  font-size: 24px;
+//   margin-bottom: 10px;
+}
+
+.addButton {
+  background-color: #ffc300;
+  color: #242424;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 8px 20px;
+//   margin-bottom: 20px;
+  font-weight: bold;
+  font-size:16px;
+  
+}
+
+.fc {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.5em;
+}
+
+.fc .fc-button {
+  background-color: #242424;
+  border: none;
+  color: white;
+  margin: 0 5px;
+}
+
+.fc .fc-button:hover {
+  background-color: #0056b3;
+}
+
+.fc .fc-daygrid-event {
+  background-color: #007bff;
+  color: white;
+}
