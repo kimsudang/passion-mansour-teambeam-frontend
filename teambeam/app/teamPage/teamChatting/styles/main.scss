@@ -1,4 +1,5 @@
-body, html {
+body,
+html {
   height: 100%;
   margin: 0;
   background-color: #f1f1f1;
@@ -8,6 +9,7 @@ body, html {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding: 0px;
 }
 
 .mainContent {
@@ -44,19 +46,19 @@ body, html {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #eee;
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 90%;
   box-sizing: border-box;
+  margin-left: 77px;
 
   .quillEditor {
     flex: 1;
     .ql-container {
       height: auto;
       min-height: 100px;
-      background-color: #FFFFFF;
+      background-color: #ffffff;
     }
   }
 }
@@ -70,7 +72,8 @@ body, html {
   padding: 10px 20px;
 }
 
-.messageThread, .chatArea {
+.messageThread,
+.chatArea {
   margin-bottom: 15px;
 
   .message {
