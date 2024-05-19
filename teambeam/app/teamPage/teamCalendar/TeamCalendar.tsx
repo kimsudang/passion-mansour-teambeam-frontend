@@ -5,12 +5,11 @@ import dynamic from "next/dynamic";
 import EventModal from "./components/EventModal";
 import "./styles/main.scss";
 
-const FullCalendarComponent = dynamic(
-  () => import("./components/FullCalendarComponent"),
-  { ssr: false }
-);
+const FullCalendarComponent = dynamic(() => import("./components/FullCalendarComponent"), {
+  ssr: false,
+});
 
-const teamCalendar: React.FC = () => {
+const TeamCalendar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState([
     { title: "All Day Event", start: "2024-05-01" },
@@ -60,4 +59,4 @@ const teamCalendar: React.FC = () => {
   );
 };
 
-export default teamCalendar;
+export default TeamCalendar;
