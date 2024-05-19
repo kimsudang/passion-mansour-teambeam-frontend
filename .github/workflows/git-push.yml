@@ -9,11 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     container: pandoc/latex
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      
       - name: Install mustache (to update the date)
         run: apk add ruby && gem install mustache
+
       - name: creates output
         run: sh ./build.sh
+
       - name: Pushes to another repository
         id: push_directory
         uses: cpina/github-action-push-to-another-repository@main
@@ -24,7 +27,8 @@ jobs:
           destination-github-username: kimsudang
           destination-repository-name: passion-mansour-teambeam-frontend
           user-email: ${{ secrets.SUYEON_ACCOUNT_EMAIL }}
-          commit-message: ${{ github.event.commits[0].message }}
+          commit-message: "Automated commit from GitHub Actions"
           target-branch: main
+
       - name: Test get variable exported by push-to-another-repository
         run: echo $DESTINATION_CLONED_DIRECTORY
