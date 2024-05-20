@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { Participant } from "../types";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -9,12 +11,13 @@ type EventModalProps = {
     title: string;
     startDate: string;
     endDate: string;
-    assignee?: string;
+    assignees?: string[];
     link?: string;
   }) => void;
   title: string;
   showAssignee?: boolean;
   showLink?: boolean;
+  participants: Participant[];
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -24,11 +27,12 @@ const EventModal: React.FC<EventModalProps> = ({
   title,
   showAssignee,
   showLink,
+  participants,
 }) => {
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [assignee, setAssignee] = useState("");
+  const [assignees, setAssignees] = useState<string[]>([]);
   const [link, setLink] = useState("");
 
   useEffect(() => {
@@ -36,22 +40,34 @@ const EventModal: React.FC<EventModalProps> = ({
       setEventTitle("");
       setStartDate("");
       setEndDate("");
-      setAssignee("");
+      setAssignees([]);
       setLink("");
     }
   }, [isOpen]);
+
+  const handleAssigneeChange = (selectedOptions: any) => {
+    const selectedAssignees = selectedOptions.map(
+      (option: any) => option.value
+    );
+    setAssignees(selectedAssignees);
+  };
 
   const handleSubmit = () => {
     const event = {
       title: eventTitle,
       startDate,
       endDate,
-      assignee: showAssignee ? assignee : undefined,
+      assignees: showAssignee ? assignees : undefined,
       link: showLink ? link : undefined,
     };
     onSave(event);
     onClose();
   };
+
+  const assigneeOptions = participants.map((participant) => ({
+    value: participant.name,
+    label: participant.name,
+  }));
 
   if (!isOpen) return null;
 
@@ -90,11 +106,15 @@ const EventModal: React.FC<EventModalProps> = ({
           {showAssignee && (
             <div>
               <label>담당자</label>
-              <input
-                type="text"
-                placeholder="담당자를 입력하세요."
-                value={assignee}
-                onChange={(e) => setAssignee(e.target.value)}
+              <Select
+                isMulti
+                value={assignees.map((assignee) => ({
+                  value: assignee,
+                  label: assignee,
+                }))}
+                onChange={handleAssigneeChange}
+                options={assigneeOptions}
+                placeholder="담당자를 선택하세요."
               />
             </div>
           )}

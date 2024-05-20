@@ -12,6 +12,15 @@ const LowerTodoList: React.FC<Props> = ({ subtask }) => {
       <span className="lowerDate">
         {subtask.startDate} - {subtask.endDate}
       </span>
+      {subtask.assignees && subtask.assignees.length > 0 && (
+        <div className="assigneeTags">
+          {subtask.assignees.map((assignee, index) => (
+            <span key={index} className="assigneeTag">
+              {assignee}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

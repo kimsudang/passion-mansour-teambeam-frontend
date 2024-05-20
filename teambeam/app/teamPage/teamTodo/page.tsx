@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import UpperTodoList from "./components/UpperTodoList";
 import EventModal from "./components/EventModal";
-import { TodoList } from "./types";
+import { TodoList, Participant } from "./types";
 import "./styles/main.scss";
 
 const TeamTodo: React.FC = () => {
@@ -25,18 +25,21 @@ const TeamTodo: React.FC = () => {
               title: "하위 투두 리스트명",
               startDate: "05/10",
               endDate: "05/10",
+              assignees: ["또치"],
             },
             {
               id: "1-1-2",
               title: "하위 투두 리스트명",
               startDate: "05/11",
               endDate: "05/12",
+              assignees: ["고길동"],
             },
             {
               id: "1-1-3",
               title: "하위 투두 리스트명",
               startDate: "05/10",
               endDate: "05/13",
+              assignees: ["또치"],
             },
           ],
         },
@@ -45,6 +48,12 @@ const TeamTodo: React.FC = () => {
     },
     // 다른 상위 투두 리스트들
   ]);
+
+  const participants: Participant[] = [
+    { id: "1", name: "또치" },
+    { id: "2", name: "고길동" },
+    { id: "3", name: "둘리" },
+  ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
@@ -66,7 +75,7 @@ const TeamTodo: React.FC = () => {
     title: string;
     startDate: string;
     endDate: string;
-    assignee?: string;
+    assignees?: string[];
     link?: string;
   }) => {
     // 새 이벤트를 투두 리스트에 추가하는 로직
@@ -91,6 +100,7 @@ const TeamTodo: React.FC = () => {
         title={modalTitle}
         showAssignee={showAssignee}
         showLink={showLink}
+        participants={participants}
       />
     </div>
   );

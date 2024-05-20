@@ -1,10 +1,10 @@
-export type TodoItem = {
+export interface TodoItem {
   id: string;
   title: string;
   startDate: string;
   endDate: string;
-  subtasks?: TodoItem[];
-};
+  assignees?: string[];
+}
 
 export type TodoList = {
   id: string;
@@ -12,4 +12,9 @@ export type TodoList = {
   startDate: string;
   endDate: string;
   tasks: TodoItem[];
+};
+
+export type Participant = {
+  id: string;
+  name: string;
 };

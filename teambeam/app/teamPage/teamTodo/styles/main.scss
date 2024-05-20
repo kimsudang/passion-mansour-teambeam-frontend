@@ -1,71 +1,3 @@
-body,
-html {
-  height: 100%;
-  margin: 0;
-  background-color: #f1f1f1;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-}
-
-.calendarHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.calendarContainer {
-  flex: 1;
-  padding: 20px;
-}
-
-.calendarTitle {
-  font-size: 24px;
-}
-
-.addButton {
-  background-color: #ffc300;
-  color: #242424;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 8px 20px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.fc {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.fc .fc-toolbar-title {
-  font-size: 1.5em;
-}
-
-.fc .fc-button {
-  background-color: #242424;
-  border: none;
-  color: white;
-  margin: 0 5px;
-}
-
-.fc .fc-button:hover {
-  background-color: #0056b3;
-}
-
-.fc .fc-daygrid-event {
-  background-color: #007bff;
-  color: white;
-}
-
 .todoContainer {
   padding: 20px;
 }
@@ -75,7 +7,7 @@ html {
 }
 
 .upperTodoList {
-  background: #e0e0e0;
+  border: 1px solid #d5d5d5;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -102,10 +34,9 @@ html {
 }
 
 .middleTodoList {
-  background: #f1f1f1;
+  border: 1px solid #d5d5d5;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
 }
 
@@ -133,10 +64,10 @@ html {
 }
 
 .lowerTodoList {
-  padding-left: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   background: #ffffff;
   border-radius: 5px;
+  padding: 5px 5px;
 }
 
 .lowerTodoContainer {
@@ -155,17 +86,32 @@ html {
   color: #464646;
 }
 
+.assigneeTag {
+  display: inline-block;
+  background: #f1f1f1;
+  border-radius: 5px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #242424;
+  margin-top: 30px;
+}
+
 .lowAddSubtask {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 110px;
   height: 60px;
-  border: 2px dashed #ccc;
+  border: 2px dashed #d5d5d5;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
   margin-bottom: 10px;
+  background: #ffffff;
+}
+
+.lowAddSubtask:hover {
+  background: #e0e0e0;
 }
 
 .addSubtask {
@@ -174,10 +120,15 @@ html {
   align-items: center;
   width: 100%;
   height: 50px;
-  border: 2px dashed #ccc;
+  border: 2px dashed #d5d5d5;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
+  //   background: #e0e0e0;
+}
+
+.addSubtask:hover {
+  background: #e0e0e0;
 }
 
 .modalOverlay {
@@ -210,10 +161,10 @@ html {
   gap: 15px;
 }
 
-// .eventTitle {
-//   font-size: 24px;
-//   margin-bottom: 20px;
-// }
+.eventTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
 
 .modalContent input,
 .modalContent textarea {
@@ -223,6 +174,7 @@ html {
   margin-bottom: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  border: none;
 }
 
 .modalContent button {
@@ -239,6 +191,16 @@ html {
   justify-content: flex-end;
   margin-bottom: 20px;
 }
+
+// .modal div:not(.eventMemo) {
+//   display: flex;
+//   justify-content: space-between;
+// }
+
+// .modal input {
+//   width: 75%;
+//   padding: 0px;
+// }
 
 .dropdownMenu {
   position: absolute;
