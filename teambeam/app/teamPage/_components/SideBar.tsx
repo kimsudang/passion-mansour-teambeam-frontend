@@ -42,7 +42,7 @@ export default function SideBar() {
             <div className='icon-box'>
               <TodoIcon size={18} />
             </div>
-            <span>투드리스트</span>
+            <span>투두리스트</span>
           </Link>
         </li>
 

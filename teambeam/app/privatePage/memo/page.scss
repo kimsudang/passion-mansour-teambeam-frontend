@@ -1,0 +1,57 @@
+.top-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.memo-add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #242424;
+  background: var(--primary);
+  border: none;
+  border-radius: 10px;
+}
+
+.memo-wrap {
+  width: 100%;
+  margin-top: 48px;
+
+  .memo-item {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    padding: 20px 24px;
+
+    &:hover {
+      background: #f9f9f9;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #242424;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 15px;
+      font-weight: 400;
+      color: #464646;
+      margin-bottom: 12px;
+    }
+
+    span {
+      font-size: 12px;
+      font-weight: 300;
+      color: #565656;
+    }
+  }
+}

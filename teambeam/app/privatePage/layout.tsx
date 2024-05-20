@@ -16,7 +16,7 @@ export default function PrivateLayout({ children }: props) {
       <Header />
       <div className='layout_wrap'>
         <SideBar />
-        <div className='container'>{children}</div>
+        <div className='layout-container'>{children}</div>
       </div>
     </>
   );

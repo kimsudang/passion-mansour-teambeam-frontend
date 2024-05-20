@@ -1,0 +1,33 @@
+.comment-item {
+  display: flex;
+  border-bottom: 1px solid #d5d5d5;
+  padding: 24px 0;
+
+  .comment-profile {
+    border-radius: 48px;
+  }
+
+  .comment-right {
+    margin-left: 12px;
+
+    .right-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      span {
+        font-size: 15px;
+        color: #242424;
+
+        &:last-child {
+          font-size: 13px;
+        }
+      }
+    }
+
+    p {
+      font-size: 16px;
+      color: #242424;
+    }
+  }
+}

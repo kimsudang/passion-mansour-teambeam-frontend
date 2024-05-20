@@ -23,7 +23,7 @@ export default function Header() {
       <div className='right-menu'>
         <div className='channel-menu'>
           <Link href='/privatePage/main'>개인채널</Link>
-          <Link href='/teamPage/teamMain'>팀채널</Link>
+          <Link href='/main'>팀채널</Link>
         </div>
         <div className='setting-menu'>
           <Link href='/privatePage/mySetting'>

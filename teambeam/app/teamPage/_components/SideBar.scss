@@ -1,6 +1,6 @@
 nav {
   min-width: 240px;
-  height: 100dvh;
+  height: calc(100dvh - 84px);
   background: var(--bg);
   border-right: 1px solid #d5d5d5;
   padding: 40px 24px;
