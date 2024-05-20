@@ -87,14 +87,15 @@
 }
 
 .assigneeTag {
-  display: inline-block;
-  background: #f1f1f1;
-  border-radius: 5px;
-  padding: 3px 10px;
-  font-size: 12px;
-  color: #242424;
-  margin-top: 30px;
-}
+    display: inline-block;
+    justify-content: center;
+    background: #f1f1f1;
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: #242424;
+    margin-top: 30px;
+  }
 
 .lowAddSubtask {
   display: flex;
@@ -161,6 +162,16 @@
   gap: 15px;
 }
 
+.modal div:not(.modalButtons) {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal input {
+  width: 75%;
+  padding: 0px;
+}
+
 .eventTitle {
   font-size: 24px;
   margin-bottom: 20px;
@@ -169,13 +180,18 @@
 .modalContent input,
 .modalContent textarea {
   display: block;
-  width: 100%;
+  width: 70%;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
   border: none;
 }
+
+// .css-3w2yfm-ValueContainer {
+//   display: initial !important;
+//   justify-content: initial !important;
+// }
 
 .modalContent button {
   padding: 10px 20px;
@@ -191,16 +207,6 @@
   justify-content: flex-end;
   margin-bottom: 20px;
 }
-
-// .modal div:not(.eventMemo) {
-//   display: flex;
-//   justify-content: space-between;
-// }
-
-// .modal input {
-//   width: 75%;
-//   padding: 0px;
-// }
 
 .dropdownMenu {
   position: absolute;

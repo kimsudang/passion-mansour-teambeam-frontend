@@ -104,7 +104,7 @@ const EventModal: React.FC<EventModalProps> = ({
             />
           </div>
           {showAssignee && (
-            <div>
+            <div className="todoAssignee">
               <label>담당자</label>
               <Select
                 isMulti
