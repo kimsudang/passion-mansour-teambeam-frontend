@@ -4,6 +4,7 @@ export interface TodoItem {
   startDate: string;
   endDate: string;
   assignees?: string[];
+  subtasks?: TodoItem[];
 }
 
 export type TodoList = {

@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import LowerTodoList from "./LowerTodoList";
 import { TodoItem } from "../types";
-import {
-  ToggleDownBtnIcon,
-  ToggleUpBtnIcon,
-  PlusBtnIcon,
-} from "@/app/_components/Icons";
+import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
 
 type Props = {
   task: TodoItem;
@@ -42,10 +38,10 @@ const MiddleTodoList: React.FC<Props> = ({ task, onAddGoal }) => {
       </div>
       {isOpen && (
         <div className="lowerTodoContainer">
-          {(task.subtasks || []).map((subtask, index) => (
+          {(task.subtasks ?? []).map((subtask: TodoItem, index: number) => (
             <React.Fragment key={subtask.id}>
               <LowerTodoList subtask={subtask} />
-              {index === task.subtasks.length - 1 && (
+              {index === (task.subtasks?.length ?? 0) - 1 && (
                 <button
                   className="lowAddSubtask"
                   onClick={() => onAddGoal("하위 투두 추가 모달")}
