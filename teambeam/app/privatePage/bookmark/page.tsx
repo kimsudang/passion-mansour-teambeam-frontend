@@ -40,7 +40,7 @@ const Page = () => {
   return (
     <div>
       <title>북마크</title>
-      <h1>북마크</h1>
+      <h1 style={{ marginBottom: "24px" }}>북마크</h1>
 
       {boards.map((board: Board) => {
         return <BoardList key={board.id} board={board} type={"bookmark"} />;

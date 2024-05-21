@@ -33,7 +33,7 @@ export default function Page() {
     },
     {
       id: 2,
-      title: "프로젝트 B",
+      title: "프로젝트 C",
       description:
         "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
       createAt: "2024-04-12 10:12:43",
@@ -41,7 +41,14 @@ export default function Page() {
     },
   ]);
 
-  const handleChange = useCallback(() => {}, []);
+  const handleChange = useCallback(
+    (e: any) => {
+      // api 필요
+      const arr = [...lists];
+      setLists(arr.filter((list) => list.state === e.target.value));
+    },
+    [lists]
+  );
 
   const handleAddBtn = useCallback(() => {
     console.log("project add");
@@ -58,7 +65,6 @@ export default function Page() {
             <option value='all' selected>
               전체
             </option>
-            <option value='before'>시작전</option>
             <option value='progress'>진행중</option>
             <option value='complete'>완료</option>
           </select>

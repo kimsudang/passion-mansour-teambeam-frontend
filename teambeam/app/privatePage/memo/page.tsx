@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import "./page.scss";
 import Link from "next/link";
 
-export type Memo = {
+export type MemoType = {
   id: number;
   title: string;
   content: string;
@@ -12,7 +12,7 @@ export type Memo = {
 };
 
 const Page = () => {
-  const [memoList, setMemoList] = useState<Memo[] | null>([
+  const [memoList, setMemoList] = useState<MemoType[] | null>([
     {
       id: 0,
       title: "제목입니다 1",
@@ -39,7 +39,11 @@ const Page = () => {
       <div className='memo-wrap'>
         {memoList?.map((memo) => {
           return (
-            <Link href='/' key={memo.id} className='memo-item'>
+            <Link
+              href={`/privatePage/memo/${memo.id}`}
+              key={memo.id}
+              className='memo-item'
+            >
               <h3>{memo.title}</h3>
               <p>{memo.content}</p>
               <span>{memo.createAt}</span>

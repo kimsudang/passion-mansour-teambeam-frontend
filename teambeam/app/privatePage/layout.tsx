@@ -8,11 +8,13 @@ import "./layout.scss";
 
 type props = {
   children: ReactNode;
+  md: ReactNode;
 };
 
-export default function PrivateLayout({ children }: props) {
+export default function PrivateLayout({ children, md }: props) {
   return (
     <>
+      {md}
       <Header />
       <div className='layout_wrap'>
         <SideBar />
