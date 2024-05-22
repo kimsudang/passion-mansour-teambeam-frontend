@@ -7,13 +7,13 @@ export interface TodoItem {
   subtasks?: TodoItem[];
 }
 
-export type TodoList = {
+export interface TodoList {
   id: string;
   title: string;
   startDate: string;
   endDate: string;
   tasks: TodoItem[];
-};
+}
 
 export type Participant = {
   id: string;
