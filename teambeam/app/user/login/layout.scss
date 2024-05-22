@@ -1,0 +1,89 @@
+@mixin button_styled {
+  width: 50%;
+  height: 50px;
+  margin-top: 20px;
+  border: 0px;
+  border-radius: 10px;
+  font-size: large;
+  font-weight: bold;
+}
+
+@mixin input_styled {
+  width: 50%;
+  height: 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.login_container {
+  width: 100vw;
+  height: calc(100vh - 84px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & .login_box {
+    width: calc(100vw / 2);
+    margin: 30px;
+    text-align: center;
+
+    & .email_login {
+      margin-bottom: 40px;
+
+      & .page_title {
+        font-size: 36px;
+        font-weight: bolder;
+        margin-bottom: 30px;
+
+        & .email_login_form {
+          width: 50%;
+          height: 50px;
+        }
+      }
+      
+      & .page_link {
+        font-size: small;
+        margin: 20px;
+        color: #242424;
+      }
+    }
+  }
+
+  & hr {
+    border: 1px solid "#D5D5D5";
+    margin-bottom: 15px;
+  }
+}
+
+.submit_email {
+  @include input_styled;
+}
+
+ .submit_password {
+  @include input_styled;
+}
+
+.login_with_email {
+  @include button_styled;
+  background-color: #E0E0E0;
+
+  &:hover {
+    background-color: #DADADA;
+  }
+}
+
+.login_with_kakao {
+  @include button_styled;
+  background-color: #FFC300;
+
+  &:hover {
+    background-color: #E6B411;
+  }
+}
+
+.or_text {
+  font-weight: bold;
+  margin-bottom: 15px;
+}

@@ -1,0 +1,59 @@
+@mixin button_styled {
+  width: 50%;
+  height: 50px;
+  margin-top: 30px;
+  border: 0px;
+  border-radius: 10px;
+  font-size: large;
+  font-weight: bold;
+}
+
+@mixin input_styled {
+  width: 50%;
+  height: 50px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.setting_password_container {
+  width: 100vw;
+  height: calc(100vh - 84px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  & .page_title {
+    font-size: 36px;
+    font-weight: bolder;
+    margin-bottom: 40px;
+  }
+
+  & .setting_box {
+    width: calc(100vw / 2);
+    margin: 30px;
+  }
+
+  & input {
+    @include input_styled;
+  }
+
+  & .warning_msg {
+    margin-left: calc(100vw / 8 + 5px);
+    font-size: small;
+    color: #fd5f5f;
+    text-align: left;
+  }
+
+  & .change_password {
+    @include button_styled;
+    background-color: #FFC300;
+ 
+    &:hover {
+     background-color: #E6B411;
+    }
+ }
+}
+
