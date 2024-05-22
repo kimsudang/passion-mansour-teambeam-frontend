@@ -1,52 +1,60 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UpperTodoList from "./components/UpperTodoList";
 import EventModal from "./components/EventModal";
 import { TodoList, Participant } from "./types";
 import "./styles/main.scss";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TeamTodo: React.FC = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>([
     {
       id: "1",
-      title: "상위 투두 리스트명 1",
-      startDate: "05/10",
-      endDate: "05/20",
+      title: "프로젝트 계획 수립",
+      startDate: "2024-05-01",
+      endDate: "2024-05-31",
       tasks: [
         {
           id: "1-1",
-          title: "중위 투두 리스트 1",
-          startDate: "05/10",
-          endDate: "05/14",
+          title: "시장 조사",
+          startDate: "2024-05-01",
+          endDate: "2024-05-10",
           subtasks: [
             {
               id: "1-1-1",
-              title: "하위 투두 리스트명",
-              startDate: "05/10",
-              endDate: "05/10",
+              title: "고객 인터뷰",
+              startDate: "2024-05-01",
+              endDate: "2024-05-02",
               assignees: ["또치"],
             },
             {
               id: "1-1-2",
-              title: "하위 투두 리스트명",
-              startDate: "05/11",
-              endDate: "05/12",
+              title: "설문 조사 분석",
+              startDate: "2024-05-03",
+              endDate: "2024-05-05",
               assignees: ["고길동"],
-            },
-            {
-              id: "1-1-3",
-              title: "하위 투두 리스트명",
-              startDate: "05/10",
-              endDate: "05/13",
-              assignees: ["또치"],
             },
           ],
         },
-        // 다른 중위 투두 리스트들
+        {
+          id: "1-2",
+          title: "경쟁사 분석",
+          startDate: "2024-05-11",
+          endDate: "2024-05-20",
+          subtasks: [
+            {
+              id: "1-2-1",
+              title: "경쟁사 제품 리뷰",
+              startDate: "2024-05-11",
+              endDate: "2024-05-13",
+              assignees: ["둘리"],
+            },
+          ],
+        },
       ],
     },
-    // 다른 상위 투두 리스트들
   ]);
 
   const participants: Participant[] = [
@@ -59,11 +67,31 @@ const TeamTodo: React.FC = () => {
   const [modalTitle, setModalTitle] = useState("");
   const [showAssignee, setShowAssignee] = useState(false);
   const [showLink, setShowLink] = useState(false);
+  const [showMemo, setShowMemo] = useState(false);
+  const [currentUpperTodoId, setCurrentUpperTodoId] = useState<string | null>(null);
+  const [currentMiddleTodoId, setCurrentMiddleTodoId] = useState<string | null>(null);
 
-  const handleAddButtonClick = (type: string) => {
+  // useEffect(() => {
+  //   const loadTodos = async () => {
+  //     try {
+  //       const todos = await fetchTodos("1");
+  //       setTodoLists(todos);
+  //     } catch (error) {
+  //       console.error("Error fetching todos:", error);
+  //     }
+  //   };
+
+  //   loadTodos();
+  // }, []);
+
+  const handleAddButtonClick = (type: string, upperTodoId: string | null = null, middleTodoId: string | null = null) => {
+    console.log("handleAddButtonClick", { type, upperTodoId, middleTodoId });
     setModalTitle(type);
+    setCurrentUpperTodoId(upperTodoId);
+    setCurrentMiddleTodoId(middleTodoId);
     setShowAssignee(type === "하위 투두 추가 모달");
     setShowLink(type === "하위 투두 추가 모달");
+    setShowMemo(type === "하위 투두 추가 모달");
     setIsModalOpen(true);
   };
 
@@ -71,35 +99,104 @@ const TeamTodo: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleEventSave = (event: {
-    title: string;
-    startDate: string;
-    endDate: string;
-    assignees?: string[];
-    link?: string;
-  }) => {
-    // 새 이벤트를 투두 리스트에 추가하는 로직
-    console.log("새 이벤트 저장:", event);
+  const handleEventSave = (
+    type: string,
+    event: {
+      title: string;
+      startDate: string;
+      endDate: string;
+      memo?: string;
+      assignees?: string[];
+      link?: string;
+    }
+  ) => {
+    console.log("handleEventSave", { type, event, currentUpperTodoId, currentMiddleTodoId });
+    if (type === "상위 투두 추가 모달") {
+      const newUpperTodo: TodoList = {
+        id: String(todoLists.length + 1),
+        title: event.title,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        tasks: [],
+      };
+      setTodoLists([...todoLists, newUpperTodo]);
+    } else if (type === "중위 투두 추가 모달" && currentUpperTodoId) {
+      const updatedTodoLists = todoLists.map((list) => {
+        if (list.id === currentUpperTodoId) {
+          const newMiddleTodo = {
+            id: `${list.id}-${list.tasks.length + 1}`,
+            title: event.title,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            subtasks: [],
+          };
+          return {
+            ...list,
+            tasks: [...list.tasks, newMiddleTodo],
+          };
+        }
+        return list;
+      });
+      setTodoLists(updatedTodoLists);
+    } else if (type === "하위 투두 추가 모달" && currentUpperTodoId && currentMiddleTodoId) {
+      const updatedTodoLists = todoLists.map((list) => {
+        if (list.id === currentUpperTodoId) {
+          const updatedTasks = list.tasks.map((task) => {
+            if (task.id === currentMiddleTodoId) {
+              const newLowerTodo = {
+                id: `${task.id}-${(task.subtasks ?? []).length + 1}`,
+                title: event.title,
+                startDate: event.startDate,
+                endDate: event.endDate,
+                assignees: event.assignees,
+                memo: event.memo,
+                link: event.link
+              };
+              return {
+                ...task,
+                subtasks: [...(task.subtasks ?? []), newLowerTodo],
+              };
+            }
+            return task;
+          });
+          return {
+            ...list,
+            tasks: updatedTasks,
+          };
+        }
+        return list;
+      });
+      setTodoLists(updatedTodoLists);
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteGoal = (id: string) => {
+    setTodoLists(todoLists.filter((list) => list.id !== id));
   };
 
   return (
     <div className="todoContainer">
+      <ToastContainer />
       <h2>투두리스트</h2>
       {todoLists.map((list) => (
         <UpperTodoList
           key={list.id}
           list={list}
-          onAddGoal={handleAddButtonClick}
+          onAddGoal={(type: string, middleTodoId?: string) => handleAddButtonClick(type, list.id, middleTodoId)}
+          onDeleteGoal={handleDeleteGoal}
+          listCount={todoLists.length}
         />
       ))}
 
       <EventModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        onSave={handleEventSave}
+        onSave={(event) => handleEventSave(modalTitle, event)}
         title={modalTitle}
         showAssignee={showAssignee}
         showLink={showLink}
+        showMemo={showMemo}
         participants={participants}
       />
     </div>

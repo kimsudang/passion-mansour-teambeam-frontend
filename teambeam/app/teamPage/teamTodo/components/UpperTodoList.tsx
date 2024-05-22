@@ -5,13 +5,25 @@ import MiddleTodoList from "./MiddleTodoList";
 import DropdownMenu from "./DropdownMenu";
 import { TodoList } from "../types";
 import { EllipsisBtn } from "@/app/_components/Icons";
+import { toast } from "react-toastify";
 
 type Props = {
   list: TodoList;
-  onAddGoal: (type: string) => void;
+  onAddGoal: (
+    type: string,
+    upperTodoId?: string,
+    middleTodoId?: string
+  ) => void;
+  onDeleteGoal: (id: string) => void;
+  listCount: number;
 };
 
-const UpperTodoList: React.FC<Props> = ({ list, onAddGoal }) => {
+const UpperTodoList: React.FC<Props> = ({
+  list,
+  onAddGoal,
+  onDeleteGoal,
+  listCount,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleEllipsisClick = () => {
@@ -19,12 +31,17 @@ const UpperTodoList: React.FC<Props> = ({ list, onAddGoal }) => {
   };
 
   const handleViewPastGoals = () => {
-    // 지난 목표 보기 기능 처리
     setIsDropdownOpen(false);
   };
 
   const handleDeleteGoal = () => {
-    // 목표 삭제 기능 처리
+    if (listCount > 1) {
+      onDeleteGoal(list.id);
+    } else {
+      toast.error(
+        "목표를 삭제할 수 없습니다. 최소 하나의 목표는 있어야 합니다."
+      );
+    }
     setIsDropdownOpen(false);
   };
 
@@ -41,7 +58,7 @@ const UpperTodoList: React.FC<Props> = ({ list, onAddGoal }) => {
             <DropdownMenu
               isOpen={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
-              onAddGoal={() => onAddGoal("상위 투두 추가 모달")}
+              onAddGoal={() => onAddGoal("상위 투두 추가 모달", list.id)}
               onViewPastGoals={handleViewPastGoals}
               onDeleteGoal={handleDeleteGoal}
             />
@@ -49,11 +66,15 @@ const UpperTodoList: React.FC<Props> = ({ list, onAddGoal }) => {
         </div>
       </div>
       {list.tasks.map((task) => (
-        <MiddleTodoList key={task.id} task={task} onAddGoal={onAddGoal} />
+        <MiddleTodoList
+          key={task.id}
+          task={task}
+          onAddGoal={(type) => onAddGoal(type, list.id, task.id)}
+        />
       ))}
       <button
         className="addSubtask"
-        onClick={() => onAddGoal("중위 투두 추가 모달")}
+        onClick={() => onAddGoal("중위 투두 추가 모달", list.id)}
       >
         +
       </button>
