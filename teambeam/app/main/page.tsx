@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "../_components/Header";
 import "./Main.scss";
 import Link from "next/link";
+import AddModal from "../_components/AddModal";
+import axios from "axios";
 
 export type Project = {
   id: number;
@@ -14,6 +16,7 @@ export type Project = {
 };
 
 export default function Page() {
+  const [isModal, setIsModal] = useState<boolean>(false);
   const [lists, setLists] = useState<Project[]>([
     {
       id: 0,
@@ -40,6 +43,9 @@ export default function Page() {
       state: "complete",
     },
   ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {}, []);
 
   const handleChange = useCallback(
     (e: any) => {
@@ -51,7 +57,11 @@ export default function Page() {
   );
 
   const handleAddBtn = useCallback(() => {
-    console.log("project add");
+    setIsModalOpen(true);
+  }, []);
+
+  const onCloseModal = useCallback(() => {
+    setIsModalOpen(false);
   }, []);
 
   return (
@@ -102,6 +112,8 @@ export default function Page() {
           })}
         </div>
       </div>
+
+      {isModalOpen ? <AddModal onCloseModal={onCloseModal} /> : null}
     </div>
   );
 }

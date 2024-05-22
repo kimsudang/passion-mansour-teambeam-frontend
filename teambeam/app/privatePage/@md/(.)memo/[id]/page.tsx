@@ -32,7 +32,9 @@ const MemoViewModal = () => {
         </div>
 
         <div className='buttons'>
-          <button onClick={onCancelBtn}>닫기</button>
+          <button onClick={onCancelBtn} className='closeBtn'>
+            닫기
+          </button>
           {/* <button>수정</button> */}
         </div>
       </div>

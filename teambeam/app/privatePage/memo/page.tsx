@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./page.scss";
 import Link from "next/link";
+import MemoWriteModal from "../_components/MemoWriteModal";
 
 export type MemoType = {
   id: number;
@@ -12,6 +13,7 @@ export type MemoType = {
 };
 
 const Page = () => {
+  const [isModal, setIsModal] = useState<boolean>(false);
   const [memoList, setMemoList] = useState<MemoType[] | null>([
     {
       id: 0,
@@ -26,12 +28,21 @@ const Page = () => {
       createAt: "2024-05-12 05:34:11",
     },
   ]);
+
+  const onOpenModal = useCallback(() => {
+    setIsModal(true);
+  }, []);
+
+  const onCloseModal = useCallback(() => {
+    setIsModal(false);
+  }, []);
+
   return (
     <div>
       <title>메모</title>
       <div className='top-box'>
         <h1>메모</h1>
-        <button type='button' className='memo-add-btn'>
+        <button type='button' className='memo-add-btn' onClick={onOpenModal}>
           메모추가
         </button>
       </div>
@@ -51,6 +62,8 @@ const Page = () => {
           );
         })}
       </div>
+
+      {isModal ? <MemoWriteModal onCloseModal={onCloseModal} /> : null}
     </div>
   );
 };
