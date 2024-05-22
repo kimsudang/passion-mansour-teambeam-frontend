@@ -63,13 +63,6 @@
   border-radius: 5px;
 }
 
-.lowerTodoList {
-  margin-bottom: 5px;
-  background: #ffffff;
-  border-radius: 5px;
-  padding: 5px 5px;
-}
-
 .lowerTodoContainer {
   margin-top: 10px;
   display: flex;
@@ -86,29 +79,34 @@
   color: #464646;
 }
 
+.lowerTodoList,
+.lowAddSubtask {
+  width: 100%;
+  height: auto;
+  margin-bottom: 5px;
+  background: #ffffff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
 .assigneeTag {
-    display: inline-block;
-    justify-content: center;
-    background: #f1f1f1;
-    border-radius: 5px;
-    padding: 3px 10px;
-    font-size: 12px;
-    color: #242424;
-    margin-top: 30px;
-  }
+  display: inline-block;
+  justify-content: center;
+  background: #f1f1f1;
+  border-radius: 5px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #242424;
+  margin-top: 30px;
+}
 
 .lowAddSubtask {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 110px;
-  height: 60px;
   border: 2px dashed #d5d5d5;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  background: #ffffff;
 }
 
 .lowAddSubtask:hover {
@@ -125,7 +123,6 @@
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
-  //   background: #e0e0e0;
 }
 
 .addSubtask:hover {
@@ -188,11 +185,6 @@
   border: none;
 }
 
-// .css-3w2yfm-ValueContainer {
-//   display: initial !important;
-//   justify-content: initial !important;
-// }
-
 .modalContent button {
   padding: 10px 20px;
   margin-right: 10px;
@@ -233,4 +225,13 @@
 
 .dropdownItem:hover {
   background: #bbb;
+}
+
+.selectBox {
+  width: 252px;
+
+  div {
+    display: flex;
+    justify-content: flex-start !important;
+  }
 }

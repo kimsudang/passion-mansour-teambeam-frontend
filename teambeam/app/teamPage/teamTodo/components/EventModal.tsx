@@ -112,6 +112,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   value: assignee,
                   label: assignee,
                 }))}
+                className="selectBox"
                 onChange={handleAssigneeChange}
                 options={assigneeOptions}
                 placeholder="담당자를 선택하세요."
