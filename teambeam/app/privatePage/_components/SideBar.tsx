@@ -3,8 +3,11 @@
 import Link from "next/link";
 import "./SideBar.scss";
 import { BookmarkIcon, HomeIcon, MemoIcon } from "@/app/_components/Icons";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 export default function SideBar() {
+  const segment = useSelectedLayoutSegment();
+
   return (
     <nav>
       <div className='top-info'>
@@ -13,7 +16,10 @@ export default function SideBar() {
 
       <div className='side-menu'>
         <li>
-          <Link href='/privatePage/main'>
+          <Link
+            href='/privatePage/main'
+            className={segment === "main" ? "active" : ""}
+          >
             <div className='icon-box'>
               <HomeIcon size={21} />
             </div>
@@ -22,7 +28,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/privatePage/memo'>
+          <Link
+            href='/privatePage/memo'
+            className={segment === "memo" ? "active" : ""}
+          >
             <div className='icon-box'>
               <MemoIcon size={16} />
             </div>
@@ -31,7 +40,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/privatePage/bookmark'>
+          <Link
+            href='/privatePage/bookmark'
+            className={segment === "bookmark" ? "active" : ""}
+          >
             <div className='icon-box'>
               <BookmarkIcon size={14} />
             </div>

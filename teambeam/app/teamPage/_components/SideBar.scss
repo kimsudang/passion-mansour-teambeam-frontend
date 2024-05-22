@@ -36,6 +36,15 @@ nav {
         background: #e0e0e0;
       }
 
+      &.active {
+        background-color: #242424;
+        color: var(--primary);
+
+        svg {
+          fill: var(--primary);
+        }
+      }
+
       .icon-box {
         display: flex;
         justify-content: center;

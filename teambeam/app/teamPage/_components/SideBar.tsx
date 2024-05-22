@@ -10,8 +10,10 @@ import {
   SettingIcon,
   TodoIcon,
 } from "@/app/_components/Icons";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 export default function SideBar() {
+  const segment = useSelectedLayoutSegment();
   return (
     <nav>
       <div className='top-info'>
@@ -20,7 +22,10 @@ export default function SideBar() {
 
       <div className='side-menu'>
         <li>
-          <Link href='/teamPage/teamMain'>
+          <Link
+            href='/teamPage/teamMain'
+            className={segment === "teamMain" ? "active" : ""}
+          >
             <div className='icon-box'>
               <HomeIcon size={21} />
             </div>
@@ -29,7 +34,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/teamPage/teamCalendar'>
+          <Link
+            href='/teamPage/teamCalendar'
+            className={segment === "teamCalendar" ? "active" : ""}
+          >
             <div className='icon-box'>
               <CalendarIcon size={16} />
             </div>
@@ -38,7 +46,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/teamPage/teamTodo'>
+          <Link
+            href='/teamPage/teamTodo'
+            className={segment === "teamTodo" ? "active" : ""}
+          >
             <div className='icon-box'>
               <TodoIcon size={18} />
             </div>
@@ -47,7 +58,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/teamPage/teamBoard'>
+          <Link
+            href='/teamPage/teamBoard'
+            className={segment === "teamBoard" ? "active" : ""}
+          >
             <div className='icon-box'>
               <BoardIcon size={14} />
             </div>
@@ -56,7 +70,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/teamPage/teamChatting'>
+          <Link
+            href='/teamPage/teamChatting'
+            className={segment === "teamChatting" ? "active" : ""}
+          >
             <div className='icon-box'>
               <CommentIcon size={18} />
             </div>
@@ -65,7 +82,10 @@ export default function SideBar() {
         </li>
 
         <li>
-          <Link href='/teamPage/teamSetting'>
+          <Link
+            href='/teamPage/teamSetting'
+            className={segment === "teamSetting" ? "active" : ""}
+          >
             <div className='icon-box'>
               <SettingIcon size={18} />
             </div>
