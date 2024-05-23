@@ -16,6 +16,7 @@ type Props = {
   ) => void;
   onDeleteGoal: (id: string) => void;
   listCount: number;
+  onStatusChange: (type: string, id: string, newStatus: boolean) => void;
 };
 
 const UpperTodoList: React.FC<Props> = ({
@@ -23,6 +24,7 @@ const UpperTodoList: React.FC<Props> = ({
   onAddGoal,
   onDeleteGoal,
   listCount,
+  onStatusChange,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -36,7 +38,7 @@ const UpperTodoList: React.FC<Props> = ({
 
   const handleDeleteGoal = () => {
     if (listCount > 1) {
-      onDeleteGoal(list.id);
+      onDeleteGoal(list.topTodoId);
     } else {
       toast.error(
         "목표를 삭제할 수 없습니다. 최소 하나의 목표는 있어야 합니다."
@@ -45,10 +47,21 @@ const UpperTodoList: React.FC<Props> = ({
     setIsDropdownOpen(false);
   };
 
+  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onStatusChange("top", list.topTodoId, !e.target.checked);
+  };
+
   return (
     <div className="upperTodoList">
       <div className="upperTodoHeader">
-        <h3 className="upperTitle">{list.title}</h3>
+        <div>
+          <input
+            type="checkbox"
+            checked={!list.status}
+            onChange={handleStatusChange}
+          />
+          <h3 className="upperTitle">{list.title}</h3>
+        </div>
         <div className="upperSide">
           <span className="upperDate">
             {list.startDate} - {list.endDate}
@@ -58,23 +71,24 @@ const UpperTodoList: React.FC<Props> = ({
             <DropdownMenu
               isOpen={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
-              onAddGoal={() => onAddGoal("상위 투두 추가 모달", list.id)}
+              onAddGoal={() => onAddGoal("상위 투두 추가 모달", list.topTodoId)}
               onViewPastGoals={handleViewPastGoals}
               onDeleteGoal={handleDeleteGoal}
             />
           </div>
         </div>
       </div>
-      {list.tasks.map((task) => (
+      {list.middleTodos.map((task) => (
         <MiddleTodoList
-          key={task.id}
+          key={task.middleTodoId}
           task={task}
-          onAddGoal={(type) => onAddGoal(type, list.id, task.id)}
+          onAddGoal={onAddGoal}
+          onStatusChange={onStatusChange}
         />
       ))}
       <button
         className="addSubtask"
-        onClick={() => onAddGoal("중위 투두 추가 모달", list.id)}
+        onClick={() => onAddGoal("중위 투두 추가 모달", list.topTodoId)}
       >
         +
       </button>

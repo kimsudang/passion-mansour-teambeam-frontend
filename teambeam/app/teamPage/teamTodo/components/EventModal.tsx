@@ -13,15 +13,11 @@ type EventModalProps = {
       title: string;
       startDate: string;
       endDate: string;
-      memo: string;
       assignees?: string[];
-      link?: string;
     }
   ) => void;
   title: string;
   showAssignee?: boolean;
-  showLink?: boolean;
-  showMemo?: boolean;
   participants: Participant[];
 };
 
@@ -31,16 +27,12 @@ const EventModal: React.FC<EventModalProps> = ({
   onSave,
   title,
   showAssignee,
-  showLink,
-  showMemo,
   participants,
 }) => {
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [assignees, setAssignees] = useState<string[]>([]);
-  const [link, setLink] = useState("");
-  const [memo, setMemo] = useState("");
 
   useEffect(() => {
     if (!isOpen) {
@@ -48,13 +40,7 @@ const EventModal: React.FC<EventModalProps> = ({
       setStartDate("");
       setEndDate("");
       setAssignees([]);
-      setLink("");
-      setMemo("");
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    console.log("Modal open:", isOpen);
   }, [isOpen]);
 
   const handleAssigneeChange = (selectedOptions: any) => {
@@ -65,16 +51,19 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handleSubmit = () => {
+    if (!eventTitle || !startDate || !endDate) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+
     const event = {
       title: eventTitle,
       startDate,
       endDate,
-      memo,
       assignees: showAssignee ? assignees : undefined,
-      link: showLink ? link : undefined,
     };
-    console.log("Submitting Event:", event);
-    onSave(title, event);
+    console.log("Submitting Event:", event); // 디버그 로그 추가
+    onSave("상위 투두 추가 모달", event); // 함수 호출 시 '상위 투두 추가 모달'과 event 데이터 전달
     onClose();
   };
 
@@ -103,7 +92,7 @@ const EventModal: React.FC<EventModalProps> = ({
           <div>
             <label>일정 시작</label>
             <input
-              type="datetime-local"
+              type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               required
@@ -112,7 +101,7 @@ const EventModal: React.FC<EventModalProps> = ({
           <div>
             <label>일정 종료</label>
             <input
-              type="datetime-local"
+              type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -130,28 +119,6 @@ const EventModal: React.FC<EventModalProps> = ({
                 onChange={handleAssigneeChange}
                 options={assigneeOptions}
                 placeholder="담당자를 선택하세요."
-              />
-            </div>
-          )}
-          {showLink && (
-            <div>
-              <label>링크</label>
-              <input
-                type="text"
-                placeholder="참고자료 링크를 첨부해주세요."
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-              />
-            </div>
-          )}
-          {showMemo && (
-            <div>
-              <label>메모</label>
-              <input
-                type="text"
-                placeholder="메모를 입력하세요."
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
               />
             </div>
           )}

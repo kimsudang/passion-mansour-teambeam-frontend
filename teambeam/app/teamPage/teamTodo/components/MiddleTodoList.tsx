@@ -8,23 +8,35 @@ import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
 type Props = {
   task: TodoItem;
   onAddGoal: (type: string, middleTodoId?: string) => void;
+  onStatusChange: (type: string, id: string, newStatus: boolean) => void;
 };
 
-const MiddleTodoList: React.FC<Props> = ({ task, onAddGoal }) => {
+const MiddleTodoList: React.FC<Props> = ({
+  task,
+  onAddGoal,
+  onStatusChange,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  if (!task) {
-    return null;
-  }
+  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onStatusChange("middle", task.middleTodoId, !e.target.checked);
+  };
 
   return (
     <div className="middleTodoList">
       <div className="middleTodoHeader" onClick={toggleOpen}>
-        <h4>{task.title}</h4>
+        <div>
+          <input
+            type="checkbox"
+            checked={!task.status}
+            onChange={handleStatusChange}
+          />
+          <h4>{task.title}</h4>
+        </div>
         <div className="middleSide">
           <span className="middleDate">
             {task.startDate} - {task.endDate}
@@ -40,12 +52,18 @@ const MiddleTodoList: React.FC<Props> = ({ task, onAddGoal }) => {
       </div>
       {isOpen && (
         <div className="lowerTodoContainer">
-          {(task.subtasks ?? []).map((subtask: TodoItem) => (
-            <LowerTodoList key={subtask.id} subtask={subtask} />
+          {task.bottomTodos.map((subtask) => (
+            <LowerTodoList
+              key={subtask.bottomTodoId}
+              subtask={subtask}
+              onStatusChange={(id, newStatus) =>
+                onStatusChange("bottom", id, newStatus)
+              }
+            />
           ))}
           <button
             className="lowAddSubtask"
-            onClick={() => onAddGoal("하위 투두 추가 모달", task.id)}
+            onClick={() => onAddGoal("하위 투두 추가 모달", task.middleTodoId)}
           >
             +
           </button>

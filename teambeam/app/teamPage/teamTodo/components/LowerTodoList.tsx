@@ -1,14 +1,28 @@
+"use client";
+
 import React from "react";
 import { TodoItem } from "../types";
 
 type Props = {
   subtask: TodoItem;
+  onStatusChange: (id: string, newStatus: boolean) => void;
 };
 
-const LowerTodoList: React.FC<Props> = ({ subtask }) => {
+const LowerTodoList: React.FC<Props> = ({ subtask, onStatusChange }) => {
+  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onStatusChange(subtask.bottomTodoId, !e.target.checked);
+  };
+
   return (
     <div className="lowerTodoList">
-      <h5 className="lowerTitle">{subtask.title}</h5>
+      <div>
+        <input
+          type="checkbox"
+          checked={!subtask.status}
+          onChange={handleStatusChange}
+        />
+        <h5 className="lowerTitle">{subtask.title}</h5>
+      </div>
       <span className="lowerDate">
         {subtask.startDate} - {subtask.endDate}
       </span>

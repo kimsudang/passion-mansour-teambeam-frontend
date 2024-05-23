@@ -1,18 +1,22 @@
 export interface TodoItem {
-  id: string;
+  topTodoId: string;
+  middleTodoId?: string;
+  bottomTodoId?: string;
   title: string;
   startDate: string;
   endDate: string;
+  status: boolean;
   assignees?: string[];
-  subtasks?: TodoItem[];
+  bottomTodos?: TodoItem[];
 }
 
 export type TodoList = {
-  id: string;
+  topTodoId: string;
   title: string;
   startDate: string;
   endDate: string;
-  tasks: TodoItem[];
+  status: boolean;
+  middleTodos: TodoItem[];
 };
 
 export type Participant = {
