@@ -36,8 +36,8 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.SUYEON_GITHUB_KEY }}
         with:
           source-directory: 'output'
-          destination-github-username: kimsudang
-          destination-repository-name: passion-mansour-teambeam-frontend
+          destination-github-username: 'kimsudang'
+          destination-repository-name: 'passion-mansour-teambeam-frontend'
           user-email: ${{ secrets.SUYEON_ACCOUNT_EMAIL }}
           commit-message: "Automated commit from GitHub Actions"
           target-branch: main
