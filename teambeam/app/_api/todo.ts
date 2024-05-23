@@ -1,5 +1,6 @@
 import api from "@/app/_api/api";
 
+//투두리스트 조회 함수
 export const fetchTodos = async (projectId: string) => {
   try {
     const response = await api.get(`/team/${projectId}/todo`, {
@@ -41,6 +42,7 @@ export const fetchTodos = async (projectId: string) => {
   }
 };
 
+//상위 투두리스트 추가 함수
 export const addUpperTodo = async (
   projectId: string,
   upperTodo: {
@@ -64,6 +66,7 @@ export const addUpperTodo = async (
   }
 };
 
+// 중위 투두리스트 추가 함수
 export const addMiddleTodo = async (
   projectId: string,
   middleTodo: {
@@ -74,6 +77,7 @@ export const addMiddleTodo = async (
   }
 ) => {
   try {
+    console.log("Sending Middle Todo:", middleTodo); // 디버그 로그
     const response = await api.post(
       `/team/${projectId}/todo/middle`,
       middleTodo,
@@ -83,6 +87,7 @@ export const addMiddleTodo = async (
         },
       }
     );
+    console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
     console.error("Error adding middle todo:", error);
@@ -90,18 +95,19 @@ export const addMiddleTodo = async (
   }
 };
 
+// 하위 투두리스트 추가 함수
 export const addLowerTodo = async (
   projectId: string,
   lowerTodo: {
-    topTodoId: string;
     middleTodoId: string;
     title: string;
     startDate: string;
     endDate: string;
-    assignees?: string[];
+    assignees: string;
   }
 ) => {
   try {
+    console.log("Sending Lower Todo:", lowerTodo); // 디버그 로그
     const response = await api.post(
       `/team/${projectId}/todo/bottom`,
       lowerTodo,
@@ -111,9 +117,32 @@ export const addLowerTodo = async (
         },
       }
     );
+    console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
     console.error("Error adding lower todo:", error);
+    throw error;
+  }
+};
+
+//상위 투두리스트 삭제 함수
+export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
+  try {
+    console.log(
+      `Deleting Upper Todo: Project ID - ${projectId}, Top Todo ID - ${topTodoId}`
+    );
+    const response = await api.delete(
+      `/team/${projectId}/todo/top/${topTodoId}`,
+      {
+        headers: {
+          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        },
+      }
+    );
+    console.log("Delete API Response:", response.data); // 디버그 로그
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting upper todo:", error);
     throw error;
   }
 };

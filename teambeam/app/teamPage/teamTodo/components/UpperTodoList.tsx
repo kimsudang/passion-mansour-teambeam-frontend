@@ -14,7 +14,7 @@ type Props = {
     upperTodoId?: string,
     middleTodoId?: string
   ) => void;
-  onDeleteGoal: (id: string) => void;
+  onDeleteGoal: (topTodoId: string) => void;
   listCount: number;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
 };

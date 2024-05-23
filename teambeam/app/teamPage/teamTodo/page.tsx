@@ -7,7 +7,13 @@ import { TodoList, Participant } from "./types";
 import "./styles/main.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchTodos, addUpperTodo } from "@/app/_api/todo";
+import {
+  fetchTodos,
+  addUpperTodo,
+  addMiddleTodo,
+  addLowerTodo,
+  deleteUpperTodo,
+} from "@/app/_api/todo";
 
 const TeamTodo: React.FC = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>([
@@ -125,6 +131,7 @@ const TeamTodo: React.FC = () => {
       startDate: string;
       endDate: string;
       assignees?: string[];
+      memo?: string;
     }
   ) => {
     console.log("Event Data:", event); // 디버그 로그 추가
@@ -150,6 +157,78 @@ const TeamTodo: React.FC = () => {
           middleTodos: [],
         };
         setTodoLists([...todoLists, newUpperTodo]);
+      } else if (type === "중위 투두 추가 모달" && currentUpperTodoId) {
+        const middleTodo = {
+          topTodoId: currentUpperTodoId,
+          title: event.title,
+          startDate: event.startDate,
+          endDate: event.endDate,
+        };
+
+        console.log("Middle Todo Before Sending:", middleTodo); // Middle Todo Before Sending 로그
+
+        const response = await addMiddleTodo("1", middleTodo);
+        console.log("Middle Todo added:", response);
+
+        setTodoLists((prevTodoLists) =>
+          prevTodoLists.map((todoList) =>
+            todoList.topTodoId === currentUpperTodoId
+              ? {
+                  ...todoList,
+                  middleTodos: [
+                    ...todoList.middleTodos,
+                    {
+                      middleTodoId: response.middleTodoId,
+                      ...middleTodo,
+                      bottomTodos: [],
+                    },
+                  ],
+                }
+              : todoList
+          )
+        );
+      } else if (
+        type === "하위 투두 추가 모달" &&
+        currentUpperTodoId &&
+        currentMiddleTodoId
+      ) {
+        const lowerTodo = {
+          middleTodoId: currentMiddleTodoId,
+          title: event.title,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          memo: event.memo || "",
+          assignees: event.assignees?.[0] || "",
+        };
+
+        console.log("Lower Todo Before Sending:", lowerTodo); // Lower Todo Before Sending 로그
+
+        const response = await addLowerTodo("1", lowerTodo);
+        console.log("Lower Todo added:", response);
+
+        setTodoLists((prevTodoLists) =>
+          prevTodoLists.map((todoList) =>
+            todoList.topTodoId === currentUpperTodoId
+              ? {
+                  ...todoList,
+                  middleTodos: todoList.middleTodos.map((middleTodo) =>
+                    middleTodo.middleTodoId === currentMiddleTodoId
+                      ? {
+                          ...middleTodo,
+                          bottomTodos: [
+                            ...middleTodo.bottomTodos,
+                            {
+                              bottomTodoId: response.bottomTodoId,
+                              ...lowerTodo,
+                            },
+                          ],
+                        }
+                      : middleTodo
+                  ),
+                }
+              : todoList
+          )
+        );
       }
     } catch (error) {
       console.error("Error saving event:", error);
@@ -158,8 +237,20 @@ const TeamTodo: React.FC = () => {
     }
   };
 
-  const handleDeleteGoal = (id: string) => {
-    setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
+  const handleDeleteGoal = async (id: string) => {
+    try {
+      console.log(`Attempting to delete upper todo with ID: ${id}`);
+      const response = await deleteUpperTodo("1", id);
+      console.log(`API Response:`, response);
+      if (response.status === "200") {
+        console.log(`Successfully deleted upper todo with ID: ${id}`);
+        setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
+      } else {
+        console.error("Failed to delete upper todo");
+      }
+    } catch (error) {
+      console.error("Error deleting upper todo:", error);
+    }
   };
 
   const handleStatusChange = (type: string, id: string, newStatus: boolean) => {

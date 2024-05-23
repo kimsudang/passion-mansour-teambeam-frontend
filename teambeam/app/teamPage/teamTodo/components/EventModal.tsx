@@ -14,6 +14,7 @@ type EventModalProps = {
       startDate: string;
       endDate: string;
       assignees?: string[];
+      memo?: string;
     }
   ) => void;
   title: string;
@@ -33,6 +34,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [assignees, setAssignees] = useState<string[]>([]);
+  const [memo, setMemo] = useState(""); // memo state 추가
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,6 +42,7 @@ const EventModal: React.FC<EventModalProps> = ({
       setStartDate("");
       setEndDate("");
       setAssignees([]);
+      setMemo(""); // modal 닫힐 때 memo 초기화
     }
   }, [isOpen]);
 
@@ -60,10 +63,10 @@ const EventModal: React.FC<EventModalProps> = ({
       title: eventTitle,
       startDate,
       endDate,
-      assignees: showAssignee ? assignees : undefined,
+      assignees: showAssignee ? assignees : [],
     };
     console.log("Submitting Event:", event); // 디버그 로그 추가
-    onSave("상위 투두 추가 모달", event); // 함수 호출 시 '상위 투두 추가 모달'과 event 데이터 전달
+    onSave(title, event);
     onClose();
   };
 
