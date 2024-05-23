@@ -28,6 +28,11 @@
     margin-bottom: 14px;
     color: #242424;
 
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
     span {
       display: block;
       font-size: 18px;
@@ -51,13 +56,23 @@
       margin-right: 8px;
       font-size: 11px;
       color: #242424;
+      border: none;
+      cursor: pointer;
 
       &:last-child {
         margin-right: 0;
       }
 
+      &:hover {
+        background: #d5d5d5;
+      }
+
       &.active {
         background: var(--primary);
+      }
+
+      &.active:hover {
+        background: #e6b411;
       }
     }
   }
