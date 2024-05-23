@@ -1,8 +1,8 @@
 "use client";
 
 import BoardList from "@/app/_components/BoardList";
-import { ToggleUpBtnIcon } from "@/app/_components/Icons";
-import React, { useState } from "react";
+import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
+import React, { useCallback, useRef, useState } from "react";
 import "./TeamBoard.scss";
 
 export type Board = {
@@ -40,6 +40,30 @@ const Page = () => {
     },
   ]);
   const [tags, setTags] = useState<string[]>(["react", "vue", "개발"]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [isToggle, setIsToggle] = useState<boolean>(true);
+
+  const onTagToggle = useCallback((tag: string) => {
+    setActiveTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag)
+        : [...prevTags, tag]
+    );
+
+    if (tag !== "all") {
+      /*
+      axios.get(`/api/tags/${tag}`)
+        .then(res => res)
+        .then(data => setBoards(data))
+        .catch(err => console.error(err));
+      */
+    }
+  }, []);
+
+  const onAllToggle = useCallback(() => {
+    setActiveTags([]);
+  }, []);
+
   return (
     <div>
       <title>게시판</title>
@@ -50,18 +74,39 @@ const Page = () => {
 
       <div className='tag-wrap'>
         <div className='tag-info-top'>
-          <ToggleUpBtnIcon size={15} /> <span>태그선택</span>
+          <button onClick={() => setIsToggle(!isToggle)}>
+            {isToggle ? (
+              <ToggleUpBtnIcon size={15} />
+            ) : (
+              <ToggleDownBtnIcon size={15} />
+            )}
+          </button>
+
+          <span>태그선택</span>
         </div>
-        <div className='tags'>
-          <span className='tag active'>ALL</span>
-          {tags?.map((tag, idx) => {
-            return (
-              <span key={idx} className='tag'>
-                {tag}
-              </span>
-            );
-          })}
-        </div>
+        {isToggle ? (
+          <div className='tags'>
+            <button
+              className={`tag ${activeTags.length === 0 ? "active" : ""}`}
+              onClick={onAllToggle}
+              tag-data='all'
+            >
+              ALL
+            </button>
+            {tags?.map((tag, idx) => {
+              return (
+                <button
+                  key={idx}
+                  className={`tag ${activeTags.includes(tag) ? "active" : ""}`}
+                  onClick={() => onTagToggle(tag)}
+                  tag-data={tag}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
       {boards.map((board: Board) => {
