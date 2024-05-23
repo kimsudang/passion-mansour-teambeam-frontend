@@ -130,7 +130,7 @@ const TeamTodo: React.FC = () => {
       title: string;
       startDate: string;
       endDate: string;
-      assignees?: string[];
+      assignees?: number[];
       memo?: string;
     }
   ) => {
@@ -181,6 +181,7 @@ const TeamTodo: React.FC = () => {
                       middleTodoId: response.middleTodoId,
                       ...middleTodo,
                       bottomTodos: [],
+                      status: true, // status 필드 추가
                     },
                   ],
                 }
@@ -192,13 +193,17 @@ const TeamTodo: React.FC = () => {
         currentUpperTodoId &&
         currentMiddleTodoId
       ) {
+        if (event.assignees?.length === 0) {
+          throw new Error("Assignee must be selected");
+        }
+
         const lowerTodo = {
           middleTodoId: currentMiddleTodoId,
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
           memo: event.memo || "",
-          assignees: event.assignees?.[0] || "",
+          member: event.assignees?.[0], // assignees를 member로 변경
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo); // Lower Todo Before Sending 로그
@@ -220,6 +225,7 @@ const TeamTodo: React.FC = () => {
                             {
                               bottomTodoId: response.bottomTodoId,
                               ...lowerTodo,
+                              status: true, // status 필드 추가
                             },
                           ],
                         }
@@ -231,7 +237,7 @@ const TeamTodo: React.FC = () => {
         );
       }
     } catch (error) {
-      console.error("Error saving event:", error);
+      console.error("Error saving event:", error.response?.data || error);
     } finally {
       setIsModalOpen(false);
     }

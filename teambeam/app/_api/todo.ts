@@ -103,7 +103,7 @@ export const addLowerTodo = async (
     title: string;
     startDate: string;
     endDate: string;
-    assignees: string;
+    member: string; // 필드 이름 변경
   }
 ) => {
   try {
@@ -120,7 +120,7 @@ export const addLowerTodo = async (
     console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
-    console.error("Error adding lower todo:", error);
+    console.error("Error adding lower todo:", error.response?.data || error);
     throw error;
   }
 };

@@ -13,7 +13,7 @@ type EventModalProps = {
       title: string;
       startDate: string;
       endDate: string;
-      assignees?: string[];
+      assignees?: number[];
       memo?: string;
     }
   ) => void;
@@ -33,8 +33,8 @@ const EventModal: React.FC<EventModalProps> = ({
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [assignees, setAssignees] = useState<string[]>([]);
-  const [memo, setMemo] = useState(""); // memo state 추가
+  const [assignees, setAssignees] = useState<number[]>([]);
+  const [memo, setMemo] = useState("");
 
   useEffect(() => {
     if (!isOpen) {
@@ -42,19 +42,21 @@ const EventModal: React.FC<EventModalProps> = ({
       setStartDate("");
       setEndDate("");
       setAssignees([]);
-      setMemo(""); // modal 닫힐 때 memo 초기화
+      setMemo("");
     }
   }, [isOpen]);
 
-  const handleAssigneeChange = (selectedOptions: any) => {
-    const selectedAssignees = selectedOptions.map(
-      (option: any) => option.value
-    );
-    setAssignees(selectedAssignees);
+  const handleAssigneeChange = (selectedOption: any) => {
+    setAssignees([selectedOption.value]);
   };
 
   const handleSubmit = () => {
-    if (!eventTitle || !startDate || !endDate) {
+    if (
+      !eventTitle ||
+      !startDate ||
+      !endDate ||
+      (showAssignee && assignees.length === 0)
+    ) {
       alert("모든 필드를 입력해주세요.");
       return;
     }
@@ -64,14 +66,15 @@ const EventModal: React.FC<EventModalProps> = ({
       startDate,
       endDate,
       assignees: showAssignee ? assignees : [],
+      memo,
     };
-    console.log("Submitting Event:", event); // 디버그 로그 추가
+    console.log("Submitting Event:", event);
     onSave(title, event);
     onClose();
   };
 
   const assigneeOptions = participants.map((participant) => ({
-    value: participant.name,
+    value: participant.id,
     label: participant.name,
   }));
 
@@ -113,10 +116,9 @@ const EventModal: React.FC<EventModalProps> = ({
             <div className="todoAssignee">
               <label>담당자</label>
               <Select
-                isMulti
                 value={assignees.map((assignee) => ({
                   value: assignee,
-                  label: assignee,
+                  label: participants.find((p) => p.id === assignee)?.name,
                 }))}
                 className="selectBox"
                 onChange={handleAssigneeChange}
