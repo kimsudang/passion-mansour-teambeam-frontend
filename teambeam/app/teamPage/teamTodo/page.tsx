@@ -105,9 +105,9 @@ const TeamTodo: React.FC = () => {
       title: string;
       startDate: string;
       endDate: string;
-      memo?: string;
+      // memo?: string;
       assignees?: string[];
-      link?: string;
+      // link?: string;
     }
   ) => {
     console.log("handleEventSave", { type, event, currentUpperTodoId, currentMiddleTodoId });
@@ -149,8 +149,8 @@ const TeamTodo: React.FC = () => {
                 startDate: event.startDate,
                 endDate: event.endDate,
                 assignees: event.assignees,
-                memo: event.memo,
-                link: event.link
+                // memo: event.memo,
+                // link: event.link
               };
               return {
                 ...task,
@@ -195,8 +195,8 @@ const TeamTodo: React.FC = () => {
         onSave={(event) => handleEventSave(modalTitle, event)}
         title={modalTitle}
         showAssignee={showAssignee}
-        showLink={showLink}
-        showMemo={showMemo}
+        // showLink={showLink}
+        // showMemo={showMemo}
         participants={participants}
       />
     </div>
