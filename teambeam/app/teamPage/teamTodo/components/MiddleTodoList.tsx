@@ -9,7 +9,7 @@ type Props = {
   task: TodoItem;
   onAddGoal: (type: string, middleTodoId?: string) => void;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
-  participants: Participant[]; // 추가된 부분
+  participants: Participant[];
 };
 
 const MiddleTodoList: React.FC<Props> = ({
@@ -63,12 +63,18 @@ const MiddleTodoList: React.FC<Props> = ({
               onStatusChange={(id, newStatus) =>
                 onStatusChange("bottom", id, newStatus)
               }
-              participants={participants} // 추가된 부분
+              participants={participants}
             />
           ))}
           <button
             className="lowAddSubtask"
-            onClick={() => onAddGoal("하위 투두 추가 모달", task.middleTodoId)}
+            onClick={() => {
+              console.log(
+                "Adding lower todo with middleTodoId:",
+                task.middleTodoId
+              );
+              onAddGoal("하위 투두 추가 모달", task.middleTodoId);
+            }}
           >
             +
           </button>

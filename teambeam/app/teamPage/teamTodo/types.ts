@@ -1,5 +1,5 @@
 export interface TodoItem {
-  topTodoId: string;
+  topTodoId?: string;
   middleTodoId?: string;
   bottomTodoId?: string;
   title: string;
@@ -8,6 +8,8 @@ export interface TodoItem {
   status: boolean;
   assignees?: string[];
   bottomTodos?: TodoItem[];
+  member?: string;
+  memo?: string;
 }
 
 export type TodoList = {

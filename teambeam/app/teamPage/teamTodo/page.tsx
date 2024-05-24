@@ -79,6 +79,7 @@ const TeamTodo: React.FC = () => {
     if (type === "하위 투두 추가 모달") {
       setCurrentUpperTodoId(upperTodoId);
       setCurrentMiddleTodoId(middleTodoId);
+      console.log("Setting Current Middle Todo ID:", middleTodoId); // 디버깅 로그 추가
     } else if (type === "중위 투두 추가 모달") {
       setCurrentUpperTodoId(upperTodoId);
       setCurrentMiddleTodoId(null);
@@ -132,7 +133,6 @@ const TeamTodo: React.FC = () => {
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
-          status: true,
         };
 
         const response = await addMiddleTodo("1", middleTodo);
@@ -147,6 +147,7 @@ const TeamTodo: React.FC = () => {
                     {
                       middleTodoId: response.middleTodoId,
                       ...middleTodo,
+                      status: true,
                       bottomTodos: [],
                     },
                   ],
@@ -163,21 +164,26 @@ const TeamTodo: React.FC = () => {
           throw new Error("Assignee must be selected");
         }
 
-        const lowerTodo = {
+        const lowerTodo: TodoItem = {
           bottomTodoId: "",
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
           status: true,
           assignees: event.assignees.map(String),
+          middleTodoId: currentMiddleTodoId,
+          topTodoId: currentUpperTodoId,
+          memo: event.memo ?? "",
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo);
 
         const response = await addLowerTodo("1", {
-          ...lowerTodo,
           middleTodoId: currentMiddleTodoId,
-          member: event.assignees[0].toString(), // member is required by the API
+          title: event.title,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          member: event.assignees[0].toString(), // API 요구사항에 맞게 member 필드를 별도로 전달
         });
         console.log("Lower Todo added:", response);
 
@@ -195,8 +201,6 @@ const TeamTodo: React.FC = () => {
                             {
                               ...lowerTodo,
                               bottomTodoId: response.bottomTodoId,
-                              middleTodoId: currentMiddleTodoId, // Ensure to set the correct parent ID
-                              topTodoId: currentUpperTodoId, // Ensure to set the correct parent ID
                             },
                           ],
                         }
