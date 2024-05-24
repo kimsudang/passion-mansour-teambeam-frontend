@@ -64,6 +64,52 @@ export const Logo = ({ size }: { size: number }) => {
   );
 };
 
+// Board
+export const BoardSvg = ({ size }: { size: number }) => {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={size}
+      viewBox='0 0 104 83'
+      fill='none'
+    >
+      <rect width='104' height='23' rx='5' fill='#D9D9D9' />
+      <rect y='28' width='104' height='55' rx='5' fill='#D9D9D9' />
+    </svg>
+  );
+};
+
+// Table
+export const TableSvg = ({ size }: { size: number }) => {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={size}
+      viewBox='0 0 104 83'
+      fill='none'
+    >
+      <rect width='32' height='22' rx='5' fill='#D9D9D9' />
+      <rect y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
+      <rect y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
+      <rect x='36' width='32' height='22' rx='5' fill='#D9D9D9' />
+      <rect x='36' y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
+      <rect x='36' y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
+      <rect x='72' width='32' height='22' rx='5' fill='#D9D9D9' />
+      <rect x='72' y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
+      <rect x='72' y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
+    </svg>
+  );
+};
+
+// Search
+export const SearchIcon = ({ size }: { size: number }) => {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' width={size} viewBox='0 0 512 512'>
+      <path d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z' />
+    </svg>
+  );
+};
+
 // Home
 export const HomeIcon = ({ size }: { size: number }) => {
   return (
