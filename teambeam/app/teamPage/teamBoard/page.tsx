@@ -4,6 +4,7 @@ import BoardList from "@/app/_components/BoardList";
 import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
 import React, { useCallback, useRef, useState } from "react";
 import "./TeamBoard.scss";
+import Link from "next/link";
 
 export type Board = {
   id: number;
@@ -69,7 +70,9 @@ const Page = () => {
       <title>게시판</title>
       <div className='top-box'>
         <h1>게시판</h1>
-        <button className='write-add-btn'>글쓰기</button>
+        <Link href='/teamPage/teamBoard/write' className='write-add-btn'>
+          글쓰기
+        </Link>
       </div>
 
       <div className='tag-wrap'>

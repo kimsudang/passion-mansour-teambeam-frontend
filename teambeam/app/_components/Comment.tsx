@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { CommentType } from "../privatePage/bookmark/[id]/page";
-import "./Comment.scss";
+import "@/app/_styles/Comment.scss";
 
 export default function Comment({ comment }: { comment: CommentType }) {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import "./Header.scss";
+import "@/app/_styles/Header.scss";
 import { useRouter } from "next/navigation";
 import { Logo } from "./Icons";
 import Link from "next/link";

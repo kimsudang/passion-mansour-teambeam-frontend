@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Board } from "../privatePage/bookmark/page";
 import { BookmarkIcon } from "./Icons";
-import "./Board.scss";
+import "@/app/_styles/Board.scss";
 
 export default function BoardList({
   board,
