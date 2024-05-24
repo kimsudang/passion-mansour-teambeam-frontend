@@ -1,4 +1,5 @@
 import api from "@/app/_api/api";
+import { AxiosError } from "axios";
 
 //투두리스트 조회 함수
 export const fetchTodos = async (projectId: string) => {
@@ -37,7 +38,14 @@ export const fetchTodos = async (projectId: string) => {
 
     return todos;
   } catch (error) {
-    console.error("Error fetching todos:", error);
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching todos:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching todos:", error);
+    }
     throw error;
   }
 };
@@ -61,7 +69,14 @@ export const addUpperTodo = async (
     console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
-    console.error("Error adding upper todo:", error);
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error adding upper todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error adding upper todo:", error);
+    }
     throw error;
   }
 };
@@ -90,7 +105,14 @@ export const addMiddleTodo = async (
     console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
-    console.error("Error adding middle todo:", error);
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error adding middle todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error adding middle todo:", error);
+    }
     throw error;
   }
 };
@@ -120,7 +142,14 @@ export const addLowerTodo = async (
     console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
-    console.error("Error adding lower todo:", error.response?.data || error);
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error adding lower todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error adding lower todo:", error);
+    }
     throw error;
   }
 };
@@ -142,7 +171,14 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
     console.log("Delete API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
-    console.error("Error deleting upper todo:", error);
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error deleting upper todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error deleting upper todo:", error);
+    }
     throw error;
   }
 };

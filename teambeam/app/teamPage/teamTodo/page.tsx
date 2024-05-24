@@ -203,7 +203,7 @@ const TeamTodo: React.FC = () => {
           startDate: event.startDate,
           endDate: event.endDate,
           memo: event.memo || "",
-          member: event.assignees?.[0], // assignees를 member로 변경
+          member: event.assignees?.[0]?.toString() || "", // assignees를 member로 변경하고 string으로 변환
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo); // Lower Todo Before Sending 로그
@@ -236,7 +236,7 @@ const TeamTodo: React.FC = () => {
           )
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving event:", error.response?.data || error);
     } finally {
       setIsModalOpen(false);
@@ -254,7 +254,7 @@ const TeamTodo: React.FC = () => {
       } else {
         console.error("Failed to delete upper todo");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting upper todo:", error);
     }
   };
@@ -288,7 +288,7 @@ const TeamTodo: React.FC = () => {
                 return { ...subtask, status: newStatus };
               }
               return subtask;
-            }) ?? task.bottomTodos;
+            }) ?? [];
           return task;
         });
         return list;
@@ -299,7 +299,7 @@ const TeamTodo: React.FC = () => {
     if (type === "bottom") {
       updatedTodoLists.forEach((list) => {
         list.middleTodos.forEach((task) => {
-          const allSubtasksChecked = task.bottomTodos?.every(
+          const allSubtasksChecked = (task.bottomTodos ?? []).every(
             (subtask) => subtask.status === false
           );
           if (allSubtasksChecked) {

@@ -74,7 +74,7 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const assigneeOptions = participants.map((participant) => ({
-    value: participant.id,
+    value: Number(participant.id), // Ensure value is number
     label: participant.name,
   }));
 
@@ -118,7 +118,8 @@ const EventModal: React.FC<EventModalProps> = ({
               <Select
                 value={assignees.map((assignee) => ({
                   value: assignee,
-                  label: participants.find((p) => p.id === assignee)?.name,
+                  label: participants.find((p) => Number(p.id) === assignee)
+                    ?.name,
                 }))}
                 className="selectBox"
                 onChange={handleAssigneeChange}
