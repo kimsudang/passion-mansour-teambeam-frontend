@@ -23,7 +23,9 @@ const MiddleTodoList: React.FC<Props> = ({
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onStatusChange("middle", task.middleTodoId, !e.target.checked);
+    if (task.middleTodoId) {
+      onStatusChange("middle", task.middleTodoId, !e.target.checked);
+    }
   };
 
   return (
@@ -52,7 +54,7 @@ const MiddleTodoList: React.FC<Props> = ({
       </div>
       {isOpen && (
         <div className="lowerTodoContainer">
-          {task.bottomTodos.map((subtask) => (
+          {(task.bottomTodos ?? []).map((subtask) => (
             <LowerTodoList
               key={subtask.bottomTodoId}
               subtask={subtask}

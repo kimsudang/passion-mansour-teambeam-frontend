@@ -10,7 +10,9 @@ type Props = {
 
 const LowerTodoList: React.FC<Props> = ({ subtask, onStatusChange }) => {
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onStatusChange(subtask.bottomTodoId, !e.target.checked);
+    if (subtask.bottomTodoId) {
+      onStatusChange(subtask.bottomTodoId, !e.target.checked);
+    }
   };
 
   return (
