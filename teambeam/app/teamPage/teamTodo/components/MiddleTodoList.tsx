@@ -2,19 +2,21 @@
 
 import React, { useState } from "react";
 import LowerTodoList from "./LowerTodoList";
-import { TodoItem } from "../types";
+import { TodoItem, Participant } from "../types";
 import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
 
 type Props = {
   task: TodoItem;
   onAddGoal: (type: string, middleTodoId?: string) => void;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
+  participants: Participant[]; // 추가된 부분
 };
 
 const MiddleTodoList: React.FC<Props> = ({
   task,
   onAddGoal,
   onStatusChange,
+  participants,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -61,6 +63,7 @@ const MiddleTodoList: React.FC<Props> = ({
               onStatusChange={(id, newStatus) =>
                 onStatusChange("bottom", id, newStatus)
               }
+              participants={participants} // 추가된 부분
             />
           ))}
           <button

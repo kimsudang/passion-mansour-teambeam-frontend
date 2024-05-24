@@ -154,6 +154,34 @@ export const addLowerTodo = async (
   }
 };
 
+// 참가자 조회 함수
+export const fetchParticipants = async (projectId: string) => {
+  try {
+    const response = await api.get(`/api/team/${projectId}/joinMember`, {
+      headers: {
+        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+      },
+    });
+
+    const participants = response.data.joinMemberList.map((member: any) => ({
+      id: String(member.memberId),
+      name: member.memberName,
+    }));
+
+    return participants;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching participants:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching participants:", error);
+    }
+    throw error;
+  }
+};
+
 //상위 투두리스트 삭제 함수
 export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
   try {
