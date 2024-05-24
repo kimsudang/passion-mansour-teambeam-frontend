@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import "./AddModal.scss";
+import "@/app/_styles/AddModal.scss";
 
 type FormType = {
   title: string;

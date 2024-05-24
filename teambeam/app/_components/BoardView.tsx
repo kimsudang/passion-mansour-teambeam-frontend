@@ -2,7 +2,7 @@
 
 import { BackBtnIcon, BookmarkIcon } from "./Icons";
 import { useRouter } from "next/navigation";
-import "./Board.scss";
+import "@/app/_styles/Board.scss";
 import Comment from "./Comment";
 import { BoardType, CommentType } from "../privatePage/bookmark/[id]/page";
 

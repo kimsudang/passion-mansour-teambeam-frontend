@@ -67,14 +67,9 @@ export const Logo = ({ size }: { size: number }) => {
 // Board
 export const BoardSvg = ({ size }: { size: number }) => {
   return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width={size}
-      viewBox='0 0 104 83'
-      fill='none'
-    >
-      <rect width='104' height='23' rx='5' fill='#D9D9D9' />
-      <rect y='28' width='104' height='55' rx='5' fill='#D9D9D9' />
+    <svg xmlns='http://www.w3.org/2000/svg' width={size} viewBox='0 0 104 83'>
+      <rect width='104' height='23' rx='5' />
+      <rect y='28' width='104' height='55' rx='5' />
     </svg>
   );
 };
@@ -82,21 +77,16 @@ export const BoardSvg = ({ size }: { size: number }) => {
 // Table
 export const TableSvg = ({ size }: { size: number }) => {
   return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width={size}
-      viewBox='0 0 104 83'
-      fill='none'
-    >
-      <rect width='32' height='22' rx='5' fill='#D9D9D9' />
-      <rect y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
-      <rect y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
-      <rect x='36' width='32' height='22' rx='5' fill='#D9D9D9' />
-      <rect x='36' y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
-      <rect x='36' y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
-      <rect x='72' width='32' height='22' rx='5' fill='#D9D9D9' />
-      <rect x='72' y='30' width='32' height='23' rx='5' fill='#D9D9D9' />
-      <rect x='72' y='61' width='32' height='22' rx='5' fill='#D9D9D9' />
+    <svg xmlns='http://www.w3.org/2000/svg' width={size} viewBox='0 0 104 83'>
+      <rect width='32' height='22' rx='5' />
+      <rect y='30' width='32' height='23' rx='5' />
+      <rect y='61' width='32' height='22' rx='5' />
+      <rect x='36' width='32' height='22' rx='5' />
+      <rect x='36' y='30' width='32' height='23' rx='5' />
+      <rect x='36' y='61' width='32' height='22' rx='5' />
+      <rect x='72' width='32' height='22' rx='5' />
+      <rect x='72' y='30' width='32' height='23' rx='5' />
+      <rect x='72' y='61' width='32' height='22' rx='5' />
     </svg>
   );
 };
