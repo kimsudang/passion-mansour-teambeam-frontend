@@ -20,6 +20,6 @@ export type TodoList = {
 };
 
 export type Participant = {
-  id: string;
+  id: number;
   name: string;
 };

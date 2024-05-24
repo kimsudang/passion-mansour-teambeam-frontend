@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import MiddleTodoList from "./MiddleTodoList";
 import DropdownMenu from "./DropdownMenu";
-import { TodoList } from "../types";
+import { TodoList, Participant } from "../types";
 import { EllipsisBtn } from "@/app/_components/Icons";
 import { toast } from "react-toastify";
 
@@ -17,6 +17,7 @@ type Props = {
   onDeleteGoal: (topTodoId: string) => void;
   listCount: number;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
+  participants: Participant[]; // 추가된 부분
 };
 
 const UpperTodoList: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const UpperTodoList: React.FC<Props> = ({
   onDeleteGoal,
   listCount,
   onStatusChange,
+  participants,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -84,6 +86,7 @@ const UpperTodoList: React.FC<Props> = ({
           task={task}
           onAddGoal={onAddGoal}
           onStatusChange={onStatusChange}
+          participants={participants} // 추가된 부분
         />
       ))}
       <button

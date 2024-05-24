@@ -1,18 +1,28 @@
 "use client";
 
 import React from "react";
-import { TodoItem } from "../types";
+import { TodoItem, Participant } from "../types";
 
 type Props = {
   subtask: TodoItem;
   onStatusChange: (id: string, newStatus: boolean) => void;
+  participants: Participant[]; // 추가된 부분
 };
 
-const LowerTodoList: React.FC<Props> = ({ subtask, onStatusChange }) => {
+const LowerTodoList: React.FC<Props> = ({
+  subtask,
+  onStatusChange,
+  participants,
+}) => {
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (subtask.bottomTodoId) {
       onStatusChange(subtask.bottomTodoId, !e.target.checked);
     }
+  };
+
+  const getAssigneeName = (id: string) => {
+    const participant = participants.find((p) => p.id.toString() === id);
+    return participant ? participant.name : id;
   };
 
   return (
@@ -32,7 +42,7 @@ const LowerTodoList: React.FC<Props> = ({ subtask, onStatusChange }) => {
         <div className="assigneeTags">
           {subtask.assignees.map((assignee, index) => (
             <span key={index} className="assigneeTag">
-              {assignee}
+              {getAssigneeName(assignee)}
             </span>
           ))}
         </div>

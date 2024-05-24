@@ -68,13 +68,14 @@ const EventModal: React.FC<EventModalProps> = ({
       assignees: showAssignee ? assignees : [],
       memo,
     };
-    console.log("Submitting Event:", event);
+
+    console.log("Event being submitted to onSave:", event);
     onSave(title, event);
     onClose();
   };
 
   const assigneeOptions = participants.map((participant) => ({
-    value: Number(participant.id), // Ensure value is number
+    value: participant.id,
     label: participant.name,
   }));
 
@@ -118,8 +119,7 @@ const EventModal: React.FC<EventModalProps> = ({
               <Select
                 value={assignees.map((assignee) => ({
                   value: assignee,
-                  label: participants.find((p) => Number(p.id) === assignee)
-                    ?.name,
+                  label: participants.find((p) => p.id === assignee)?.name,
                 }))}
                 className="selectBox"
                 onChange={handleAssigneeChange}
