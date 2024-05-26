@@ -123,7 +123,7 @@ const Page = () => {
       </div>
 
       {boards.map((board: Board) => {
-        return <BoardList key={board.id} board={board} type={"board"} />;
+        return <BoardList key={board.postId} board={board} type={"board"} />;
       })}
     </div>
   );
