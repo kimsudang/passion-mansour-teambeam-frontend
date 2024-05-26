@@ -1,6 +1,11 @@
 "use client";
 
-import { BackBtnIcon, BoardSvg, TableSvg } from "@/app/_components/Icons";
+import {
+  BackBtnIcon,
+  BoardSvg,
+  SearchIcon,
+  TableSvg,
+} from "@/app/_components/Icons";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import "@/app/_styles/Board.scss";
@@ -16,7 +21,16 @@ const Page = () => {
   const [inputContent, setInputContent] = useState<string>("");
   const [template, setTemplate] = useState<string>("board");
   const [tags, setTags] = useState<string[]>(["react", "개발", "기획", "vue"]);
-  const [selectTags, setSelectTags] = useState<string[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const [tagSelect, setTagSelect] = useState<string[]>([]);
+  const [isTagsMenu, setIsTagsMenu] = useState<boolean>(false);
+
+  const filterTag = tags.filter((tag) => {
+    return (
+      tag?.toLocaleLowerCase()?.includes(query?.toLocaleLowerCase()?.trim()) &&
+      !tagSelect.includes(tag)
+    );
+  });
 
   const router = useRouter();
 
@@ -41,10 +55,10 @@ const Page = () => {
       notice,
       title,
       content: template !== "board" ? "표" : inputContent,
-      tags: selectTags,
+      tags: tagSelect,
     };
     console.log(data);
-  }, [notice, title, template, inputContent, selectTags]);
+  }, [notice, title, template, inputContent, tagSelect]);
 
   const modules = {
     toolbar: [
@@ -174,7 +188,66 @@ const Page = () => {
             placeholder='제목'
           />
 
-          <input type='text' placeholder='태그 기능 작업 예정' />
+          <div className='tagWrap'>
+            <div className='tagSearchBox'>
+              <SearchIcon size={24} />
+              <input
+                type='text'
+                className='tagSearchInput'
+                value={query}
+                onChange={(e) => setQuery(e.target.value.trimStart())}
+                placeholder='태그 검색'
+                onFocus={() => setIsTagsMenu(true)}
+                onBlur={() => setIsTagsMenu(false)}
+              />
+            </div>
+
+            {tagSelect?.length ? (
+              <div className='selectTagWrap'>
+                {tagSelect.map((tag) => (
+                  <div key={tag} className='selectTagItem'>
+                    {tag}
+                    <span
+                      className='tagClose'
+                      onClick={() =>
+                        setTagSelect(
+                          tagSelect.filter((_tag) => {
+                            return _tag !== tag;
+                          })
+                        )
+                      }
+                    >
+                      X
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {isTagsMenu ? (
+              <div className='tagsMenuWrap'>
+                <ul>
+                  {filterTag?.length ? (
+                    filterTag.map((tag, idx) => (
+                      <li
+                        key={tag}
+                        className='tagItem'
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setIsTagsMenu(true);
+                          setTagSelect((prev) => [...prev, tag]);
+                        }}
+                      >
+                        {tag}
+                      </li>
+                    ))
+                  ) : (
+                    <li className='noItem'>검색하신 태그가 없습니다</li>
+                  )}
+                </ul>
+              </div>
+            ) : null}
+          </div>
 
           {template === "board" ? (
             <div className='editorBox'>
