@@ -34,6 +34,12 @@ export default function MemoWriteModal({
 
   const onSubmit = useCallback(async () => {
     // "use server";
+    const data = {
+      memberId: 2,
+      memoTitle: form.title,
+      memoContent: form.content,
+    };
+
     console.log("title : ", form.title);
     console.log("content : ", form.content);
   }, [form]);

@@ -7,12 +7,14 @@ import "./TeamBoard.scss";
 import Link from "next/link";
 
 export type Board = {
-  id: number;
-  title: string;
-  description: string;
+  postId: number;
+  postTitle: string;
+  postType: string;
+  postContent: string;
   writer: string;
-  tags: string[];
-  createAt: string;
+  tags: { tagId: number; tagName: string }[];
+  createDate: string;
+  updateDate: string;
   notice: boolean;
   bookmark: boolean;
 };
@@ -20,22 +22,30 @@ export type Board = {
 const Page = () => {
   const [boards, setBoards] = useState<Board[]>([
     {
-      id: 1,
-      title: "게시글 1",
-      description: "게시글 1입니다.",
+      postId: 1,
+      postTitle: "게시글 1",
+      postType: "board",
+      postContent: "게시글 1입니다.",
       writer: "홍길동",
-      tags: ["react", "개발", "기획"],
-      createAt: "2024-04-12 09:51:13",
+      tags: [
+        { tagId: 21, tagName: "react" },
+        { tagId: 52, tagName: "개발" },
+        { tagId: 56, tagName: "기획" },
+      ],
+      createDate: "2024-04-12 09:51:13",
+      updateDate: "2024-04-12 09:51:13",
       notice: false,
       bookmark: true,
     },
     {
-      id: 2,
-      title: "게시글 2",
-      description: "게시글 2입니다.",
+      postId: 2,
+      postTitle: "게시글 2",
+      postType: "board",
+      postContent: "게시글 2입니다.",
       writer: "홍길동",
-      tags: ["vue"],
-      createAt: "2024-04-12 09:51:13",
+      tags: [{ tagId: 11, tagName: "vue" }],
+      createDate: "2024-04-12 09:51:13",
+      updateDate: "2024-04-12 09:51:13",
       notice: false,
       bookmark: true,
     },
