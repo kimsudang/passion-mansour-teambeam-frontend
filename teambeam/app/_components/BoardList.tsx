@@ -16,27 +16,27 @@ export default function BoardList({
     <Link
       href={
         type === "bookmark"
-          ? `/privatePage/bookmark/${board.id}`
-          : `/teamPage/teamBoard/${board.id}`
+          ? `/privatePage/bookmark/${board.postId}`
+          : `/teamPage/teamBoard/${board.postId}`
       }
       className='board-item'
     >
       <div className='board-left'>
         <div className='tags'>
-          {board.tags.map((tag: string, idx: number) => {
+          {board.tags.map((tag) => {
             return (
-              <span key={idx} className='tag'>
-                {tag}
+              <span key={tag.tagId} className='tag'>
+                {tag.tagName}
               </span>
             );
           })}
         </div>
-        <h3>{board.title}</h3>
-        <p>{board.description}</p>
+        <h3>{board.postTitle}</h3>
+        <p>{board.postContent}</p>
         <div className='board-info'>
           <span>{board.writer}</span>
           <b>ㆍ</b>
-          <span>{board.createAt}</span>
+          <span>{board.createDate}</span>
         </div>
       </div>
       <div className='board-right'>

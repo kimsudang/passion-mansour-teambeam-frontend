@@ -8,42 +8,41 @@ import AddModal from "../_components/AddModal";
 import axios from "axios";
 
 export type Project = {
-  id: number;
-  title: string;
+  projectId: number;
+  projectName: string;
   description: string;
-  createAt: string;
-  state: string;
+  createDate: string;
+  projectStatus: string;
 };
 
 export default function Page() {
-  const [isModal, setIsModal] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [lists, setLists] = useState<Project[]>([
     {
-      id: 0,
-      title: "프로젝트 A",
+      projectId: 0,
+      projectName: "프로젝트 A",
       description:
         "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createAt: "2024-04-12 10:12:43",
-      state: "progress",
+      createDate: "2024-04-12 10:12:43",
+      projectStatus: "PROGRESS",
     },
     {
-      id: 1,
-      title: "프로젝트 B",
+      projectId: 1,
+      projectName: "프로젝트 B",
       description:
         "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createAt: "2024-04-12 10:12:43",
-      state: "complete",
+      createDate: "2024-04-12 10:12:43",
+      projectStatus: "END",
     },
     {
-      id: 2,
-      title: "프로젝트 C",
+      projectId: 2,
+      projectName: "프로젝트 C",
       description:
         "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createAt: "2024-04-12 10:12:43",
-      state: "complete",
+      createDate: "2024-04-12 10:12:43",
+      projectStatus: "PROGRESS",
     },
   ]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -51,7 +50,13 @@ export default function Page() {
     (e: any) => {
       // api 필요
       const arr = [...lists];
-      setLists(arr.filter((list) => list.state === e.target.value));
+      setLists(
+        arr.filter(
+          (list) =>
+            list.projectStatus?.toLocaleLowerCase() ===
+            e.target.value.toLocaleLowerCase()
+        )
+      );
     },
     [lists]
   );
@@ -76,7 +81,7 @@ export default function Page() {
               전체
             </option>
             <option value='progress'>진행중</option>
-            <option value='complete'>완료</option>
+            <option value='end'>완료</option>
           </select>
         </div>
 
@@ -90,17 +95,17 @@ export default function Page() {
             return (
               <Link
                 href='/teamPage/teamMain'
-                key={list.id}
+                key={list.projectId}
                 className='project-item'
               >
                 <div className='project-list-wrap'>
-                  {list.state === "progress" ? (
+                  {list.projectStatus === "PROGRESS" ? (
                     <span className='progress'>진행중</span>
                   ) : null}
-                  {list.state === "complete" ? (
-                    <span className='complete'>완료</span>
+                  {list.projectStatus === "END" ? (
+                    <span className='end'>완료</span>
                   ) : null}
-                  <h4>{list.title}</h4>
+                  <h4>{list.projectName}</h4>
 
                   <div className='project-info'>
                     <span>프로젝트 설명</span>

@@ -20,9 +20,9 @@ export default function Comment({ comment }: { comment: CommentType }) {
         <div className='right-info'>
           <span>{comment.writer}</span>
           <b>ㆍ</b>
-          <span>{comment.createAt}</span>
+          <span>{comment.createDate}</span>
         </div>
-        <p>{comment.content}</p>
+        <p>{comment.postCommentContent}</p>
       </div>
     </div>
   );

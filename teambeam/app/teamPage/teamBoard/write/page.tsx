@@ -15,20 +15,32 @@ import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
 
+type tagType = {
+  tagId: number;
+  tagName: string;
+};
+
 const Page = () => {
   const [title, setTitle] = useState<string>("");
   const [notice, setNotice] = useState<boolean>(false);
   const [inputContent, setInputContent] = useState<string>("");
   const [template, setTemplate] = useState<string>("board");
-  const [tags, setTags] = useState<string[]>(["react", "개발", "기획", "vue"]);
+  const [tags, setTags] = useState<tagType[]>([
+    { tagId: 21, tagName: "react" },
+    { tagId: 23, tagName: "개발" },
+    { tagId: 25, tagName: "기획" },
+    { tagId: 27, tagName: "vue" },
+  ]);
   const [query, setQuery] = useState<string>("");
   const [tagSelect, setTagSelect] = useState<string[]>([]);
   const [isTagsMenu, setIsTagsMenu] = useState<boolean>(false);
 
   const filterTag = tags.filter((tag) => {
     return (
-      tag?.toLocaleLowerCase()?.includes(query?.toLocaleLowerCase()?.trim()) &&
-      !tagSelect.includes(tag)
+      tag.tagName
+        ?.toLocaleLowerCase()
+        ?.includes(query?.toLocaleLowerCase()?.trim()) &&
+      !tagSelect.includes(tag.tagName)
     );
   });
 
@@ -230,15 +242,15 @@ const Page = () => {
                   {filterTag?.length ? (
                     filterTag.map((tag, idx) => (
                       <li
-                        key={tag}
+                        key={tag.tagId}
                         className='tagItem'
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
                           setIsTagsMenu(true);
-                          setTagSelect((prev) => [...prev, tag]);
+                          setTagSelect((prev) => [...prev, tag.tagName]);
                         }}
                       >
-                        {tag}
+                        {tag.tagName}
                       </li>
                     ))
                   ) : (
