@@ -5,66 +5,77 @@ import Comment from "@/app/_components/Comment";
 import React, { useState } from "react";
 
 export type BoardType = {
-  id: number;
-  title: string;
-  content: string;
+  postId: number;
+  postTitle: string;
+  postType: string;
+  postContent: string;
   writer: string;
-  createAt: string;
-  tags: string[];
+  createDate: string;
+  updateDate: string;
+  tags: { tagId: number; tagName: string }[];
   notice: boolean;
   bookmark: boolean;
 };
 
 export type CommentType = {
-  id: number;
-  content: string;
+  postCommentId: number;
+  postCommentContent: string;
   writer: string;
   profileSrc: string;
-  createAt: string;
+  createDate: string;
+  updateDate: string;
 };
 
 const Page = () => {
   const [boardData, setBoardData] = useState<BoardType>({
-    id: 0,
-    title: "게시글 제목",
-    content:
+    postId: 0,
+    postTitle: "게시글 제목",
+    postType: "board",
+    postContent:
       "게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다  게시글 내용입니다",
     writer: "홍길동",
-    createAt: "2024-04-23 09:51:13",
-    tags: ["react", "개발"],
+    createDate: "2024-04-23 09:51:13",
+    updateDate: "2024-04-23 09:51:13",
+    tags: [
+      { tagId: 23, tagName: "react" },
+      { tagId: 51, tagName: "개발" },
+    ],
     notice: false,
     bookmark: true,
   });
   const [comments, setComments] = useState<CommentType[]>([
     {
-      id: 0,
-      content:
+      postCommentId: 0,
+      postCommentContent:
         "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
       writer: "홍길동",
       profileSrc: "/img/profile_default.png",
-      createAt: "2024-01-03 10:42:12",
+      createDate: "2024-01-03 10:42:12",
+      updateDate: "2024-01-03 10:42:12",
     },
     {
-      id: 1,
-      content:
+      postCommentId: 1,
+      postCommentContent:
         "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
       writer: "홍길동",
       profileSrc: "/img/profile_default.png",
-      createAt: "2024-01-03 10:42:12",
+      createDate: "2024-01-03 10:42:12",
+      updateDate: "2024-01-03 10:42:12",
     },
     {
-      id: 2,
-      content:
+      postCommentId: 2,
+      postCommentContent:
         "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
       writer: "홍길동",
       profileSrc: "/img/profile_default.png",
-      createAt: "2024-01-03 10:42:12",
+      createDate: "2024-01-03 10:42:12",
+      updateDate: "2024-01-03 10:42:12",
     },
   ]);
 
   return (
     <div>
-      <title>{boardData.title}</title>
+      <title>{boardData.postId}</title>
       <BoardView boardData={boardData} comments={comments} />
     </div>
   );
