@@ -1,20 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { Participant } from "@/app/teamPage/teamTodo/types";
 
 type EventModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (event: { title: string; start: string; end: string }) => void;
+  participants: Participant[];
 };
 
-const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSave }) => {
+const EventModal: React.FC<EventModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  participants,
+}) => {
   const [title, setTitle] = useState("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [assignees, setAssignees] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setStart("");
+      setEnd("");
+      setAssignees([]);
+    }
+  }, [isOpen]);
+
+  const handleAssigneeChange = (selectedOptions: any) => {
+    const assignees = selectedOptions.map((option: any) => option.value);
+    setAssignees(assignees);
+  };
 
   const handleSubmit = () => {
     onSave({ title, start, end: end || "" });
     onClose();
   };
+
+  const assigneeOptions = participants.map((participant) => ({
+    value: participant.id,
+    label: participant.name,
+  }));
+
+  console.log("Participants in EventModal:", participants); // 로그 추가
 
   if (!isOpen) return null;
 
@@ -33,14 +63,23 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSave }) => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        <div>
+        <div className="todoAssignee">
           <label>참석자</label>
-          <input type="text" placeholder="@사용자명" />
+          <Select
+            isMulti
+            value={assignees.map((assignee) => ({
+              value: assignee,
+              label: participants.find((p) => p.id === assignee)?.name,
+            }))}
+            onChange={handleAssigneeChange}
+            options={assigneeOptions}
+            placeholder="참석자를 선택하세요."
+          />
         </div>
         <div>
           <label>일정 시작</label>
           <input
-            type="datetime-local"
+            type="date"
             value={start}
             onChange={(e) => setStart(e.target.value)}
             required
@@ -49,7 +88,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSave }) => {
         <div>
           <label>일정 종료</label>
           <input
-            type="datetime-local"
+            type="date"
             value={end}
             onChange={(e) => setEnd(e.target.value)}
           />
