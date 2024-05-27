@@ -182,6 +182,37 @@
   }
 }
 
+.viewTable {
+  display: block;
+  width: 1000px;
+  min-width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+
+  thead tr {
+    height: 72px;
+    background: #e0e0e0;
+
+    th {
+      min-width: 200px;
+      border: 1px solid #d5d5d5;
+      text-align: center;
+    }
+  }
+
+  tbody tr {
+    height: 64px;
+    background: #fff;
+
+    td {
+      min-width: 200px;
+      border: 1px solid #d5d5d5;
+      text-align: center;
+    }
+  }
+}
+
 // Board - write
 @include hightWide {
   .templateSelect {
@@ -307,7 +338,7 @@
   display: flex;
   flex-direction: column;
 
-  input[type="text"] {
+  .inputText {
     width: 100%;
     border-radius: 10px;
     padding: 28px 24px;
@@ -419,4 +450,80 @@
     display: flex;
     justify-content: center;
   }
+}
+
+.tableWrap {
+  display: flex;
+  width: 100%;
+}
+
+.writerTable {
+  display: block;
+  width: 1000px;
+  min-width: calc(100% - 78px);
+  max-width: calc(100% - 78px);
+  overflow-x: auto;
+  border-collapse: collapse;
+
+  thead tr {
+    height: 72px;
+    background: #e0e0e0;
+
+    th {
+      min-width: 200px;
+      border: 1px solid #d5d5d5;
+
+      input {
+        display: block;
+        width: 100%;
+        height: 72px;
+        border: none;
+        background: transparent;
+        padding: 0 4px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #242424;
+        text-align: center;
+      }
+    }
+  }
+
+  tbody tr {
+    background: #fff;
+
+    td {
+      min-width: 200px;
+      border: 1px solid #d5d5d5;
+
+      input {
+        display: block;
+        width: 100%;
+        height: 72px;
+        border: none;
+        background: transparent;
+        padding: 0 4px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #242424;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.colAddBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  margin-left: 14px;
+}
+
+.rowAddBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 64px;
+  margin-top: 14px;
 }

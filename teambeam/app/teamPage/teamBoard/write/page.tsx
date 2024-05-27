@@ -193,6 +193,7 @@ const Page = () => {
 
           <input
             type='text'
+            className='inputText'
             value={title}
             onChange={handleTitle}
             placeholder='제목'
@@ -203,7 +204,7 @@ const Page = () => {
               <SearchIcon size={24} />
               <input
                 type='text'
-                className='tagSearchInput'
+                className='inputText tagSearchInput'
                 value={query}
                 onChange={(e) => setQuery(e.target.value.trimStart())}
                 placeholder='태그 검색'
@@ -272,43 +273,51 @@ const Page = () => {
 
           {template === "table" ? (
             <>
-              <table>
-                <thead>
-                  {cells.slice(0, 1).map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell) => (
-                        <th key={cell.key}>
-                          <input
-                            type='text'
-                            value={cell.value}
-                            onChange={(e) => handleCellValue(e, rowIndex, cell)}
-                          />
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {cells.slice(1).map((row, rowIndex) => (
-                    <tr key={rowIndex + 1}>
-                      {row.map((cell) => (
-                        <td key={cell.key}>
-                          <input
-                            type='text'
-                            value={cell.value}
-                            onChange={(e) =>
-                              handleCellValue(e, rowIndex + 1, cell)
-                            }
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className='tableWrap'>
+                <table className='writerTable'>
+                  <thead>
+                    {cells.slice(0, 1).map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell) => (
+                          <th key={cell.key}>
+                            <input
+                              type='text'
+                              value={cell.value}
+                              onChange={(e) =>
+                                handleCellValue(e, rowIndex, cell)
+                              }
+                            />
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {cells.slice(1).map((row, rowIndex) => (
+                      <tr key={rowIndex + 1}>
+                        {row.map((cell) => (
+                          <td key={cell.key}>
+                            <input
+                              type='text'
+                              value={cell.value}
+                              onChange={(e) =>
+                                handleCellValue(e, rowIndex + 1, cell)
+                              }
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <button className='colAddBtn' onClick={handleColumnAdd}>
+                  열 추가
+                </button>
+              </div>
 
-              <button onClick={handleRowAdd}>행 추가</button>
-              <button onClick={handleColumnAdd}>열 추가</button>
+              <button className='rowAddBtn' onClick={handleRowAdd}>
+                행 추가
+              </button>
             </>
           ) : null}
         </div>

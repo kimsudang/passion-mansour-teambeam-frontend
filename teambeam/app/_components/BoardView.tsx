@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { BackBtnIcon, BookmarkIcon } from "./Icons";
 import { useRouter } from "next/navigation";
 import "@/app/_styles/Board.scss";
@@ -26,7 +27,7 @@ export default function BoardView({
       </div>
       <div className='view-info-wrap'>
         <div className='view-info'>
-          <span>{boardData.writer}</span>
+          <span>{boardData.writer.memberName}</span>
           <b>ㆍ</b>
           <span>{boardData.createDate}</span>
         </div>
@@ -45,8 +46,35 @@ export default function BoardView({
         })}
       </div>
 
-      <p className='board-view-content'>{boardData.postContent}</p>
+      <div className='board-view-content'>
+        {boardData.postType === "board" ? (
+          typeof boardData.postContent === "string" ? (
+            <>{boardData.postContent}</>
+          ) : null
+        ) : null}
 
+        {boardData.postType === "table" &&
+        Array.isArray(boardData.postContent) ? (
+          <table className='viewTable'>
+            <thead>
+              <tr>
+                {boardData.postContent[0].map((cell) => (
+                  <th key={cell.key}>{cell.value}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {boardData.postContent.slice(1).map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {row.map((cell) => (
+                    <td key={cell.key}>{cell.value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : null}
+      </div>
       <div className='comment-wrap'>
         <p className='comment-info'>
           댓글 <span>{comments.length}</span>

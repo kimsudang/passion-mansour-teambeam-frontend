@@ -4,12 +4,20 @@ import BoardView from "@/app/_components/BoardView";
 import Comment from "@/app/_components/Comment";
 import React, { useState } from "react";
 
+type ContentType = {
+  key: string;
+  value: string;
+};
+
 export type BoardType = {
   postId: number;
   postTitle: string;
   postType: string;
-  postContent: string;
-  writer: string;
+  postContent: ContentType[][] | string;
+  writer: {
+    memberId: number;
+    memberName: string;
+  };
   createDate: string;
   updateDate: string;
   tags: { tagId: number; tagName: string }[];
@@ -33,7 +41,10 @@ const Page = () => {
     postType: "board",
     postContent:
       "게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다 게시글 내용입니다  게시글 내용입니다",
-    writer: "홍길동",
+    writer: {
+      memberId: 0,
+      memberName: "홍길동",
+    },
     createDate: "2024-04-23 09:51:13",
     updateDate: "2024-04-23 09:51:13",
     tags: [
@@ -75,7 +86,7 @@ const Page = () => {
 
   return (
     <div>
-      <title>{boardData.postId}</title>
+      <title>{boardData.postTitle}</title>
       <BoardView boardData={boardData} comments={comments} />
     </div>
   );
