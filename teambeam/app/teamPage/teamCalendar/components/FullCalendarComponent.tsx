@@ -11,9 +11,11 @@ type FullCalendarComponentProps = {
     title: string;
     start: string;
     end: string;
-    location: string;
-    content: string;
-    link: string;
+    location?: string;
+    content?: string;
+    link?: string;
+    time?: string;
+    todo?: boolean;
   }[];
   eventClick: (event: any) => void;
 };
@@ -22,7 +24,7 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
   events,
   eventClick,
 }) => {
-  console.log("Events data:", events); // 이벤트 데이터 확인
+  console.log("Events data:", events);
   return (
     <FullCalendar
       plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
@@ -40,7 +42,14 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
       }))}
       editable={true}
       selectable={true}
-      eventClick={({ event }) => eventClick(event)} // 수정된 부분
+      eventClick={({ event }) => eventClick(event)}
+      eventContent={(eventInfo) => {
+        return (
+          <div>
+            <strong>{eventInfo.event.title}</strong>
+          </div>
+        );
+      }}
     />
   );
 };

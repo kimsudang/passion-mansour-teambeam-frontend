@@ -19,21 +19,29 @@ export const fetchCalendarEvents = async (
 
     console.log("Calendar events response:", response.data);
 
-    if (
-      response.data &&
-      response.data.status === "200" &&
-      response.data.schedules
-    ) {
-      const events = response.data.schedules.map((schedule: any) => ({
+    if (response.data && response.data.status === "200") {
+      const scheduleEvents = response.data.schedules.map((schedule: any) => ({
         id: schedule.scheduleId,
         title: schedule.title,
         start: schedule.time,
-        end: schedule.time, // Assuming `time` is used for both start and end
+        end: schedule.time,
         location: schedule.location,
         content: schedule.content,
         link: schedule.link,
+        assignees: schedule.scheduleMembers.map(
+          (member: any) => member.memberId
+        ),
       }));
-      return events;
+
+      const todoEvents = response.data.topTodos.map((todo: any) => ({
+        id: todo.topTodoId,
+        title: todo.title,
+        start: todo.startDate,
+        end: todo.endDate,
+        todo: true,
+      }));
+
+      return [...scheduleEvents, ...todoEvents];
     } else {
       throw new Error("Invalid response data format");
     }
