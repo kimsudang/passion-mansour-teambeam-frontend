@@ -1,0 +1,58 @@
+@mixin button_styled {
+  width: 100px;
+  height: 50px;
+  margin-top: 30px;
+  border: 0px;
+  border-radius: 10px;
+  font-size: large;
+  font-weight: bold;
+}
+
+.teamBeam_container {
+  width: 100vw;
+  height: calc(100vh - 84px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  & .comment_box {
+    width: calc(100vw / 2);
+    margin: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;    
+    flex-direction: column;
+  }
+
+  & .start_button {
+    width: calc(100vw / 2);
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    & Link {
+      margin-right: 30px;
+    }
+
+    & .join_button {
+      @include button_styled;
+      background-color: #E0E0E0;
+
+      &:hover {
+        background-color: #DADADA;
+      }
+    }
+
+    & .login_button {
+      @include button_styled;
+      background-color: #FFC300;
+
+      &:hover {
+        background-color: #E6B411;
+  }
+    }
+  }
+}
