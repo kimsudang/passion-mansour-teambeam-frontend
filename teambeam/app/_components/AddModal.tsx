@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import "@/app/_styles/AddModal.scss";
-import { postPorject } from "../_api/project";
+import { postPorject } from "@/app/_api/project";
 
 type FormType = {
   title: string;
