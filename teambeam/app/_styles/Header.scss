@@ -38,3 +38,45 @@ header {
   display: block;
   border-radius: 48px;
 }
+
+.setting-menu {
+  position: relative;
+
+  button {
+    display: block;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.modalMenuWrap {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 78px;
+  right: 0;
+  width: 140px;
+  padding: 8px 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    li {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 12px 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: #e9e9e9;
+      }
+    }
+  }
+}
