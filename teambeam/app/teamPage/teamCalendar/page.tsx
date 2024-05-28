@@ -8,7 +8,7 @@ import {
   fetchCalendarEvents,
   fetchParticipants,
   fetchEventDetails,
-  addCalendarEvent,
+  addCalendarEvent, // 여기에 추가
 } from "@/app/_api/calendar";
 import { Participant } from "@/app/teamPage/teamTodo/types";
 
@@ -25,16 +25,22 @@ const TeamCalendar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [events, setEvents] = useState<any[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
 
   useEffect(() => {
     const projectId = "1";
-    fetchEvents(projectId);
+    fetchEvents(projectId, year, month);
     fetchParticipantsList(projectId);
-  }, []);
+  }, [year, month]);
 
-  const fetchEvents = async (projectId: string) => {
+  const fetchEvents = async (
+    projectId: string,
+    year: number,
+    month: number
+  ) => {
     try {
-      const events = await fetchCalendarEvents(projectId, 2024, 5);
+      const events = await fetchCalendarEvents(projectId, year, month);
       setEvents(events);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -81,17 +87,13 @@ const TeamCalendar: React.FC = () => {
   };
 
   const handleEventSave = async (event: any) => {
-    const projectId = "1"; // 실제 프로젝트 ID 사용
     try {
-      const savedEvent = await addCalendarEvent(projectId, event);
-      setEvents([
-        ...events,
-        {
-          ...savedEvent,
-          start: savedEvent.time,
-          end: savedEvent.time,
-        },
-      ]);
+      const projectId = "1";
+      const savedEvent = await addCalendarEvent(projectId, {
+        ...event,
+        memberId: event.assignees,
+      });
+      setEvents([...events, savedEvent]);
     } catch (error) {
       console.error("Error saving event:", error);
     }
