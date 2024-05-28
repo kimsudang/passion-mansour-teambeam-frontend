@@ -9,12 +9,7 @@ export const fetchCalendarEvents = async (
 ) => {
   try {
     const response = await api.get(
-      `/team/${projectId}/calendar/month?year=${year}&month=${month}`,
-      {
-        headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
-        },
-      }
+      `/team/${projectId}/calendar/month?year=${year}&month=${month}`
     );
 
     console.log("Calendar events response:", response.data);
@@ -64,14 +59,7 @@ export const fetchEventDetails = async (
   scheduleId: string
 ) => {
   try {
-    const response = await api.get(
-      `/team/${projectId}/calendar/${scheduleId}`,
-      {
-        headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
-        },
-      }
-    );
+    const response = await api.get(`/team/${projectId}/calendar/${scheduleId}`);
 
     console.log("Event details response:", response.data);
 
@@ -98,7 +86,7 @@ export const fetchParticipants = async (projectId: string) => {
   try {
     const response = await api.get(`/team/${projectId}/joinMember`, {
       headers: {
-        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        Authorization: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
       },
     });
 
@@ -139,18 +127,36 @@ export const addCalendarEvent = async (
   }
 ) => {
   try {
-    const response = await api.post(`/team/${projectId}/calendar`, event, {
-      headers: {
-        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
-      },
+    // 이벤트 페이로드 로깅 (디버깅 용도)
+    console.log("Adding event:", event);
+
+    // 이벤트 페이로드 검증
+    if (
+      !event.title ||
+      !event.time ||
+      !event.location ||
+      !event.content ||
+      !event.link ||
+      !event.memberId.length
+    ) {
+      throw new Error("모든 이벤트 필드는 필수이며 비어 있을 수 없습니다");
+    }
+
+    const response = await api.post(`/team/${projectId}/calendar`, {
+      title: event.title,
+      time: event.time,
+      location: event.location,
+      content: event.content,
+      link: event.link,
+      memberId: event.memberId, // 'assignees' 대신 'memberId' 사용
     });
 
     console.log("Add calendar event response:", response.data);
 
     if (response.data && response.data.scheduleId) {
-      return response.data; // 추가된 이벤트 데이터
+      return response.data; // 추가된 이벤트 데이터 반환
     } else {
-      throw new Error("Invalid response data format");
+      throw new Error("응답 데이터 형식이 유효하지 않습니다");
     }
   } catch (error) {
     if (error instanceof AxiosError) {

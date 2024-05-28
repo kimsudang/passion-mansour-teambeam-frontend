@@ -8,7 +8,7 @@ import {
   fetchCalendarEvents,
   fetchParticipants,
   fetchEventDetails,
-  addCalendarEvent, // 여기에 추가
+  addCalendarEvent,
 } from "@/app/_api/calendar";
 import { Participant } from "@/app/teamPage/teamTodo/types";
 
@@ -66,7 +66,9 @@ const TeamCalendar: React.FC = () => {
         location: event.location,
         content: event.content,
         link: event.link,
-        assignees: event.scheduleMembers.map((member: any) => member.memberId),
+        assignees: event.scheduleMembers.map(
+          (member: Participant) => member.id
+        ), // id 사용
         id: event.scheduleId,
       });
       setIsReadOnly(true);
@@ -93,7 +95,26 @@ const TeamCalendar: React.FC = () => {
         ...event,
         memberId: event.assignees,
       });
-      setEvents([...events, savedEvent]);
+      console.log("Saved event:", savedEvent);
+
+      // 기존 이벤트 목록에 새 이벤트 추가
+      setEvents((prevEvents) => [
+        ...prevEvents,
+        {
+          id: savedEvent.scheduleId,
+          title: savedEvent.title,
+          start: savedEvent.time,
+          end: savedEvent.time, // 필요한 경우 끝 시간을 따로 설정
+          location: savedEvent.location,
+          content: savedEvent.content,
+          link: savedEvent.link,
+          assignees: savedEvent.scheduleMembers.map(
+            (member: Participant) => member.id
+          ), // id 사용
+        },
+      ]);
+
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving event:", error);
     }
