@@ -6,12 +6,23 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import "../styles/main.scss";
 
 type FullCalendarComponentProps = {
-  events: { title: string; start: string; end: string }[];
+  events: {
+    id: string;
+    title: string;
+    start: string;
+    end: string;
+    location: string;
+    content: string;
+    link: string;
+  }[];
+  eventClick: (event: any) => void;
 };
 
 const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
   events,
+  eventClick,
 }) => {
+  console.log("Events data:", events); // 이벤트 데이터 확인
   return (
     <FullCalendar
       plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
@@ -21,9 +32,15 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
         center: "title",
         right: "dayGridMonth,timeGridWeek",
       }}
-      events={events}
+      events={events.map((event) => ({
+        ...event,
+        extendedProps: {
+          ...event,
+        },
+      }))}
       editable={true}
       selectable={true}
+      eventClick={({ event }) => eventClick(event)} // 수정된 부분
     />
   );
 };
