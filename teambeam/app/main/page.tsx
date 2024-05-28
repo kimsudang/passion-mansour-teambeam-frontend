@@ -5,7 +5,7 @@ import Header from "../_components/Header";
 import "./Main.scss";
 import Link from "next/link";
 import AddModal from "../_components/AddModal";
-import { getPorjectList } from "../_api/project";
+import { getPorjectList } from "@/app/_api/project";
 
 export type Project = {
   projectId: number;
