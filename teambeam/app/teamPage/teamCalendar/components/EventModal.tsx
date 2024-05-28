@@ -5,8 +5,25 @@ import { Participant } from "@/app/teamPage/teamTodo/types";
 type EventModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (event: { title: string; start: string; end: string }) => void;
+  onSave: (event: {
+    title: string;
+    time: string;
+    location: string;
+    content: string;
+    link: string;
+    memberId: number[];
+  }) => void;
   participants: Participant[];
+  readonly?: boolean;
+  onDelete?: () => void;
+  initialEvent?: {
+    title: string;
+    time: string;
+    location: string;
+    content: string;
+    link: string;
+    memberId: number[];
+  };
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -14,28 +31,37 @@ const EventModal: React.FC<EventModalProps> = ({
   onClose,
   onSave,
   participants,
+  readonly = false,
+  onDelete,
+  initialEvent,
 }) => {
-  const [title, setTitle] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [assignees, setAssignees] = useState<number[]>([]);
+  const [title, setTitle] = useState(initialEvent?.title || "");
+  const [time, setTime] = useState(initialEvent?.time || "");
+  const [location, setLocation] = useState(initialEvent?.location || "");
+  const [content, setContent] = useState(initialEvent?.content || "");
+  const [link, setLink] = useState(initialEvent?.link || "");
+  const [memberId, setMemberId] = useState<number[]>(
+    initialEvent?.memberId || []
+  );
 
   useEffect(() => {
     if (!isOpen) {
-      setTitle("");
-      setStart("");
-      setEnd("");
-      setAssignees([]);
+      setTitle(initialEvent?.title || "");
+      setTime(initialEvent?.time || "");
+      setLocation(initialEvent?.location || "");
+      setContent(initialEvent?.content || "");
+      setLink(initialEvent?.link || "");
+      setMemberId(initialEvent?.memberId || []);
     }
-  }, [isOpen]);
+  }, [isOpen, initialEvent]);
 
   const handleAssigneeChange = (selectedOptions: any) => {
     const assignees = selectedOptions.map((option: any) => option.value);
-    setAssignees(assignees);
+    setMemberId(assignees);
   };
 
   const handleSubmit = () => {
-    onSave({ title, start, end: end || "" });
+    onSave({ title, time, location, content, link, memberId });
     onClose();
   };
 
@@ -44,15 +70,17 @@ const EventModal: React.FC<EventModalProps> = ({
     label: participant.name,
   }));
 
-  console.log("Participants in EventModal:", participants); // 로그 추가
-
   if (!isOpen) return null;
 
   return (
     <div className="modalOverlay">
       <div className="modal">
         <div className="modalButtons">
-          <button onClick={handleSubmit}>저장</button>
+          {readonly ? (
+            <button onClick={onDelete}>삭제</button>
+          ) : (
+            <button onClick={handleSubmit}>저장</button>
+          )}
           <button onClick={onClose}>닫기</button>
         </div>
         <input
@@ -61,49 +89,64 @@ const EventModal: React.FC<EventModalProps> = ({
           placeholder="일정명을 입력하세요."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          readOnly={readonly}
           required
         />
+        <div>
+          <label>시간</label>
+          <input
+            type="datetime-local"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            readOnly={readonly}
+            required
+          />
+        </div>
+        <div>
+          <label>장소</label>
+          <input
+            type="text"
+            placeholder="장소를 입력하세요."
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            readOnly={readonly}
+            required
+          />
+        </div>
+        <div>
+          <label>내용</label>
+          <textarea
+            placeholder="메모할 내용을 입력해주세요."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            readOnly={readonly}
+            required
+          ></textarea>
+        </div>
+        <div>
+          <label>링크</label>
+          <input
+            type="text"
+            placeholder="참고자료 링크를 첨부해주세요."
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            readOnly={readonly}
+            required
+          />
+        </div>
         <div className="todoAssignee">
           <label>참석자</label>
           <Select
             isMulti
-            value={assignees.map((assignee) => ({
+            value={memberId.map((assignee) => ({
               value: assignee,
               label: participants.find((p) => p.id === assignee)?.name,
             }))}
             onChange={handleAssigneeChange}
             options={assigneeOptions}
             placeholder="참석자를 선택하세요."
+            isDisabled={readonly}
           />
-        </div>
-        <div>
-          <label>일정 시작</label>
-          <input
-            type="date"
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>일정 종료</label>
-          <input
-            type="date"
-            value={end}
-            onChange={(e) => setEnd(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>장소</label>
-          <input type="text" placeholder="장소를 입력하세요." />
-        </div>
-        <div>
-          <label>링크</label>
-          <input type="text" placeholder="참고자료 링크를 첨부해주세요." />
-        </div>
-        <div className="eventMemo">
-          <label>내용</label>
-          <textarea placeholder="메모할 내용을 입력해주세요."></textarea>
         </div>
       </div>
     </div>
