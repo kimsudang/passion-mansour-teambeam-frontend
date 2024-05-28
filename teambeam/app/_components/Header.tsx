@@ -6,13 +6,26 @@ import { Logo } from "./Icons";
 import Link from "next/link";
 import Image from "next/image";
 import profileDefault from "../../public/img/profile_default.png";
+import { useCallback, useState } from "react";
 
 export default function Header() {
+  const [isMenu, setIsMenu] = useState<boolean>(false);
+
   const router = useRouter();
 
-  const handleOnClick = () => {
-    router.push(`/main`);
-  };
+  const handleModalMenu = useCallback(() => {
+    setIsMenu(!isMenu);
+  }, [isMenu]);
+
+  const handleMySetting = useCallback(() => {
+    setIsMenu(false);
+    router.push("/user/mySetting");
+  }, [router]);
+
+  const handleLogout = useCallback(() => {
+    setIsMenu(false);
+    router.push("/user/login");
+  }, [router]);
 
   return (
     <header>
@@ -26,7 +39,7 @@ export default function Header() {
           <Link href='/main'>팀채널</Link>
         </div>
         <div className='setting-menu'>
-          <Link href='/privatePage/mySetting'>
+          <button onClick={handleModalMenu}>
             <Image
               src={profileDefault}
               alt='마이 프로필'
@@ -34,7 +47,22 @@ export default function Header() {
               width={48}
               height={48}
             />
-          </Link>
+          </button>
+
+          {isMenu ? (
+            <>
+              <div className='modalMenuWrap'>
+                <ul>
+                  <li onClick={handleMySetting}>
+                    <span>환경설정</span>
+                  </li>
+                  <li onClick={handleLogout}>
+                    <span>로그아웃</span>
+                  </li>
+                </ul>
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
     </header>
