@@ -5,7 +5,7 @@ import Header from "../_components/Header";
 import "./Main.scss";
 import Link from "next/link";
 import AddModal from "../_components/AddModal";
-import axios from "axios";
+import { getPorjectList } from "../_api/project";
 
 export type Project = {
   projectId: number;
@@ -17,49 +17,42 @@ export type Project = {
 
 export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [lists, setLists] = useState<Project[]>([
-    {
-      projectId: 0,
-      projectName: "프로젝트 A",
-      description:
-        "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createDate: "2024-04-12 10:12:43",
-      projectStatus: "PROGRESS",
-    },
-    {
-      projectId: 1,
-      projectName: "프로젝트 B",
-      description:
-        "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createDate: "2024-04-12 10:12:43",
-      projectStatus: "END",
-    },
-    {
-      projectId: 2,
-      projectName: "프로젝트 C",
-      description:
-        "프로젝트를 진행함에 있어 필요한 서비스들을 통합시킨 프로젝트 일정관리 종합 서비스 팀글벙글 프로젝트 진행 기간: 2024.04.29 ~ 2024.06.20",
-      createDate: "2024-04-12 10:12:43",
-      projectStatus: "PROGRESS",
-    },
-  ]);
+  const [lists, setLists] = useState<Project[]>([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log("Access Token: ", process.env.NEXT_PUBLIC_ACCESS_TOKEN);
 
-  const handleChange = useCallback(
-    (e: any) => {
-      // api 필요
-      const arr = [...lists];
-      setLists(
-        arr.filter(
-          (list) =>
-            list.projectStatus?.toLocaleLowerCase() ===
-            e.target.value.toLocaleLowerCase()
-        )
-      );
-    },
-    [lists]
-  );
+    const fetchData = async () => {
+      try {
+        const res = await getPorjectList("/projectList");
+        console.log("res : ", res);
+
+        setLists(res.data.projectList);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleChange = useCallback(async (e: any) => {
+    try {
+      const res = await getPorjectList("/projectList");
+
+      e.target.value === "all"
+        ? setLists(res.data.projectList)
+        : setLists(
+            res.data.projectList.filter(
+              (list: any) =>
+                list.projectStatus?.toLocaleLowerCase() ===
+                e.target.value.toLocaleLowerCase()
+            )
+          );
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const handleAddBtn = useCallback(() => {
     setIsModalOpen(true);
@@ -91,7 +84,7 @@ export default function Page() {
             <span>+</span>
           </div>
 
-          {lists.map((list) => {
+          {lists?.map((list) => {
             return (
               <Link
                 href='/teamPage/teamMain'
