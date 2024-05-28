@@ -24,7 +24,6 @@ type EventModalProps = {
     link: string;
     assignees: number[];
   };
-  onTimeChange?: (time: string) => void; // 추가
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -35,7 +34,6 @@ const EventModal: React.FC<EventModalProps> = ({
   readonly = false,
   onDelete,
   initialEvent,
-  onTimeChange, // 추가
 }) => {
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [time, setTime] = useState(initialEvent?.time || "");
@@ -63,16 +61,16 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handleSubmit = () => {
+    console.log("Submitting event:", {
+      title,
+      time,
+      location,
+      content,
+      link,
+      assignees,
+    });
     onSave({ title, time, location, content, link, assignees });
     onClose();
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = e.target.value;
-    setTime(newTime);
-    if (onTimeChange) {
-      onTimeChange(newTime); // 시간 변경 시 부모 컴포넌트로 전달
-    }
   };
 
   const assigneeOptions = participants.map((participant) => ({
@@ -107,7 +105,7 @@ const EventModal: React.FC<EventModalProps> = ({
           <input
             type="datetime-local"
             value={time}
-            onChange={handleTimeChange} // handleTimeChange로 변경
+            onChange={(e) => setTime(e.target.value)}
             readOnly={readonly}
             required
           />
