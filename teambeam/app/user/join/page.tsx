@@ -1,35 +1,91 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useForm from "../../_hooks/useForm";
+import { useSearchParams, useRouter } from "next/navigation";
+import axios from "axios";
 import "./layout.scss";
 
 interface IFormValues {
   memberName: string;
   mail: string;
-  confirmMail: string;
+  confirmMailCode: string;
   password: string;
   confirmPassword: string;
 }
 
 const Join: React.FC = () => {
+  const [serverCode, setServerCode] = useState<string | null>(null);
+  const [codeConfirmed, setCodeConfirmed] = useState<boolean>(false);
+  const router = useRouter();
+  const params = useSearchParams();
+  const token = params.get("token"); // 라우터에서 토큰을 가져옵니다.
+
+  // 새로운 랜덤 코드를 생성하고 상태에 저장
+  const handleSendCode = async () => {
+    try {
+      // axios를 사용하여 백엔드로 이메일과 코드를 전송
+      const response = await axios.post('http://34.22.108.250:8080/api/register-request', 
+      {mail: values.mail}, { headers: { "Content-Type": "application/json" }}
+    );
+      const { code } = response.data;
+      setServerCode(code); // 백엔드에서 받은 인증 코드를 상태에 저장
+      alert("인증 코드 전송 성공");
+      setCodeConfirmed(false);
+    } catch (error) {
+      alert("인증 코드 전송 실패");
+    }
+  };
+
+  const handleConfirmCode = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    
+    if (values.confirmMailCode === serverCode) {
+      setCodeConfirmed(true);
+      console.log("인증 코드 확인 성공");
+      alert("인증 코드 확인 성공");
+    } else {
+      setCodeConfirmed(false);
+      console.error("인증 코드가 일치하지 않습니다.");
+      alert("인증 코드가 일치하지 않습니다.");
+    }
+  };
+
+  // useForm 훅을 사용하여 폼 상태와 유효성 검사 로직을 관리
   const { values, errors, isLoading, handleChange, handleSubmit } =
     useForm<IFormValues>({
+      // 초기값
       initialValues: {
         memberName: "",
         mail: "",
-        confirmMail: "",
+        confirmMailCode: "",
         password: "",
         confirmPassword: "",
       },
-      onSubmit: (data) => {
+      // 폼 제출 시 실행될 함수
+      onSubmit: async (data) => {
         // 더미 데이터로 테스트하기 위해 콘솔에 출력합니다.
-        console.log("폼 데이터:", data);
+        if (codeConfirmed === true) {
+          console.log("폼 데이터:", data);
 
-        // 통신을 위한 정보만을 추출하여 콘솔에 출력합니다.
-        // const { memberName, mail, confirmMail , password } = data;
-        // console.log("추출한 데이터:", { memberName, mail, confirmMail , password });
+          try {
+            // 폼 데이터를 서버로 전송
+            const {memberName, mail, password} = data;
+            await axios.post('http://34.22.108.250:8080/api/register', 
+            {memberName, mail, password, token},
+            { headers: { "Content-Type": "application/json" }}
+          );
+            console.log("회원가입 성공");
+            router.push("/user/login"); // 이동할 경로 지정
+          } 
+          catch (error) {
+            console.error("회원가입 실패:", error);
+          }
+        } else {
+          console.error("인증 코드가 확인되지 않았습니다.");
+        }
       },
+
       validate: (values) => {
         const errors: Partial<Record<keyof IFormValues, string>> = {};
         // 유효성 검사 로직을 구현합니다.
@@ -41,10 +97,10 @@ const Join: React.FC = () => {
         } else if (!/\S+@\S+\.\S+/.test(values.mail)) {
           errors.mail = "유효한 이메일 주소를 입력하세요.";
         }
-        if (!values.confirmMail) {
-          errors.confirmMail = "이메일을 입력하세요.";
-        } else if (!/\S+@\S+\.\S+/.test(values.confirmMail)) {
-          errors.confirmMail = "유효한 이메일 주소를 입력하세요.";
+        if (!values.confirmMailCode) {
+          errors.confirmMailCode = "인증 코드를 입력하세요.";
+        } else if (serverCode !== values.confirmMailCode) {
+          errors.confirmMailCode = "인증 코드가 일치하지 않습니다. 다시 확인해주세요.";
         }
         if (!values.password) {
           errors.password =
@@ -54,11 +110,14 @@ const Join: React.FC = () => {
             /^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
           if (!passwordPattern.test(values.password)) {
             errors.password =
-              "비밀번호는 최소 8자 이상이어야 하며, 소문자, 숫자, 특수문자를 모두 포함해야 합니다.";
+              "비밀번호는 최소 8자 이상, 소문자, 숫자, 특수문자를 모두 포함해야 합니다.";
           }
         }
         if (values.password !== values.confirmPassword) {
           errors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+        }
+        if (codeConfirmed !== true) {
+          errors.confirmPassword = "인증 코드를 확인해주세요.";
         }
         return errors;
       },
@@ -90,8 +149,8 @@ const Join: React.FC = () => {
                 value={values.mail}
                 onChange={handleChange}
               />
-              <button>
-                <p className='button_name'>
+              <button type='button' onClick={handleSendCode}>
+                <p className='button_name' >
                   인증코드
                   <br />
                   전송
@@ -102,25 +161,25 @@ const Join: React.FC = () => {
             <div className='email_button'>
               <input
                 type='text'
-                name='confirmMail'
+                name='confirmMailCode'
                 placeholder='전송받은 코드를 입력해주세요.'
-                value={values.confirmMail}
+                value={values.confirmMailCode}
                 onChange={handleChange}
               />
-              <button>
+              <button type='button' onClick={handleConfirmCode}>
                 <p className='button_name'>
                   인증코드
                   <br />
                   확인
                 </p>
               </button>
-              {errors.confirmMail && (
-                <p className='error'>{errors.confirmMail}</p>
+              {errors.confirmMailCode && (
+                <p className='error'>{errors.confirmMailCode}</p>
               )}
             </div>
             <div>
               <input
-                type='text'
+                type='password'
                 name='password'
                 placeholder='비밀번호를 입력해주세요.'
                 value={values.password}
@@ -130,7 +189,7 @@ const Join: React.FC = () => {
             </div>
             <div>
               <input
-                type='text'
+                type='password'
                 name='confirmPassword'
                 placeholder='비밀번호를 다시 입력해주세요.'
                 value={values.confirmPassword}
