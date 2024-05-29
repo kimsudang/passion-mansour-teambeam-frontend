@@ -10,24 +10,29 @@ type ContentType = {
 
 export type BoardType = {
   postId: number;
-  postTitle: string;
+  title: string;
   postType: string;
-  postContent: ContentType[][] | string;
-  writer: {
+  content: ContentType[][] | string;
+  member: {
     memberId: number;
     memberName: string;
+    profileImage: string;
   };
   createDate: string;
   updateDate: string;
-  tags: { tagId: number; tagName: string }[];
+  postTags: { tagId: number; tagName: string }[];
   notice: boolean;
   bookmark: boolean;
 };
 
 export type CommentType = {
   postCommentId: number;
-  postCommentContent: string;
-  writer: string;
+  content: string;
+  member: {
+    memberId: number;
+    memberName: string;
+    profileImage: string;
+  };
   profileSrc: string;
   createDate: string;
   updateDate: string;
@@ -36,9 +41,9 @@ export type CommentType = {
 const Page = () => {
   const [boardData, setBoardData] = useState<BoardType>({
     postId: 0,
-    postTitle: "게시글 제목",
+    title: "게시글 제목",
     postType: "table",
-    postContent: [
+    content: [
       [
         { key: "0_0", value: "HTTP" },
         { key: "0_1", value: "기능" },
@@ -55,15 +60,13 @@ const Page = () => {
         { key: "2_2", value: "/api/project" },
       ],
     ],
-    writer: {
-      memberId: 0,
-      memberName: "홍길동",
-    },
+    member: { memberId: 2, memberName: "홍길동", profileImage: "" },
     createDate: "2024-04-23 09:51:13",
     updateDate: "2024-04-23 09:51:13",
-    tags: [
-      { tagId: 23, tagName: "react" },
-      { tagId: 51, tagName: "개발" },
+    postTags: [
+      { tagId: 21, tagName: "react" },
+      { tagId: 52, tagName: "개발" },
+      { tagId: 56, tagName: "기획" },
     ],
     notice: false,
     bookmark: true,
@@ -71,18 +74,18 @@ const Page = () => {
   const [comments, setComments] = useState<CommentType[]>([
     {
       postCommentId: 0,
-      postCommentContent:
+      content:
         "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
-      writer: "홍길동",
+      member: { memberId: 2, memberName: "홍길동", profileImage: "" },
       profileSrc: "/img/profile_default.png",
       createDate: "2024-01-03 10:42:12",
       updateDate: "2024-01-03 10:42:12",
     },
     {
       postCommentId: 1,
-      postCommentContent:
+      content:
         "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
-      writer: "홍길동",
+      member: { memberId: 2, memberName: "홍길동", profileImage: "" },
       profileSrc: "/img/profile_default.png",
       createDate: "2024-01-03 10:42:12",
       updateDate: "2024-01-03 10:42:12",
@@ -91,7 +94,7 @@ const Page = () => {
 
   return (
     <div>
-      <title>{boardData.postTitle}</title>
+      <title>{boardData.title}</title>
       <BoardView boardData={boardData} comments={comments} />
     </div>
   );
