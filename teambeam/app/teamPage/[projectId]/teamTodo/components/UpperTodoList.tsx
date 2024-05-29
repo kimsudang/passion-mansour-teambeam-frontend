@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import MiddleTodoList from "./MiddleTodoList";
 import DropdownMenu from "./DropdownMenu";
@@ -38,9 +36,19 @@ const UpperTodoList: React.FC<Props> = ({
     setIsDropdownOpen(false);
   };
 
-  const handleDeleteGoal = () => {
+  const handleDeleteGoal = async () => {
     if (listCount > 1) {
-      onDeleteGoal(list.topTodoId);
+      try {
+        await onDeleteGoal(list.topTodoId);
+        // 성공 메시지 표시
+        toast.success("목표가 성공적으로 삭제되었습니다.");
+        // 페이지 새로고침
+        window.location.reload();
+      } catch (error) {
+        console.error("Error deleting upper todo:", error);
+        // 실패 메시지 표시
+        toast.error("목표 삭제 중 오류가 발생했습니다.");
+      }
     } else {
       toast.error(
         "목표를 삭제할 수 없습니다. 최소 하나의 목표는 있어야 합니다."

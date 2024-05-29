@@ -192,7 +192,7 @@ export const fetchParticipants = async (
   }
 };
 
-//상위 투두리스트 삭제 함수
+// 상위 투두리스트 삭제 함수
 export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
   try {
     console.log(
@@ -207,7 +207,13 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
       }
     );
     console.log("Delete API Response:", response.data); // 디버그 로그
-    return response.data;
+
+    // 응답 데이터가 없거나 status가 200일 경우 성공으로 처리
+    if (!response.data || (response.data && response.data.status === 200)) {
+      return response.data; // 삭제된 일정 데이터 반환
+    } else {
+      throw new Error("Invalid response data format");
+    }
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error(

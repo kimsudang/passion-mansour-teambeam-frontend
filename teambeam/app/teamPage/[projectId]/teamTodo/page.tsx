@@ -211,15 +211,35 @@ const TeamTodo: React.FC = () => {
   };
 
   const handleDeleteGoal = async (id: string) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
     try {
       const response = await deleteUpperTodo("1", id);
       if (response.status === "200") {
         setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
+        // 성공 메시지 표시
+        toast.success("목표가 성공적으로 삭제되었습니다.", {
+          autoClose: 10000,
+        });
+        // 일정 시간이 지나고 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 10000); // 10초 후에 새로고침
       } else {
         console.error("Failed to delete upper todo");
+        // 실패 메시지 표시
+        toast.error("목표 삭제 중 오류가 발생했습니다.", {
+          autoClose: 10000,
+        });
       }
     } catch (error: any) {
       console.error("Error deleting upper todo:", error);
+      // 실패 메시지 표시
+      toast.error("목표 삭제 중 오류가 발생했습니다.", {
+        autoClose: 10000,
+      });
     }
   };
 
