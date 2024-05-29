@@ -10,10 +10,11 @@ import {
   SettingIcon,
   TodoIcon,
 } from "@/app/_components/Icons";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useParams, useSelectedLayoutSegment } from "next/navigation";
 
 export default function SideBar() {
   const segment = useSelectedLayoutSegment();
+  const params = useParams<{ projectId: string }>();
   return (
     <nav>
       <div className='top-info'>
@@ -23,7 +24,7 @@ export default function SideBar() {
       <div className='side-menu'>
         <li>
           <Link
-            href='/teamPage/teamMain'
+            href={`/teamPage/${params.projectId}/teamMain`}
             className={segment === "teamMain" ? "active" : ""}
           >
             <div className='icon-box'>
@@ -35,7 +36,7 @@ export default function SideBar() {
 
         <li>
           <Link
-            href='/teamPage/teamCalendar'
+            href={`/teamPage/${params.projectId}/teamCalendar`}
             className={segment === "teamCalendar" ? "active" : ""}
           >
             <div className='icon-box'>
@@ -47,7 +48,7 @@ export default function SideBar() {
 
         <li>
           <Link
-            href='/teamPage/teamTodo'
+            href={`/teamPage/${params.projectId}/teamTodo`}
             className={segment === "teamTodo" ? "active" : ""}
           >
             <div className='icon-box'>
@@ -59,7 +60,7 @@ export default function SideBar() {
 
         <li>
           <Link
-            href='/teamPage/teamBoard'
+            href={`/teamPage/${params.projectId}/teamBoard`}
             className={segment === "teamBoard" ? "active" : ""}
           >
             <div className='icon-box'>
@@ -71,7 +72,7 @@ export default function SideBar() {
 
         <li>
           <Link
-            href='/teamPage/teamChatting'
+            href={`/teamPage/${params.projectId}/teamChatting`}
             className={segment === "teamChatting" ? "active" : ""}
           >
             <div className='icon-box'>
@@ -83,7 +84,7 @@ export default function SideBar() {
 
         <li>
           <Link
-            href='/teamPage/teamSetting'
+            href={`/teamPage/${params.projectId}/teamSetting`}
             className={segment === "teamSetting" ? "active" : ""}
           >
             <div className='icon-box'>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import Header from "../_components/Header";
+import Header from "@/app/_components/Header";
 import SideBar from "./_components/SideBar";
 import "@/app/globals.scss";
 import "./layout.scss";
