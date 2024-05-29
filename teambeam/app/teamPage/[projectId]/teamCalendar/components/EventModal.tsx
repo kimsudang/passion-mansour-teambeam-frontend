@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
+import { deleteCalendarEvent } from "@/app/_api/calendar";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -15,7 +16,7 @@ type EventModalProps = {
   }) => void;
   participants: Participant[];
   readonly?: boolean;
-  onDelete?: () => void;
+  onDelete?: (scheduleId: number) => void;
   initialEvent?: {
     title: string;
     time: string;
@@ -23,6 +24,7 @@ type EventModalProps = {
     content: string;
     link: string;
     assignees: { id: number; name: string }[];
+    id: number;
   };
 };
 
@@ -76,6 +78,14 @@ const EventModal: React.FC<EventModalProps> = ({
     onClose();
   };
 
+  const handleDelete = async () => {
+    if (initialEvent && initialEvent.id) {
+      if (onDelete) {
+        onDelete(initialEvent.id);
+      }
+    }
+  };
+
   const assigneeOptions = participants.map((participant) => ({
     value: participant.id,
     label: participant.name,
@@ -88,7 +98,7 @@ const EventModal: React.FC<EventModalProps> = ({
       <div className="modal">
         <div className="modalButtons">
           {readonly ? (
-            <button onClick={onDelete}>삭제</button>
+            <button onClick={handleDelete}>삭제</button>
           ) : (
             <button onClick={handleSubmit}>저장</button>
           )}
