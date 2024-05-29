@@ -189,3 +189,43 @@ export const addCalendarEvent = async (
     throw error;
   }
 };
+
+// 일정 삭제 함수
+export const deleteCalendarEvent = async (
+  projectId: string,
+  scheduleId: number,
+  token: string,
+  refreshToken: string
+) => {
+  try {
+    const response = await api.delete(
+      `/team/${projectId}/calendar/${scheduleId}`,
+      {
+        headers: {
+          Authorization: token,
+          RefreshToken: refreshToken,
+        },
+      }
+    );
+
+    console.log("Delete calendar event response:", response.data);
+
+    // 응답 데이터가 없거나 status가 200일 경우 성공으로 처리
+    if (!response.data || (response.data && response.data.status === 200)) {
+      return response.data; // 삭제된 일정 데이터 반환
+    } else {
+      console.log("Response data:", response.data);
+      throw new Error("Invalid response data format");
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error deleting calendar event:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error deleting calendar event:", error);
+    }
+    throw error;
+  }
+};

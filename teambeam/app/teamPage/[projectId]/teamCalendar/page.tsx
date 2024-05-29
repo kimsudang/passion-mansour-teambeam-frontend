@@ -9,6 +9,7 @@ import {
   fetchParticipants,
   fetchEventDetails,
   addCalendarEvent,
+  deleteCalendarEvent,
 } from "@/app/_api/calendar";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
 
@@ -110,7 +111,9 @@ const TeamCalendar: React.FC = () => {
       const projectId = "1";
       const savedEvent = await addCalendarEvent(projectId, {
         ...event,
-        memberId: event.assignees,
+        memberId: event.assignees.map(
+          (assignee: { id: number }) => assignee.id
+        ),
       });
       console.log("Saved event:", savedEvent);
 
@@ -136,6 +139,35 @@ const TeamCalendar: React.FC = () => {
     }
   };
 
+  const handleEventDelete = async (scheduleId: number) => {
+    try {
+      const projectId = "1"; // 실제 프로젝트 ID 사용
+      const response = await deleteCalendarEvent(
+        projectId,
+        scheduleId,
+        token,
+        refreshToken
+      );
+      console.log("Delete response:", response);
+
+      // 이벤트 목록에서 삭제된 이벤트 제거
+      setEvents(events.filter((e) => e.id !== scheduleId));
+
+      // 모달 창 닫기
+      setIsModalOpen(false);
+
+      // 성공 메시지 표시
+      alert("일정이 성공적으로 삭제되었습니다.");
+
+      // 페이지 새로고침
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      // 실패 메시지 표시
+      alert("일정 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   const handleEventClick = (clickInfo: any) => {
     const projectId = "1"; // 실제 프로젝트 ID 사용
     console.log("Clicked event info:", clickInfo);
@@ -149,13 +181,6 @@ const TeamCalendar: React.FC = () => {
       fetchEventDetail(projectId, eventId);
     } else {
       console.error("Event ID is undefined");
-    }
-  };
-
-  const handleEventDelete = () => {
-    if (selectedEvent) {
-      setEvents(events.filter((e) => e.id !== selectedEvent.id));
-      setIsModalOpen(false);
     }
   };
 
