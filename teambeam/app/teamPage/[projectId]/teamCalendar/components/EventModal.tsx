@@ -11,7 +11,7 @@ type EventModalProps = {
     location: string;
     content: string;
     link: string;
-    assignees: number[];
+    assignees: { id: number; name: string }[];
   }) => void;
   participants: Participant[];
   readonly?: boolean;
@@ -22,7 +22,7 @@ type EventModalProps = {
     location: string;
     content: string;
     link: string;
-    assignees: number[];
+    assignees: { id: number; name: string }[];
   };
 };
 
@@ -40,7 +40,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [location, setLocation] = useState(initialEvent?.location || "");
   const [content, setContent] = useState(initialEvent?.content || "");
   const [link, setLink] = useState(initialEvent?.link || "");
-  const [assignees, setAssignees] = useState<number[]>(
+  const [assignees, setAssignees] = useState<{ id: number; name: string }[]>(
     initialEvent?.assignees || []
   );
 
@@ -56,7 +56,10 @@ const EventModal: React.FC<EventModalProps> = ({
   }, [isOpen, initialEvent]);
 
   const handleAssigneeChange = (selectedOptions: any) => {
-    const assignees = selectedOptions.map((option: any) => option.value);
+    const assignees = selectedOptions.map((option: any) => ({
+      id: option.value,
+      name: option.label,
+    }));
     setAssignees(assignees);
   };
 
@@ -81,9 +84,9 @@ const EventModal: React.FC<EventModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className='modalOverlay'>
-      <div className='modal'>
-        <div className='modalButtons'>
+    <div className="modalOverlay">
+      <div className="modal">
+        <div className="modalButtons">
           {readonly ? (
             <button onClick={onDelete}>삭제</button>
           ) : (
@@ -92,9 +95,9 @@ const EventModal: React.FC<EventModalProps> = ({
           <button onClick={onClose}>닫기</button>
         </div>
         <input
-          className='eventTitle'
-          type='text'
-          placeholder='일정명을 입력하세요.'
+          className="eventTitle"
+          type="text"
+          placeholder="일정명을 입력하세요."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           readOnly={readonly}
@@ -103,7 +106,7 @@ const EventModal: React.FC<EventModalProps> = ({
         <div>
           <label>시간</label>
           <input
-            type='datetime-local'
+            type="datetime-local"
             value={time}
             onChange={(e) => setTime(e.target.value)}
             readOnly={readonly}
@@ -113,8 +116,8 @@ const EventModal: React.FC<EventModalProps> = ({
         <div>
           <label>장소</label>
           <input
-            type='text'
-            placeholder='장소를 입력하세요.'
+            type="text"
+            placeholder="장소를 입력하세요."
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             readOnly={readonly}
@@ -124,7 +127,7 @@ const EventModal: React.FC<EventModalProps> = ({
         <div>
           <label>내용</label>
           <textarea
-            placeholder='메모할 내용을 입력해주세요.'
+            placeholder="메모할 내용을 입력해주세요."
             value={content}
             onChange={(e) => setContent(e.target.value)}
             readOnly={readonly}
@@ -134,25 +137,25 @@ const EventModal: React.FC<EventModalProps> = ({
         <div>
           <label>링크</label>
           <input
-            type='text'
-            placeholder='참고자료 링크를 첨부해주세요.'
+            type="text"
+            placeholder="참고자료 링크를 첨부해주세요."
             value={link}
             onChange={(e) => setLink(e.target.value)}
             readOnly={readonly}
             required
           />
         </div>
-        <div className='todoAssignee'>
+        <div className="todoAssignee">
           <label>참석자</label>
           <Select
             isMulti
             value={assignees.map((assignee) => ({
-              value: assignee,
-              label: participants.find((p) => p.id === assignee)?.name,
+              value: assignee.id,
+              label: assignee.name,
             }))}
             onChange={handleAssigneeChange}
             options={assigneeOptions}
-            placeholder='참석자를 선택하세요.'
+            placeholder="참석자를 선택하세요."
             isDisabled={readonly}
           />
         </div>

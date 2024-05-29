@@ -35,14 +35,22 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
         right: "dayGridMonth,timeGridWeek",
       }}
       events={events.map((event) => ({
-        ...event,
+        id: event.id,
+        title: event.title,
+        start: event.start,
+        end: event.end,
         extendedProps: {
-          ...event,
+          id: event.id,
+          location: event.location || "",
+          content: event.content || "",
+          link: event.link || "",
+          time: event.time || "",
+          todo: event.todo || false,
         },
       }))}
       editable={true}
       selectable={true}
-      eventClick={({ event }) => eventClick(event)}
+      eventClick={(info) => eventClick(info)}
       eventContent={(eventInfo) => {
         return (
           <div>

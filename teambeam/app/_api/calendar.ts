@@ -65,10 +65,20 @@ export const fetchCalendarEvents = async (
 // 캘린더 이벤트 상세 조회 함수
 export const fetchEventDetails = async (
   projectId: string,
-  scheduleId: string
+  scheduleId: string,
+  token: string,
+  refreshToken: string
 ) => {
   try {
-    const response = await api.get(`/team/${projectId}/calendar/${scheduleId}`);
+    const response = await api.get(
+      `/team/${projectId}/calendar/${scheduleId}`,
+      {
+        headers: {
+          Authorization: token,
+          RefreshToken: refreshToken,
+        },
+      }
+    );
 
     console.log("Event details response:", response.data);
 

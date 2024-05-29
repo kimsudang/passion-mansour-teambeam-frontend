@@ -24,4 +24,6 @@ export type TodoList = {
 export type Participant = {
   id: number;
   name: string;
+  memberId?: number;
+  memberName?: string;
 };
