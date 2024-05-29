@@ -1,20 +1,31 @@
 "use client";
 
 import { MemoType } from "@/app/privatePage/memo/page";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./MemoModal.scss";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { getMemoList } from "@/app/_api/memo";
 
 const MemoViewModal = () => {
-  const [memo, setMemo] = useState<MemoType>({
-    memoId: 0,
-    memoTitle: "제목입니다 1",
-    memoContent: "메모내용 입니다",
-    createDate: "2024-05-12 05:34:11",
-    updateDate: "2024-05-12 05:34:11",
-  });
+  const [memo, setMemo] = useState<MemoType | undefined>();
 
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getMemoList(`/my/memo/${params.id}`);
+        console.log("res : ", res);
+
+        setMemo(res.data);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    fetchData();
+  }, [params]);
 
   const onCancelBtn = useCallback(() => {
     router.back();
@@ -23,21 +34,25 @@ const MemoViewModal = () => {
   return (
     <div className='modal-bg'>
       <div className='modal-wrap'>
-        <div className='modal-header'>
-          <span>{memo.createDate}</span>
-          <h2>{memo.memoTitle}</h2>
-        </div>
+        {memo !== undefined ? (
+          <>
+            <div className='modal-header'>
+              <span>{memo?.createDate}</span>
+              <h2>{memo.memoTitle}</h2>
+            </div>
 
-        <div className='modal-body'>
-          <p>{memo.memoContent}</p>
-        </div>
+            <div className='modal-body'>
+              <p>{memo.memoContent}</p>
+            </div>
 
-        <div className='buttons'>
-          <button onClick={onCancelBtn} className='closeBtn'>
-            닫기
-          </button>
-          {/* <button>수정</button> */}
-        </div>
+            <div className='buttons'>
+              <button onClick={onCancelBtn} className='closeBtn'>
+                닫기
+              </button>
+              {/* <button>수정</button> */}
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

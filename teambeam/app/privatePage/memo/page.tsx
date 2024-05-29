@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./page.scss";
 import Link from "next/link";
 import MemoWriteModal from "../_components/MemoWriteModal";
+import { getMemoList } from "@/app/_api/memo";
 
 export type MemoType = {
   memoId: number;
@@ -15,22 +16,22 @@ export type MemoType = {
 
 const Page = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
-  const [memoList, setMemoList] = useState<MemoType[] | null>([
-    {
-      memoId: 0,
-      memoTitle: "제목입니다 1",
-      memoContent: "메모내용 입니다",
-      createDate: "2024-05-12 05:34:11",
-      updateDate: "2024-05-12 05:34:11",
-    },
-    {
-      memoId: 1,
-      memoTitle: "제목입니다 2",
-      memoContent: "메모내용 입니다",
-      createDate: "2024-05-12 05:34:11",
-      updateDate: "2024-05-12 05:34:11",
-    },
-  ]);
+  const [memoList, setMemoList] = useState<MemoType[] | null>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getMemoList("/my/memo/");
+        console.log("res : ", res);
+
+        setMemoList(res.data.memoResponses);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const onOpenModal = useCallback(() => {
     setIsModal(true);
@@ -45,7 +46,7 @@ const Page = () => {
       <title>메모</title>
       <div className='top-box'>
         <h1>메모</h1>
-        <button type='button' className='memo-add-btn' onClick={onOpenModal}>
+        <button type='button' className='memoAddBtn' onClick={onOpenModal}>
           메모추가
         </button>
       </div>
@@ -64,6 +65,10 @@ const Page = () => {
             </Link>
           );
         })}
+
+        {memoList?.length === 0 ? (
+          <span className='noMemoList'>작성된 메모가 없습니다.</span>
+        ) : null}
       </div>
 
       {isModal ? <MemoWriteModal onCloseModal={onCloseModal} /> : null}
