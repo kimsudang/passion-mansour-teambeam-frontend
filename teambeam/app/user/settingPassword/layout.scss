@@ -3,7 +3,7 @@
   height: 50px;
   margin-top: 30px;
   border: 0px;
-  border-radius: 10px;
+  border-radius: 10px;   
   font-size: large;
   font-weight: bold;
 }
@@ -41,10 +41,9 @@
   }
 
   & .warning_msg {
-    margin-left: calc(100vw / 8 + 5px);
     font-size: small;
     color: #fd5f5f;
-    text-align: left;
+    text-align: center;
   }
 
   & .change_password {
