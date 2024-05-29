@@ -155,20 +155,30 @@ export const addLowerTodo = async (
 };
 
 // 참가자 조회 함수
-export const fetchParticipants = async (projectId: string) => {
+export const fetchParticipants = async (
+  projectId: string,
+  token: string,
+  refreshToken: string
+) => {
   try {
-    const response = await api.get(`/api/team/${projectId}/joinMember`, {
+    const response = await api.get(`/team/${projectId}/joinMember`, {
       headers: {
-        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        Authorization: token,
+        RefreshToken: refreshToken,
       },
     });
 
-    const participants = response.data.joinMemberList.map((member: any) => ({
-      id: String(member.memberId),
-      name: member.memberName,
-    }));
+    console.log("Participants response:", response.data);
 
-    return participants;
+    if (response.data && response.data.joinMemberList) {
+      const participants = response.data.joinMemberList.map((member: any) => ({
+        id: String(member.memberId),
+        name: member.memberName,
+      }));
+      return participants;
+    } else {
+      throw new Error("Invalid response data format");
+    }
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error(

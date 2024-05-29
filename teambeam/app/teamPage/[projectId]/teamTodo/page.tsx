@@ -14,7 +14,7 @@ import {
   addLowerTodo,
   deleteUpperTodo,
 } from "@/app/_api/todo";
-import api from "@/app/_api/api";
+import { fetchParticipants } from "@/app/_api/calendar";
 
 const TeamTodo: React.FC = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>([]);
@@ -28,6 +28,8 @@ const TeamTodo: React.FC = () => {
   const [currentMiddleTodoId, setCurrentMiddleTodoId] = useState<string | null>(
     null
   );
+  const [token, setToken] = useState(""); // 실제 토큰 값 설정
+  const [refreshToken, setRefreshToken] = useState(""); // 실제 리프레시 토큰 값 설정
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -42,19 +44,9 @@ const TeamTodo: React.FC = () => {
 
     const loadParticipants = async () => {
       try {
-        const response = await api.get(`/team/1/joinMember`, {
-          headers: {
-            accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
-          },
-        });
-        const participantsData = response.data.joinMemberList.map(
-          (member: any) => ({
-            id: member.memberId,
-            name: member.memberName,
-          })
-        );
-        console.log("Loaded Participants:", participantsData);
-        setParticipants(participantsData);
+        const participants = await fetchParticipants("1");
+        console.log("Loaded Participants:", participants);
+        setParticipants(participants);
       } catch (error) {
         console.error("Error fetching participants:", error);
       }
@@ -62,7 +54,7 @@ const TeamTodo: React.FC = () => {
 
     loadTodos();
     loadParticipants();
-  }, []);
+  }, [token, refreshToken]);
 
   const handleAddButtonClick = (
     type: string,
