@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from "react";
 import "./MemoWriteModal.scss";
+import { postMemo } from "@/app/_api/memo";
+import { useRouter } from "next/navigation";
 
 type FormType = {
   title: string;
@@ -17,6 +19,8 @@ export default function MemoWriteModal({
     title: "",
     content: "",
   });
+
+  const router = useRouter();
 
   const titleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,15 +38,20 @@ export default function MemoWriteModal({
 
   const onSubmit = useCallback(async () => {
     // "use server";
-    const data = {
-      memberId: 2,
-      memoTitle: form.title,
-      memoContent: form.content,
-    };
 
     console.log("title : ", form.title);
     console.log("content : ", form.content);
-  }, [form]);
+
+    try {
+      const res = await postMemo("/my/memo/", form);
+      console.log("res : ", res);
+
+      alert("메모 생성이 완료되었습니다.");
+      router.refresh();
+    } catch (err) {
+      console.log("err  : ", err);
+    }
+  }, [form, router]);
 
   return (
     <div className='modal-bg'>
