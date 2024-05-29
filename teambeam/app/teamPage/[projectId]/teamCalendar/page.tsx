@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import EventModal from "./components/EventModal";
 import "./styles/main.scss";
@@ -27,25 +27,32 @@ const TeamCalendar: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [token, setToken] = useState(""); // 실제 토큰 값 설정
+  const [refreshToken, setRefreshToken] = useState(""); // 실제 리프레시 토큰 값 설정
+
+  const fetchEvents = useCallback(
+    async (projectId: string, year: number, month: number) => {
+      try {
+        const events = await fetchCalendarEvents(
+          projectId,
+          year,
+          month,
+          token,
+          refreshToken
+        );
+        setEvents(events);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    },
+    [token, refreshToken]
+  );
 
   useEffect(() => {
     const projectId = "1";
     fetchEvents(projectId, year, month);
     fetchParticipantsList(projectId);
-  }, [year, month]);
-
-  const fetchEvents = async (
-    projectId: string,
-    year: number,
-    month: number
-  ) => {
-    try {
-      const events = await fetchCalendarEvents(projectId, year, month);
-      setEvents(events);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
+  }, [year, month, fetchEvents]);
 
   const fetchParticipantsList = async (projectId: string) => {
     try {
@@ -68,7 +75,7 @@ const TeamCalendar: React.FC = () => {
         link: event.link,
         assignees: event.scheduleMembers.map(
           (member: Participant) => member.id
-        ), // id 사용
+        ),
         id: event.scheduleId,
       });
       setIsReadOnly(true);
@@ -110,7 +117,7 @@ const TeamCalendar: React.FC = () => {
           link: savedEvent.link,
           assignees: savedEvent.scheduleMembers.map(
             (member: Participant) => member.id
-          ), // id 사용
+          ),
         },
       ]);
 
@@ -141,10 +148,10 @@ const TeamCalendar: React.FC = () => {
   };
 
   return (
-    <div className='calendarContainer'>
-      <div className='calendarHeader'>
-        <h2 className='calendarTitle'>캘린더</h2>
-        <button className='addButton' onClick={handleAddButtonClick}>
+    <div className="calendarContainer">
+      <div className="calendarHeader">
+        <h2 className="calendarTitle">캘린더</h2>
+        <button className="addButton" onClick={handleAddButtonClick}>
           일정 추가
         </button>
       </div>

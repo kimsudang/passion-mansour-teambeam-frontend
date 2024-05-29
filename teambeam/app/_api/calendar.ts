@@ -1,15 +1,24 @@
 import api from "@/app/_api/api";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 // 캘린더 이벤트 조회 함수
 export const fetchCalendarEvents = async (
   projectId: string,
   year: number,
-  month: number
+  month: number,
+  token: string,
+  refreshToken: string
 ) => {
   try {
-    const response = await api.get(
-      `/team/${projectId}/calendar/month?year=${year}&month=${month}`
+    const response = await axios.get(
+      `http://34.22.108.250:8080/api/team/${projectId}/calendar/month`,
+      {
+        params: { year, month },
+        headers: {
+          Authorization: token,
+          RefreshToken: refreshToken,
+        },
+      }
     );
 
     console.log("Calendar events response:", response.data);
