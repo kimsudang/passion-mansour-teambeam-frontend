@@ -10,7 +10,7 @@ import {
   fetchEventDetails,
   addCalendarEvent,
 } from "@/app/_api/calendar";
-import { Participant } from "@/app/teamPage/teamTodo/types";
+import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
 
 const FullCalendarComponent = dynamic(
   () => import("./components/FullCalendarComponent"),
@@ -141,10 +141,10 @@ const TeamCalendar: React.FC = () => {
   };
 
   return (
-    <div className="calendarContainer">
-      <div className="calendarHeader">
-        <h2 className="calendarTitle">캘린더</h2>
-        <button className="addButton" onClick={handleAddButtonClick}>
+    <div className='calendarContainer'>
+      <div className='calendarHeader'>
+        <h2 className='calendarTitle'>캘린더</h2>
+        <button className='addButton' onClick={handleAddButtonClick}>
           일정 추가
         </button>
       </div>

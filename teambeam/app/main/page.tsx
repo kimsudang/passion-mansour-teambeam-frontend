@@ -87,7 +87,7 @@ export default function Page() {
           {lists?.map((list) => {
             return (
               <Link
-                href='/teamPage/teamMain'
+                href={`/teamPage/${list.projectId}/teamMain`}
                 key={list.projectId}
                 className='project-item'
               >
