@@ -1,12 +1,14 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
+const token = localStorage.getItem("Authorization");
+
 // 프로젝트 리스트 조회
 export const getPorjectList = async (url: string) => {
   try {
     const res = await api.get(url, {
       headers: {
-        Authorization: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        Authorization: token,
       },
       withCredentials: true,
     });
@@ -39,7 +41,7 @@ export const postPorject = async (
       },
       {
         headers: {
-          Authorization: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+          Authorization: token,
         },
         withCredentials: true,
       }
