@@ -21,6 +21,7 @@ export type BoardType = {
     memberName: string;
     profileImage: string;
   };
+  projectId: number;
   createDate: string;
   updateDate: string;
   postTags: { tagId: number; tagName: string }[];
@@ -74,6 +75,7 @@ const Page = () => {
   ]);
 
   const params = useParams<{ projectId: string; id: string }>();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,23 +90,21 @@ const Page = () => {
       }
     };
 
-    /*
     const fetchCommentData = async () => {
       try {
         const res = await getComment(
-          `/team/${params.projectId}/1/${params.id}`
+          `/team/${params.projectId}/1/${params.id}/`
         );
         console.log("res : ", res);
 
-        setBoardData(res.data);
+        setComments(res.data.postCommentResponseList);
       } catch (err) {
         console.log("err  : ", err);
       }
     };
-    */
 
     fetchData();
-    //fetchCommentData();
+    fetchCommentData();
   }, [params]);
 
   return (
@@ -112,7 +112,12 @@ const Page = () => {
       {boardData ? (
         <>
           <title>{boardData.title}</title>
-          <BoardView boardData={boardData} comments={comments} />
+          <BoardView
+            projectId={params.projectId}
+            boardData={boardData}
+            comments={comments}
+            setComments={setComments}
+          />
         </>
       ) : null}
     </div>

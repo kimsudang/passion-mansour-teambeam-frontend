@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import "./MemoWriteModal.scss";
 import { postMemo } from "@/app/_api/memo";
-import { redirect, useRouter } from "next/navigation";
+import { MemoType } from "../memo/page";
 
 type FormType = {
   title: string;
@@ -12,15 +12,15 @@ type FormType = {
 
 export default function MemoWriteModal({
   onCloseModal,
+  setMemoList,
 }: {
   onCloseModal: () => void;
+  setMemoList: React.Dispatch<React.SetStateAction<MemoType[]>>;
 }) {
   const [form, setForm] = useState<FormType>({
     title: "",
     content: "",
   });
-
-  const router = useRouter();
 
   const titleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,11 +48,11 @@ export default function MemoWriteModal({
 
       alert("메모 생성이 완료되었습니다.");
       onCloseModal();
-      router.refresh();
+      setMemoList((prev) => [...prev, res.data]);
     } catch (err) {
       console.log("err  : ", err);
     }
-  }, [form, router]);
+  }, [form, onCloseModal, setMemoList]);
 
   return (
     <div className='modal-bg'>

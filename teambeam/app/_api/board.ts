@@ -148,6 +148,39 @@ export const getPostTag = async (url: string) => {
 };
 
 // 게시글 삭제
+export const editPost = async (
+  url: string,
+  data: {
+    title: string;
+    content: CellType[][] | string;
+    postType: string;
+    notice: boolean;
+    postTagIds: number[];
+  }
+) => {
+  try {
+    const res = await api.patch(url, data, {
+      headers: {
+        Authorization: token,
+      },
+      withCredentials: true,
+    });
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
+// 게시글 삭제
 export const deletePost = async (url: string) => {
   try {
     const res = await api.delete(url, {

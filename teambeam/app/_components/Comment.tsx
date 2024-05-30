@@ -9,7 +9,11 @@ export default function Comment({ comment }: { comment: CommentType }) {
     <div className='comment-item'>
       <div className='profile-box'>
         <Image
-          src={comment.profileSrc}
+          src={
+            comment.member.profileImage !== null
+              ? comment.member.profileImage
+              : "/img/profile_default.png"
+          }
           alt='프로필'
           className='comment-profile'
           width={48}

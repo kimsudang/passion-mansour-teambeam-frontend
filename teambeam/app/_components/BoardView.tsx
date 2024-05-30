@@ -2,20 +2,33 @@
 
 import React, { useCallback, useState } from "react";
 import { BackBtnIcon, BookmarkIcon } from "./Icons";
-import { useRouter } from "next/navigation";
+import {
+  useParams,
+  useRouter,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import "@/app/_styles/Board.scss";
 import Comment from "./Comment";
 import { BoardType, CommentType } from "../privatePage/bookmark/[id]/page";
+import { deletePost, postComment } from "../_api/board";
 
 export default function BoardView({
+  projectId,
   boardData,
   comments,
+  setComments,
 }: {
+  projectId: string;
   boardData: BoardType;
   comments: CommentType[];
+  setComments: React.Dispatch<React.SetStateAction<CommentType[]>>;
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
+
   const router = useRouter();
+  const segment = useSelectedLayoutSegment();
+  const params = useParams<{ projectId: string; id: string }>();
+  const memberId = localStorage.getItem("MemberId");
 
   const handleComment = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -24,13 +37,46 @@ export default function BoardView({
     []
   );
 
-  const onSubmit = useCallback(() => {
-    const data = {
-      content: commentContent,
-    };
+  // 게시글 수정
+  const handlePostUpdate = useCallback(() => {
+    if (segment === "bookmark")
+      router.push(`/privatePage/bookmark/edit/${boardData.postId}`);
+    else
+      router.push(`/teamPage/${projectId}/teamBoard/${boardData.postId}/edit`);
+  }, [router, segment, projectId, boardData]);
 
-    console.log("commentContent : ", data);
-  }, [commentContent]);
+  // 게시글 삭제
+  const handlePostDelete = useCallback(async () => {
+    try {
+      const res = await deletePost(`/team/${projectId}/1/${boardData.postId}`);
+
+      console.log(res);
+
+      alert("게시글이 삭제되었습니다.");
+      if (segment === "bookmark") router.push("/privatePage/bookmark");
+      else router.push(`/teamPage/${projectId}/teamBoard`);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [router, segment, projectId, boardData]);
+
+  const onSubmit = useCallback(async () => {
+    try {
+      const data = {
+        content: commentContent,
+      };
+
+      const res = await postComment(
+        `/team/${params.projectId}/1/${params.id}/`,
+        data
+      );
+
+      console.log("comment : ", res);
+      setComments((prev) => [...prev, res.data]);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [commentContent, params]);
 
   return (
     <>
@@ -91,6 +137,17 @@ export default function BoardView({
             </tbody>
           </table>
         ) : null}
+
+        {memberId === String(boardData.member.memberId) && (
+          <div className='editButtons'>
+            <button type='button' onClick={handlePostUpdate}>
+              수정
+            </button>
+            <button type='button' onClick={handlePostDelete}>
+              삭제
+            </button>
+          </div>
+        )}
       </div>
       <div className='comment-wrap'>
         <p className='comment-info'>
