@@ -157,12 +157,13 @@
   flex-direction: column;
   // justify-content: center;
   // align-items: center;
-  gap: 16px;
 }
 
 .modal div:not(.modalButtons) {
   display: flex;
   justify-content: space-between;
+  align-content: center;
+  gap: 10px;
 }
 
 .eventTitle {
@@ -174,7 +175,7 @@
 .modalContent textarea,
 .modalContent select {
   display: block;
-  width: 80%;
+  width: 70%;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 4px;
