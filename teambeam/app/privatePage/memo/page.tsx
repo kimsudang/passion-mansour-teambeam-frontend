@@ -16,7 +16,7 @@ export type MemoType = {
 
 const Page = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
-  const [memoList, setMemoList] = useState<MemoType[] | null>([]);
+  const [memoList, setMemoList] = useState<MemoType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,7 +71,9 @@ const Page = () => {
         ) : null}
       </div>
 
-      {isModal ? <MemoWriteModal onCloseModal={onCloseModal} /> : null}
+      {isModal ? (
+        <MemoWriteModal onCloseModal={onCloseModal} setMemoList={setMemoList} />
+      ) : null}
     </div>
   );
 };

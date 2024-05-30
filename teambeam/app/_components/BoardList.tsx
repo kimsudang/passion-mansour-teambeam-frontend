@@ -6,11 +6,11 @@ import { BookmarkIcon } from "./Icons";
 import "@/app/_styles/Board.scss";
 
 export default function BoardList({
-  pojectId,
+  projectId,
   board,
   type,
 }: {
-  pojectId: string;
+  projectId: string;
   board: Board;
   type: string;
 }) {
@@ -19,7 +19,7 @@ export default function BoardList({
       href={
         type === "bookmark"
           ? `/privatePage/bookmark/${board.postId}`
-          : `/teamPage/${pojectId}/teamBoard/${board.postId}`
+          : `/teamPage/${projectId}/teamBoard/${board.postId}`
       }
       className='board-item'
     >

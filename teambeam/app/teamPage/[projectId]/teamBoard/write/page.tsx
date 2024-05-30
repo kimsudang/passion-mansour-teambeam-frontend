@@ -174,7 +174,11 @@ const Page = () => {
       <form action={onSubmit}>
         <div className='top-board-view write'>
           <div className='topBoardLeft'>
-            <button className='back-btn' onClick={() => router.back()}>
+            <button
+              type='button'
+              className='back-btn'
+              onClick={() => router.back()}
+            >
               <BackBtnIcon size={13} />
             </button>
 

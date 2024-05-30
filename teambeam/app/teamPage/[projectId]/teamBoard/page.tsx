@@ -33,7 +33,7 @@ type TagType = {
 };
 
 const Page = () => {
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [boards, setBoards] = useState<Board[] | null>(null);
   const [tagLists, setTagLists] = useState<TagType[]>([]);
   const [activeTags, setActiveTags] = useState<TagType[]>([]);
   const [isToggle, setIsToggle] = useState<boolean>(true);
@@ -50,6 +50,7 @@ const Page = () => {
           `/team/${params.projectId}/1/tags?${queryString}`
         );
 
+        console.log("tagToggle : ", res.data.postResponses);
         setBoards(res.data.postResponses);
       } catch (err) {
         console.log(err);
@@ -72,7 +73,9 @@ const Page = () => {
 
     const fetchTagData = async () => {
       try {
-        const res = await getPostTag(`/team/${params.projectId}/tag`);
+        const res = await getPostTag(
+          `/team/${params.projectId}/post/tag?postId=1`
+        );
         console.log("res : ", res);
 
         setTagLists(res.data.tagResponses);
@@ -81,8 +84,12 @@ const Page = () => {
       }
     };
 
-    fetchData();
     fetchTagData();
+
+    // 태그가 all 일 경우
+    if (activeTags.length === 0) {
+      fetchData();
+    }
 
     // 태그별 게시글 조회
     if (activeTags.length > 0 && activeTags[0].tagName !== "all") {
@@ -156,16 +163,30 @@ const Page = () => {
         ) : null}
       </div>
 
-      {boards.map((board: Board) => {
-        return (
-          <BoardList
-            key={board.postId}
-            pojectId={params.projectId}
-            board={board}
-            type={"board"}
-          />
-        );
-      })}
+      {boards !== null ? (
+        <>
+          {boards.length === 0 ? (
+            <p style={{ textAlign: "center", padding: "32px 0" }}>
+              게시글이 없습니다.
+            </p>
+          ) : (
+            <>
+              {boards.map((board: Board) => {
+                return (
+                  <BoardList
+                    key={board.postId}
+                    projectId={params.projectId}
+                    board={board}
+                    type={"board"}
+                  />
+                );
+              })}
+            </>
+          )}
+        </>
+      ) : (
+        <p>Loading</p>
+      )}
     </div>
   );
 };
