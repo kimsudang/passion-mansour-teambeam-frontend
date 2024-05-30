@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import "./MemoWriteModal.scss";
 import { postMemo } from "@/app/_api/memo";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 type FormType = {
   title: string;
@@ -47,6 +47,7 @@ export default function MemoWriteModal({
       console.log("res : ", res);
 
       alert("메모 생성이 완료되었습니다.");
+      onCloseModal();
       router.refresh();
     } catch (err) {
       console.log("err  : ", err);

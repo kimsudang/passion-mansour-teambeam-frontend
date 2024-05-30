@@ -49,7 +49,7 @@ export default function AddModal({
       console.log("res : ", res);
 
       alert("프로젝트 생성이 완료되었습니다.");
-      router.push("/teamPage/teamMain");
+      router.push(`/teamPage/${res.data.project.projectId}/teamMain`);
     } catch (err) {
       console.log("err  : ", err);
     }

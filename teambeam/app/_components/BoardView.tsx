@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { BackBtnIcon, BookmarkIcon } from "./Icons";
 import { useRouter } from "next/navigation";
 import "@/app/_styles/Board.scss";
@@ -14,7 +14,23 @@ export default function BoardView({
   boardData: BoardType;
   comments: CommentType[];
 }) {
+  const [commentContent, setCommentContent] = useState<string>("");
   const router = useRouter();
+
+  const handleComment = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setCommentContent(e.target.value);
+    },
+    []
+  );
+
+  const onSubmit = useCallback(() => {
+    const data = {
+      content: commentContent,
+    };
+
+    console.log("commentContent : ", data);
+  }, [commentContent]);
 
   return (
     <>
@@ -23,11 +39,11 @@ export default function BoardView({
           <BackBtnIcon size={13} />
         </button>
 
-        <h2>{boardData.postTitle}</h2>
+        <h2>{boardData.title}</h2>
       </div>
       <div className='view-info-wrap'>
         <div className='view-info'>
-          <span>{boardData.writer.memberName}</span>
+          <span>{boardData.member.memberName}</span>
           <b>ㆍ</b>
           <span>{boardData.createDate}</span>
         </div>
@@ -37,7 +53,7 @@ export default function BoardView({
         </button>
       </div>
       <div className='view-tags'>
-        {boardData.tags.map((tag) => {
+        {boardData.postTags.map((tag) => {
           return (
             <span key={tag.tagId} className='tag'>
               {tag.tagName}
@@ -47,24 +63,25 @@ export default function BoardView({
       </div>
 
       <div className='board-view-content'>
-        {boardData.postType === "board" ? (
-          typeof boardData.postContent === "string" ? (
-            <>{boardData.postContent}</>
+        {boardData.postType === "text" ? (
+          typeof boardData.content === "string" ? (
+            <div
+              dangerouslySetInnerHTML={{ __html: boardData.content as string }}
+            />
           ) : null
         ) : null}
 
-        {boardData.postType === "table" &&
-        Array.isArray(boardData.postContent) ? (
+        {boardData.postType === "table" && Array.isArray(boardData.content) ? (
           <table className='viewTable'>
             <thead>
               <tr>
-                {boardData.postContent[0].map((cell) => (
+                {boardData.content[0].map((cell) => (
                   <th key={cell.key}>{cell.value}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {boardData.postContent.slice(1).map((row, rowIndex) => (
+              {boardData.content.slice(1).map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell) => (
                     <td key={cell.key}>{cell.value}</td>
@@ -80,8 +97,14 @@ export default function BoardView({
           댓글 <span>{comments.length}</span>
         </p>
         <div className='comment-input-wrap'>
-          <textarea placeholder='댓글을 입력하세요'></textarea>
-          <button>등록</button>
+          <form action={onSubmit}>
+            <textarea
+              value={commentContent}
+              onChange={handleComment}
+              placeholder='댓글을 입력하세요'
+            ></textarea>
+            <button type='submit'>등록</button>
+          </form>
         </div>
         {comments?.map((comment) => {
           return <Comment key={comment.postCommentId} comment={comment} />;

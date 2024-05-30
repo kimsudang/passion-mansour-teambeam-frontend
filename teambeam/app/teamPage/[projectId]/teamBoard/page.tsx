@@ -2,73 +2,100 @@
 
 import BoardList from "@/app/_components/BoardList";
 import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./TeamBoard.scss";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { getPostList, getPostTag, getPostTagList } from "@/app/_api/board";
 
 export type Board = {
   postId: number;
-  postTitle: string;
+  title: string;
   postType: string;
-  postContent: string;
-  writer: string;
-  tags: { tagId: number; tagName: string }[];
+  content: string;
+  member: {
+    memberId: number;
+    memberName: string;
+    profileImage: string;
+  };
+  postTags: { tagId: number; tagName: string }[];
   createDate: string;
   updateDate: string;
   notice: boolean;
   bookmark: boolean;
 };
 
+type TagType = {
+  tagId: number;
+  tagName: string;
+  tagCategory: string;
+  projectId: number;
+};
+
 const Page = () => {
-  const [boards, setBoards] = useState<Board[]>([
-    {
-      postId: 1,
-      postTitle: "게시글 1",
-      postType: "board",
-      postContent: "게시글 1입니다.",
-      writer: "홍길동",
-      tags: [
-        { tagId: 21, tagName: "react" },
-        { tagId: 52, tagName: "개발" },
-        { tagId: 56, tagName: "기획" },
-      ],
-      createDate: "2024-04-12 09:51:13",
-      updateDate: "2024-04-12 09:51:13",
-      notice: false,
-      bookmark: true,
-    },
-    {
-      postId: 2,
-      postTitle: "게시글 2",
-      postType: "board",
-      postContent: "게시글 2입니다.",
-      writer: "홍길동",
-      tags: [{ tagId: 11, tagName: "vue" }],
-      createDate: "2024-04-12 09:51:13",
-      updateDate: "2024-04-12 09:51:13",
-      notice: false,
-      bookmark: true,
-    },
-  ]);
-  const [tags, setTags] = useState<string[]>(["react", "vue", "개발"]);
-  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [tagLists, setTagLists] = useState<TagType[]>([]);
+  const [activeTags, setActiveTags] = useState<TagType[]>([]);
   const [isToggle, setIsToggle] = useState<boolean>(true);
 
-  const onTagToggle = useCallback((tag: string) => {
-    setActiveTags((prevTags) =>
-      prevTags.includes(tag)
-        ? prevTags.filter((t) => t !== tag)
+  const params = useParams<{ projectId: string }>();
+
+  const fetchTagToggleData = useCallback(
+    async (tag: number[]) => {
+      console.log("tag : ", tag);
+      const queryString = tag.map((tag) => `tags=${tag}`).join("&");
+
+      try {
+        const res = await getPostTagList(
+          `/team/${params.projectId}/1/tags?${queryString}`
+        );
+
+        setBoards(res.data.postResponses);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [params]
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getPostList(`/team/${params.projectId}/1/`);
+        console.log("res : ", res);
+
+        setBoards(res.data.postResponses);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    const fetchTagData = async () => {
+      try {
+        const res = await getPostTag(`/team/${params.projectId}/tag`);
+        console.log("res : ", res);
+
+        setTagLists(res.data.tagResponses);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    fetchData();
+    fetchTagData();
+
+    // 태그별 게시글 조회
+    if (activeTags.length > 0 && activeTags[0].tagName !== "all") {
+      fetchTagToggleData(activeTags.map((_tag) => _tag.tagId));
+    }
+  }, [params, activeTags, fetchTagToggleData]);
+
+  const onTagToggle = useCallback((tag: TagType) => {
+    setActiveTags((prevTags: TagType[]) =>
+      prevTags.map((_tag) => _tag.tagName).includes(tag.tagName)
+        ? prevTags.filter((t) => t.tagName !== tag.tagName)
         : [...prevTags, tag]
     );
-
-    if (tag !== "all") {
-      /*
-      axios.get(`/api/tags/${tag}`)
-        .then(res => res)
-        .then(data => setBoards(data))
-        .catch(err => console.error(err));
-      */
-    }
   }, []);
 
   const onAllToggle = useCallback(() => {
@@ -80,7 +107,10 @@ const Page = () => {
       <title>게시판</title>
       <div className='top-box'>
         <h1>게시판</h1>
-        <Link href='/teamPage/teamBoard/write' className='write-add-btn'>
+        <Link
+          href={`/teamPage/${params.projectId}/teamBoard/write`}
+          className='write-add-btn'
+        >
           글쓰기
         </Link>
       </div>
@@ -106,15 +136,19 @@ const Page = () => {
             >
               ALL
             </button>
-            {tags?.map((tag, idx) => {
+            {tagLists?.map((tag) => {
               return (
                 <button
-                  key={idx}
-                  className={`tag ${activeTags.includes(tag) ? "active" : ""}`}
+                  key={tag.tagId}
+                  className={`tag ${
+                    activeTags.map((_tag) => _tag.tagName).includes(tag.tagName)
+                      ? "active"
+                      : ""
+                  }`}
                   onClick={() => onTagToggle(tag)}
                   tag-data={tag}
                 >
-                  {tag}
+                  {tag.tagName}
                 </button>
               );
             })}
@@ -123,7 +157,14 @@ const Page = () => {
       </div>
 
       {boards.map((board: Board) => {
-        return <BoardList key={board.postId} board={board} type={"board"} />;
+        return (
+          <BoardList
+            key={board.postId}
+            pojectId={params.projectId}
+            board={board}
+            type={"board"}
+          />
+        );
       })}
     </div>
   );

@@ -3,8 +3,8 @@ import { AxiosError } from "axios";
 
 const token = localStorage.getItem("Authorization");
 
-// 메모 리스트 조회
-export const getMemoList = async (url: string) => {
+// 전체 북마크 리스트 조회
+export const getBookmarkList = async (url: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -27,8 +27,8 @@ export const getMemoList = async (url: string) => {
   }
 };
 
-// 메모 리스트 상세 조회
-export const getMemoDetailList = async (url: string) => {
+// 북마크 상세 조회
+export const getBookmarkDetail = async (url: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -51,18 +51,12 @@ export const getMemoDetailList = async (url: string) => {
   }
 };
 
-// 프로젝트 생성
-export const postMemo = async (
-  url: string,
-  data: { title: string; content: string }
-) => {
+// 북마크 등록
+export const postBookmark = async (url: string) => {
   try {
     const res = await api.post(
       url,
-      {
-        memoTitle: data.title,
-        memoContent: data.content,
-      },
+      {},
       {
         headers: {
           Authorization: token,
@@ -70,6 +64,30 @@ export const postMemo = async (
         withCredentials: true,
       }
     );
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
+// 북마크 제거
+export const deleteBookmark = async (url: string) => {
+  try {
+    const res = await api.delete(url, {
+      headers: {
+        Authorization: token,
+      },
+      withCredentials: true,
+    });
 
     return res;
   } catch (error) {
