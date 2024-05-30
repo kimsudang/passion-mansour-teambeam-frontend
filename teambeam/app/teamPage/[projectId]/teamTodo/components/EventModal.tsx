@@ -86,8 +86,8 @@ const EventModal: React.FC<EventModalProps> = ({
       <div className="modal">
         <div className="modalContent">
           <div className="modalButtons">
-            <button onClick={handleSubmit}>저장</button>
-            <button onClick={onClose}>취소</button>
+            <button className="saveButton" onClick={handleSubmit}>저장</button>
+            <button className="cancelButton" onClick={onClose}>닫기</button>
           </div>
           <input
             className="eventTitle"

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
-import { deleteCalendarEvent } from "@/app/_api/calendar";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -98,11 +97,17 @@ const EventModal: React.FC<EventModalProps> = ({
       <div className="modal">
         <div className="modalButtons">
           {readonly ? (
-            <button onClick={handleDelete}>삭제</button>
+            <button className="deleteButton" onClick={handleDelete}>
+              삭제
+            </button>
           ) : (
-            <button onClick={handleSubmit}>저장</button>
+            <button className="saveButton" onClick={handleSubmit}>
+              저장
+            </button>
           )}
-          <button onClick={onClose}>닫기</button>
+          <button className="cancelButton" onClick={onClose}>
+            닫기
+          </button>
         </div>
         <input
           className="eventTitle"
@@ -113,8 +118,8 @@ const EventModal: React.FC<EventModalProps> = ({
           readOnly={readonly}
           required
         />
-        <div>
-          <label>시간</label>
+        <div className="inputGroup">
+          <label>일시</label>
           <input
             type="datetime-local"
             value={time}
@@ -123,39 +128,7 @@ const EventModal: React.FC<EventModalProps> = ({
             required
           />
         </div>
-        <div>
-          <label>장소</label>
-          <input
-            type="text"
-            placeholder="장소를 입력하세요."
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            readOnly={readonly}
-            required
-          />
-        </div>
-        <div>
-          <label>내용</label>
-          <textarea
-            placeholder="메모할 내용을 입력해주세요."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            readOnly={readonly}
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label>링크</label>
-          <input
-            type="text"
-            placeholder="참고자료 링크를 첨부해주세요."
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            readOnly={readonly}
-            required
-          />
-        </div>
-        <div className="todoAssignee">
+        <div className="inputGroup">
           <label>참석자</label>
           <Select
             isMulti
@@ -168,6 +141,39 @@ const EventModal: React.FC<EventModalProps> = ({
             placeholder="참석자를 선택하세요."
             isDisabled={readonly}
           />
+        </div>
+        <div className="inputGroup">
+          <label>장소</label>
+          <input
+            type="text"
+            placeholder="장소를 입력하세요."
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            readOnly={readonly}
+            required
+          />
+        </div>
+        <div className="inputGroup">
+          <label>링크</label>
+          <input
+            type="text"
+            placeholder="참고자료 링크를 첨부해주세요."
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            readOnly={readonly}
+            required
+          />
+        </div>
+        <hr />
+        <div className="inputGroup eventMemo">
+          <label>내용</label>
+          <textarea
+            placeholder="메모할 내용을 입력해주세요."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            readOnly={readonly}
+            required
+          ></textarea>
         </div>
       </div>
     </div>
