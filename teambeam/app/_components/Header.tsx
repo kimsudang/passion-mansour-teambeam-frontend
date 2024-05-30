@@ -24,6 +24,7 @@ export default function Header() {
 
   const handleLogout = useCallback(() => {
     setIsMenu(false);
+    localStorage.clear();
     router.push("/user/login");
   }, [router]);
 
