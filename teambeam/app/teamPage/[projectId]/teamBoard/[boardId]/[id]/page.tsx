@@ -74,13 +74,17 @@ const Page = () => {
     },
   ]);
 
-  const params = useParams<{ projectId: string; id: string }>();
+  const params = useParams<{
+    projectId: string;
+    boardId: string;
+    id: string;
+  }>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getPostDetail(
-          `/team/${params.projectId}/1/${params.id}`
+          `/team/${params.projectId}/${params.boardId}/${params.id}`
         );
         console.log("res : ", res);
 
@@ -93,7 +97,7 @@ const Page = () => {
     const fetchCommentData = async () => {
       try {
         const res = await getComment(
-          `/team/${params.projectId}/1/${params.id}/`
+          `/team/${params.projectId}/${params.boardId}/${params.id}/`
         );
         console.log("res : ", res);
 

@@ -51,7 +51,11 @@ const Page = () => {
 
   const memberId = localStorage.getItem("MemberId");
   const router = useRouter();
-  const params = useParams<{ projectId: string; id: string }>();
+  const params = useParams<{
+    projectId: string;
+    boardId: string;
+    id: string;
+  }>();
 
   useEffect(() => {
     const newCells: CellType[][] = [];
@@ -67,7 +71,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const res = await getPostDetail(
-          `/team/${params.projectId}/1/${params.id}`
+          `/team/${params.projectId}/${params.boardId}/${params.id}`
         );
         console.log("memberId : ", memberId);
         console.log("res : ", res);
@@ -198,13 +202,13 @@ const Page = () => {
 
     try {
       const res = await editPost(
-        `/team/${params.projectId}/1/${params.id}`,
+        `/team/${params.projectId}/${params.boardId}/${params.id}`,
         data
       );
       console.log("res : ", res);
 
       alert("게시글 수정이 완료되었습니다.");
-      router.push(`/teamPage/${params.projectId}/teamBoard/${params.id}`);
+      router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
     }
