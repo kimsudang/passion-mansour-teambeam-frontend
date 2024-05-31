@@ -115,7 +115,7 @@ const Page = () => {
       <div className='top-box'>
         <h1>게시판</h1>
         <Link
-          href={`/teamPage/${params.projectId}/teamBoard/write`}
+          href={`/teamPage/${params.projectId}/teamBoard/${params.boardId}/write`}
           className='write-add-btn'
         >
           글쓰기
