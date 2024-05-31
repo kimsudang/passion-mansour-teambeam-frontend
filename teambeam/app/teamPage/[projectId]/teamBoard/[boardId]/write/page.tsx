@@ -38,7 +38,7 @@ const Page = () => {
   const [rows, setRows] = useState<number>(2);
   const [cells, setCells] = useState<CellType[][]>([]);
 
-  const params = useParams<{ projectId: string }>();
+  const params = useParams<{ projectId: string; boardId: string }>();
 
   useEffect(() => {
     const newCells: CellType[][] = [];
