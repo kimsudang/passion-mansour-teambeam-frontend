@@ -65,6 +65,12 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handleSubmit = () => {
+    // 필수 필드 검증
+    if (!title || !time) {
+      alert("일정명과 일시는 필수 입력 항목입니다.");
+      return;
+    }
+
     console.log("Submitting event:", {
       title,
       time,
@@ -109,71 +115,74 @@ const EventModal: React.FC<EventModalProps> = ({
             닫기
           </button>
         </div>
-        <input
-          className="eventTitle"
-          type="text"
-          placeholder="일정명을 입력하세요."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          readOnly={readonly}
-          required
-        />
-        <div className="inputGroup">
-          <label>일시</label>
+        <div className="modalContent">
           <input
-            type="datetime-local"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            readOnly={readonly}
-            required
-          />
-        </div>
-        <div className="inputGroup">
-          <label>참석자</label>
-          <Select
-            isMulti
-            value={assignees.map((assignee) => ({
-              value: assignee.id,
-              label: assignee.name,
-            }))}
-            onChange={handleAssigneeChange}
-            options={assigneeOptions}
-            placeholder="참석자를 선택하세요."
-            isDisabled={readonly}
-          />
-        </div>
-        <div className="inputGroup">
-          <label>장소</label>
-          <input
+            className="eventTitle"
             type="text"
-            placeholder="장소를 입력하세요."
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            placeholder="일정명을 입력하세요."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             readOnly={readonly}
             required
           />
-        </div>
-        <div className="inputGroup">
-          <label>링크</label>
-          <input
-            type="text"
-            placeholder="참고자료 링크를 첨부해주세요."
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            readOnly={readonly}
-            required
-          />
-        </div>
-        <hr />
-        <div className="inputGroup eventMemo">
-          <label>내용</label>
-          <textarea
-            placeholder="메모할 내용을 입력해주세요."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            readOnly={readonly}
-            required
-          ></textarea>
+          <div className="inputGroup">
+            <label>일시</label>
+            <input
+              type="datetime-local"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              readOnly={readonly}
+              required
+            />
+          </div>
+          <div className="inputGroup">
+            <label>참석자</label>
+            <Select
+              isMulti
+              value={assignees.map((assignee) => ({
+                value: assignee.id,
+                label: assignee.name,
+              }))}
+              className="selectBox"
+              onChange={handleAssigneeChange}
+              options={assigneeOptions}
+              placeholder="참석자를 선택하세요."
+              isDisabled={readonly}
+            />
+          </div>
+          <div className="inputGroup">
+            <label>장소</label>
+            <input
+              type="text"
+              placeholder="장소를 입력하세요."
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              readOnly={readonly}
+              required
+            />
+          </div>
+          <div className="inputGroup">
+            <label>링크</label>
+            <input
+              type="text"
+              placeholder="참고자료 링크를 첨부해주세요."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              readOnly={readonly}
+              required
+            />
+          </div>
+          <hr />
+          <div className="inputGroup eventMemo">
+            <label>내용</label>
+            <textarea
+              placeholder="메모할 내용을 입력해주세요."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              readOnly={readonly}
+              required
+            ></textarea>
+          </div>
         </div>
       </div>
     </div>

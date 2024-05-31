@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import UpperTodoList from "./components/UpperTodoList";
 import EventModal from "./components/EventModal";
 import { TodoList, Participant, TodoItem } from "./types";
-import "./styles/main.scss";
+import "./styles/TeamTodo.scss";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {

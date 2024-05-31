@@ -1,6 +1,23 @@
 import api from "@/app/_api/api";
 import axios, { AxiosError } from "axios";
 
+// 로컬 스토리지에서 토큰을 가져오는 함수
+const getToken = () => {
+  const token = localStorage.getItem("Authorization");
+  if (!token) {
+    throw new Error("Authorization token is missing");
+  }
+  return token;
+};
+
+const getRefreshToken = () => {
+  const token = localStorage.getItem("RefreshToken");
+  if (!token) {
+    throw new Error("Refresh token is missing");
+  }
+  return token;
+};
+
 // 캘린더 이벤트 조회 함수
 export const fetchCalendarEvents = async (
   projectId: string,
@@ -103,9 +120,11 @@ export const fetchEventDetails = async (
 // 참가자 조회 함수
 export const fetchParticipants = async (projectId: string) => {
   try {
+    const token = getToken();
+
     const response = await api.get(`/team/${projectId}/joinMember`, {
       headers: {
-        Authorization: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        Authorization: token,
       },
     });
 
@@ -133,47 +152,37 @@ export const fetchParticipants = async (projectId: string) => {
   }
 };
 
-// 캘린더 이벤트 추가 함수
 export const addCalendarEvent = async (
   projectId: string,
   event: {
     title: string;
     time: string;
-    location: string;
-    content: string;
-    link: string;
+    location?: string;
+    content?: string;
+    link?: string;
     memberId: number[];
   }
 ) => {
   try {
-    // 이벤트 페이로드 로깅 (디버깅 용도)
     console.log("Adding event:", event);
 
-    // 이벤트 페이로드 검증
-    if (
-      !event.title ||
-      !event.time ||
-      !event.location ||
-      !event.content ||
-      !event.link ||
-      !event.memberId.length
-    ) {
-      throw new Error("모든 이벤트 필드는 필수이며 비어 있을 수 없습니다");
+    if (!event.title || !event.time) {
+      throw new Error("일정명과 일시는 필수 입력 항목입니다.");
     }
 
     const response = await api.post(`/team/${projectId}/calendar`, {
       title: event.title,
       time: event.time,
-      location: event.location,
-      content: event.content,
-      link: event.link,
-      memberId: event.memberId, // 'assignees' 대신 'memberId' 사용
+      location: event.location || "",
+      content: event.content || "",
+      link: event.link || "",
+      memberId: event.memberId,
     });
 
     console.log("Add calendar event response:", response.data);
 
     if (response.data && response.data.scheduleId) {
-      return response.data; // 추가된 이벤트 데이터 반환
+      return response.data;
     } else {
       throw new Error("응답 데이터 형식이 유효하지 않습니다");
     }
