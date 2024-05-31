@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import EventModal from "./components/EventModal";
-import "./styles/main.scss";
+import "./styles/TeamCalendar.scss";
 import {
   fetchCalendarEvents,
   fetchParticipants,
@@ -28,9 +28,13 @@ const TeamCalendar: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [token, setToken] = useState(""); // 실제 토큰 값 설정
-  const [refreshToken, setRefreshToken] = useState(""); // 실제 리프레시 토큰 값 설정
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [token, setToken] = useState(
+    localStorage.getItem("Authorization") || ""
+  );
+  const [refreshToken, setRefreshToken] = useState(
+    localStorage.getItem("RefreshToken") || ""
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchEvents = useCallback(
     async (projectId: string, year: number, month: number) => {
@@ -68,7 +72,7 @@ const TeamCalendar: React.FC = () => {
 
   const fetchEventDetail = async (projectId: string, scheduleId: string) => {
     try {
-      setIsLoading(true); // 로딩 상태 시작
+      setIsLoading(true);
       const event = await fetchEventDetails(
         projectId,
         scheduleId,
@@ -92,7 +96,7 @@ const TeamCalendar: React.FC = () => {
     } catch (error) {
       console.error("Error fetching event details:", error);
     } finally {
-      setIsLoading(false); // 로딩 상태 종료
+      setIsLoading(false);
     }
   };
 
@@ -117,21 +121,8 @@ const TeamCalendar: React.FC = () => {
       });
       console.log("Saved event:", savedEvent);
 
-      setEvents((prevEvents) => [
-        ...prevEvents,
-        {
-          id: savedEvent.scheduleId,
-          title: savedEvent.title,
-          start: savedEvent.time,
-          end: savedEvent.time, // 필요한 경우 끝 시간을 따로 설정
-          location: savedEvent.location,
-          content: savedEvent.content,
-          link: savedEvent.link,
-          assignees: savedEvent.scheduleMembers.map(
-            (member: Participant) => member.id
-          ),
-        },
-      ]);
+      // 이벤트 목록 다시 가져오기
+      await fetchEvents(projectId, year, month);
 
       setIsModalOpen(false);
     } catch (error) {

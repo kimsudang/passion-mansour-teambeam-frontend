@@ -84,7 +84,15 @@ html {
   padding: 70px 40px;
   border-radius: 10px;
   width: 400px;
+  height: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
+}
+
+.modalContent {
+  align-content: center;
+  margin-top: 20%;
 }
 
 .modal h2 {
@@ -122,6 +130,7 @@ html {
 }
 
 .inputGroup {
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -137,6 +146,19 @@ html {
 .modal input {
   width: 80%;
   padding: 0px;
+}
+
+.selectBox {
+  width: 252px;
+
+  div {
+    display: flex;
+    justify-content: flex-start !important;
+  }
+}
+
+.modalButtons {
+  gap: 10px;
 }
 
 .saveButton,
