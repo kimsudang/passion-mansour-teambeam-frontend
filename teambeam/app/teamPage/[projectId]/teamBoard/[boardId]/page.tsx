@@ -38,7 +38,7 @@ const Page = () => {
   const [activeTags, setActiveTags] = useState<TagType[]>([]);
   const [isToggle, setIsToggle] = useState<boolean>(true);
 
-  const params = useParams<{ projectId: string }>();
+  const params = useParams<{ projectId: string; boardId: string }>();
 
   const fetchTagToggleData = useCallback(
     async (tag: number[]) => {
@@ -62,7 +62,9 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getPostList(`/team/${params.projectId}/1/`);
+        const res = await getPostList(
+          `/team/${params.projectId}/${params.boardId}/`
+        );
         console.log("res : ", res);
 
         setBoards(res.data.postResponses);
@@ -73,9 +75,7 @@ const Page = () => {
 
     const fetchTagData = async () => {
       try {
-        const res = await getPostTag(
-          `/team/${params.projectId}/post/tag?postId=1`
-        );
+        const res = await getPostTag(`/team/${params.projectId}/post/tag`);
         console.log("res : ", res);
 
         setTagLists(res.data.tagResponses);
@@ -176,7 +176,9 @@ const Page = () => {
                   <BoardList
                     key={board.postId}
                     projectId={params.projectId}
+                    boardId={params.boardId}
                     board={board}
+                    bookmark={null}
                     type={"board"}
                   />
                 );

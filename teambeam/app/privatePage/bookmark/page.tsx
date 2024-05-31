@@ -21,8 +21,28 @@ export type Board = {
   bookmark: boolean;
 };
 
+export type BookmarkType = {
+  bookmarkId: number;
+  member: {
+    memberId: number;
+    memberName: string;
+    profileImage: string;
+  };
+  post: {
+    boardId: number;
+    boardName: string;
+    title: string;
+    contnet: string;
+    bookmark: boolean;
+    createDate: string;
+    notice: boolean;
+    postTags: { tagId: number; tagName: string }[];
+    postType: string;
+  };
+};
+
 const Page = () => {
-  const [boards, setBoards] = useState<Board[] | null>(null);
+  const [bookmarks, setBookmarks] = useState<BookmarkType[] | null>(null);
 
   // [
   //   {
@@ -49,7 +69,7 @@ const Page = () => {
         const res = await getBookmarkList(`/my/bookmark/`);
         console.log("res : ", res);
 
-        setBoards(res.data.postResponses);
+        setBookmarks(res.data.bookmarkResponses);
       } catch (err) {
         console.log("err  : ", err);
       }
@@ -63,20 +83,22 @@ const Page = () => {
       <title>북마크</title>
       <h1 style={{ marginBottom: "24px" }}>북마크</h1>
 
-      {boards !== null ? (
+      {bookmarks !== null ? (
         <>
-          {boards.length === 0 ? (
+          {bookmarks.length === 0 ? (
             <p style={{ textAlign: "center", padding: "32px 0" }}>
               북마크한 게시글이 없습니다.
             </p>
           ) : (
             <>
-              {boards.map((board: Board) => {
+              {bookmarks.map((bookmark: BookmarkType) => {
                 return (
                   <BoardList
                     projectId={"undefined"}
-                    key={board.postId}
-                    board={board}
+                    boardId={"undefined"}
+                    key={bookmark.bookmarkId}
+                    board={null}
+                    bookmark={bookmark}
                     type={"bookmark"}
                   />
                 );

@@ -11,10 +11,32 @@ import {
   TodoIcon,
 } from "@/app/_components/Icons";
 import { useParams, useSelectedLayoutSegment } from "next/navigation";
+import { useEffect, useState } from "react";
+
+type BoardType = {
+  boardId: number;
+  boardName: string;
+};
 
 export default function SideBar() {
+  const [bordLists, setBoardLists] = useState<BoardType[]>([
+    {
+      boardId: 1,
+      boardName: "게시판",
+    },
+    {
+      boardId: 2,
+      boardName: "fsdfsdsfsad",
+    },
+  ]);
   const segment = useSelectedLayoutSegment();
-  const params = useParams<{ projectId: string }>();
+  const params = useParams<{
+    projectId: string;
+    boardId: string;
+  }>();
+
+  useEffect(() => {}, []);
+
   return (
     <nav>
       <div className='top-info'>
@@ -58,17 +80,25 @@ export default function SideBar() {
           </Link>
         </li>
 
-        <li>
-          <Link
-            href={`/teamPage/${params.projectId}/teamBoard`}
-            className={segment === "teamBoard" ? "active" : ""}
-          >
-            <div className='icon-box'>
-              <BoardIcon size={14} />
-            </div>
-            <span>게시판</span>
-          </Link>
-        </li>
+        {bordLists?.map((board) => {
+          return (
+            <li key={board.boardId}>
+              <Link
+                href={`/teamPage/${params.projectId}/teamBoard/${board.boardId}`}
+                className={
+                  params.boardId === String(board.boardId) ? "active" : ""
+                }
+              >
+                <div className='icon-box'>
+                  <BoardIcon size={18} />
+                </div>
+                <span>
+                  {board.boardName === "" ? "게시판" : board.boardName}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
 
         <li>
           <Link

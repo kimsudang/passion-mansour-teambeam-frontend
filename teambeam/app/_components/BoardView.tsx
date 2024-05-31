@@ -27,7 +27,11 @@ export default function BoardView({
 
   const router = useRouter();
   const segment = useSelectedLayoutSegment();
-  const params = useParams<{ projectId: string; id: string }>();
+  const params = useParams<{
+    projectId: string;
+    boardId: string;
+    id: string;
+  }>();
   const memberId = localStorage.getItem("MemberId");
 
   const handleComment = useCallback(
@@ -42,23 +46,27 @@ export default function BoardView({
     if (segment === "bookmark")
       router.push(`/privatePage/bookmark/edit/${boardData.postId}`);
     else
-      router.push(`/teamPage/${projectId}/teamBoard/${boardData.postId}/edit`);
-  }, [router, segment, projectId, boardData]);
+      router.push(
+        `/teamPage/${projectId}/teamBoard/${params.boardId}/${boardData.postId}/edit`
+      );
+  }, [router, params, segment, projectId, boardData]);
 
   // 게시글 삭제
   const handlePostDelete = useCallback(async () => {
     try {
-      const res = await deletePost(`/team/${projectId}/1/${boardData.postId}`);
+      const res = await deletePost(
+        `/team/${projectId}/${params.boardId}/${boardData.postId}`
+      );
 
       console.log(res);
 
       alert("게시글이 삭제되었습니다.");
       if (segment === "bookmark") router.push("/privatePage/bookmark");
-      else router.push(`/teamPage/${projectId}/teamBoard`);
+      else router.push(`/teamPage/${projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log(err);
     }
-  }, [router, segment, projectId, boardData]);
+  }, [router, params, segment, projectId, boardData]);
 
   const onSubmit = useCallback(async () => {
     try {
@@ -67,7 +75,7 @@ export default function BoardView({
       };
 
       const res = await postComment(
-        `/team/${params.projectId}/1/${params.id}/`,
+        `/team/${params.projectId}/${params.boardId}/${params.id}/`,
         data
       );
 
