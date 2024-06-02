@@ -203,7 +203,7 @@ const Page = () => {
       console.log("res : ", res);
 
       alert("게시글 수정이 완료되었습니다.");
-      router.push(`/teamPage/${boardData?.projectId}/teamBoard/${params.id}`);
+      router.push("/privatePage/bookmark");
     } catch (err) {
       console.log("err  : ", err);
     }

@@ -1,8 +1,12 @@
 "use client";
 
-import { getBookmarkList } from "@/app/_api/bookmark";
+import {
+  deleteBookmark,
+  getBookmarkList,
+  postBookmark,
+} from "@/app/_api/bookmark";
 import BoardList from "@/app/_components/BoardList";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export type Board = {
   postId: number;
@@ -78,6 +82,35 @@ const Page = () => {
     fetchData();
   }, []);
 
+  // 북마크 토글
+  const handleBookmark = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>, data: Board) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!data.bookmark) {
+        try {
+          const res = await postBookmark(`/my/bookmark/${data.postId}`);
+
+          console.log("bookmark add : ", res);
+          // setBookmarks(res.data.postResponses);
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        try {
+          const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+
+          console.log("bookmark remove :", res);
+          // setBookmarks(res.data.postResponses);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    },
+    []
+  );
+
   return (
     <div>
       <title>북마크</title>
@@ -99,6 +132,7 @@ const Page = () => {
                     key={bookmark.bookmarkId}
                     board={null}
                     bookmark={bookmark}
+                    handleBookmark={handleBookmark}
                     type={"bookmark"}
                   />
                 );

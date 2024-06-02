@@ -85,7 +85,7 @@ export const postAddPost = async (
   url: string,
   data: {
     title: string;
-    content: CellType[][] | string;
+    content: string;
     postType: string;
     notice: boolean;
     postTagIds: number[];

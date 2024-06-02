@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Board, BookmarkType } from "../privatePage/bookmark/page";
-import { BookmarkIcon } from "./Icons";
+import { BookmarkIcon, BookmarkLineIcon } from "./Icons";
 import "@/app/_styles/Board.scss";
 
 export default function BoardList({
@@ -10,23 +10,29 @@ export default function BoardList({
   boardId,
   board,
   bookmark,
+  handleBookmark,
   type,
 }: {
   projectId: string;
   boardId: string;
   board: Board | null;
   bookmark: BookmarkType | null;
+  handleBookmark: (e: React.MouseEvent<HTMLButtonElement>, data: any) => void;
   type: string;
 }) {
   if (type === "bookmark") {
     return (
       <Link
         href={`/privatePage/bookmark/${bookmark?.bookmarkId}`}
-        className='board-item'
+        className={`board-item ${bookmark?.post.notice ? "noticePost" : ""}`}
+        passHref
       >
         <div className='board-left'>
-          {bookmark?.post.postTags.length !== 0 && (
+          {bookmark?.post.postTags.length !== 0 || bookmark?.post.notice ? (
             <div className='tags'>
+              {bookmark?.post.notice ? (
+                <span className='tag notice'>공지</span>
+              ) : null}
               {bookmark?.post.postTags.map((tag) => {
                 return (
                   <span key={tag.tagId} className='tag'>
@@ -35,7 +41,7 @@ export default function BoardList({
                 );
               })}
             </div>
-          )}
+          ) : null}
           <h3>{bookmark?.post.title}</h3>
           {bookmark?.post.postType === "text" ? (
             <p>{bookmark?.post.content.replace(/<\/?[^>]+(>|$)/g, "")}</p>
@@ -48,7 +54,17 @@ export default function BoardList({
           </div>
         </div>
         <div className='board-right'>
-          <BookmarkIcon size={15} />
+          <button
+            type='button'
+            className='bookmarkBtn'
+            onClick={(e) => handleBookmark(e, bookmark)}
+          >
+            {board?.bookmark ? (
+              <BookmarkIcon size={15} />
+            ) : (
+              <BookmarkLineIcon size={15} />
+            )}
+          </button>
         </div>
       </Link>
     );
@@ -56,11 +72,15 @@ export default function BoardList({
     return (
       <Link
         href={`/teamPage/${projectId}/teamBoard/${boardId}/${board?.postId}`}
-        className='board-item'
+        className={`board-item ${board?.notice ? "noticePost" : ""}`}
+        passHref
       >
         <div className='board-left'>
-          {board?.postTags.length !== 0 && (
+          {board?.postTags.length !== 0 || board?.notice ? (
             <div className='tags'>
+              {board?.notice === true && (
+                <span className='tag notice'>공지</span>
+              )}
               {board?.postTags.map((tag) => {
                 return (
                   <span key={tag.tagId} className='tag'>
@@ -69,7 +89,7 @@ export default function BoardList({
                 );
               })}
             </div>
-          )}
+          ) : null}
           <h3>{board?.title}</h3>
           {board?.postType === "text" ? (
             <p>{board.content.replace(/<\/?[^>]+(>|$)/g, "")}</p>
@@ -82,7 +102,17 @@ export default function BoardList({
           </div>
         </div>
         <div className='board-right'>
-          <BookmarkIcon size={15} />
+          <button
+            type='button'
+            className={`bookmarkBtn ${board?.bookmark ? "active" : ""}`}
+            onClick={(e) => handleBookmark(e, board)}
+          >
+            {board?.bookmark ? (
+              <BookmarkIcon size={15} />
+            ) : (
+              <BookmarkLineIcon size={15} />
+            )}
+          </button>
         </div>
       </Link>
     );
