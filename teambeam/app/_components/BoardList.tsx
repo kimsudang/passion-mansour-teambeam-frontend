@@ -48,7 +48,7 @@ export default function BoardList({
           ) : null}
 
           <div className='board-info'>
-            <span>{bookmark?.member.memberName}</span>
+            <span>{bookmark?.post.member.memberName}</span>
             <b>ㆍ</b>
             <span>{bookmark?.post.createDate}</span>
           </div>
@@ -56,10 +56,10 @@ export default function BoardList({
         <div className='board-right'>
           <button
             type='button'
-            className='bookmarkBtn'
+            className={`bookmarkBtn ${bookmark?.post.bookmark ? "active" : ""}`}
             onClick={(e) => handleBookmark(e, bookmark)}
           >
-            {board?.bookmark ? (
+            {bookmark?.post.bookmark ? (
               <BookmarkIcon size={15} />
             ) : (
               <BookmarkLineIcon size={15} />

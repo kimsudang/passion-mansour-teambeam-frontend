@@ -171,12 +171,12 @@ export const getPostTag = async (url: string) => {
   }
 };
 
-// 게시글 삭제
+// 게시글 수정
 export const editPost = async (
   url: string,
   data: {
     title: string;
-    content: CellType[][] | string;
+    content: string;
     postType: string;
     notice: boolean;
     postTagIds: number[];

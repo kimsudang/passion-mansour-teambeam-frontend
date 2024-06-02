@@ -24,7 +24,8 @@ const Page = () => {
         const res = await getMemoList("/my/memo/");
         console.log("res : ", res);
 
-        setMemoList(res.data.memoResponses);
+        const sortDate = sortDateData(res.data.memoResponses);
+        setMemoList(sortDate);
       } catch (err) {
         console.log("err  : ", err);
       }
@@ -32,6 +33,13 @@ const Page = () => {
 
     fetchData();
   }, []);
+
+  // 최신순 정렬
+  const sortDateData = (data: MemoType[]) => {
+    return data.sort(
+      (a, b) => Number(new Date(b.createDate)) - Number(new Date(a.createDate))
+    );
+  };
 
   const onOpenModal = useCallback(() => {
     setIsModal(true);

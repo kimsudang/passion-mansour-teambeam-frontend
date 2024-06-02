@@ -28,6 +28,7 @@ export default function SideBar() {
   }>();
 
   useEffect(() => {
+    // 게시판 조회
     const fetchData = async () => {
       try {
         const res = await getBoardList(`/team/${params.projectId}/board`);

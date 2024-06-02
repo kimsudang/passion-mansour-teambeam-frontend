@@ -48,12 +48,13 @@ const Page = () => {
 
       try {
         const res = await getPostTagList(
-          `/team/${params.projectId}/1/tags?${queryString}`
+          `/team/${params.projectId}/${params.boardId}/tags?${queryString}`
         );
-        const sortPostData = sortNoticeData(res.data.postResponses);
 
-        console.log("tagToggle : ", res.data.postResponses);
-        setBoards(sortPostData);
+        const sortNotice = sortNoticeData(res.data.postResponses);
+        const sortDate = sortDateData(res.data.postResponses);
+
+        setBoards([...sortNotice, ...sortDate]);
       } catch (err) {
         console.log(err);
       }
@@ -67,10 +68,12 @@ const Page = () => {
         const res = await getPostList(
           `/team/${params.projectId}/${params.boardId}/`
         );
-        const sortPostData = sortNoticeData(res.data.postResponses);
-        console.log("res : ", res);
+        console.log("post list : ", res);
 
-        setBoards(sortPostData);
+        const sortNotice = sortNoticeData(res.data.postResponses);
+        const sortDate = sortDateData(res.data.postResponses);
+
+        setBoards([...sortNotice, ...sortDate]);
       } catch (err) {
         console.log("err  : ", err);
       }
@@ -102,7 +105,17 @@ const Page = () => {
 
   // 공지일 경우 가장 위로 보내기
   const sortNoticeData = (data: Board[]) => {
-    return data.sort((a, b) => Number(b.notice) - Number(a.notice));
+    return data.filter((item) => item.notice);
+  };
+
+  // 일반 게시글 최신순 정렬
+  const sortDateData = (data: Board[]) => {
+    return data
+      .filter((item) => !item.notice)
+      .sort(
+        (a, b) =>
+          Number(new Date(b.createDate)) - Number(new Date(a.createDate))
+      );
   };
 
   // 태그 토글 기능
@@ -125,6 +138,13 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
+      const isBoards = boards?.map((item) =>
+        item.postId === data.postId
+          ? { ...item, bookmark: !item.bookmark }
+          : item
+      );
+      setBoards(isBoards);
+
       if (!data.bookmark) {
         console.log("북마크 등록");
         try {
@@ -137,7 +157,10 @@ const Page = () => {
       } else {
         console.log("북마크 해제");
         try {
-          const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+          const res = await deleteBookmark(
+            `/my/bookmark/post?postId=${data.postId}`
+          );
+          // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
 
           console.log("bookmark remove :", res);
         } catch (err) {
@@ -145,7 +168,7 @@ const Page = () => {
         }
       }
     },
-    []
+    [boards]
   );
 
   return (

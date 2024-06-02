@@ -150,8 +150,15 @@
     color: #565656;
   }
 
-  .bookmark-btn {
+  .bookmarkBtn {
     border: none;
+    cursor: pointer;
+
+    &.active {
+      svg {
+        fill: var(--primary);
+      }
+    }
   }
 }
 
@@ -171,6 +178,10 @@
     margin-right: 8px;
     font-size: 11px;
     color: #242424;
+
+    &.notice {
+      background: var(--primary);
+    }
 
     &:last-child {
       margin-right: 0;

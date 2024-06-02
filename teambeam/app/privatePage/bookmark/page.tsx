@@ -34,38 +34,25 @@ export type BookmarkType = {
   };
   post: {
     boardId: number;
+    postId: number;
     boardName: string;
     title: string;
-    contnet: string;
+    content: string;
     bookmark: boolean;
     createDate: string;
     notice: boolean;
     postTags: { tagId: number; tagName: string }[];
     postType: string;
+    member: {
+      memberId: number;
+      memberName: string;
+      profileImage: string;
+    };
   };
 };
 
 const Page = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkType[] | null>(null);
-
-  // [
-  //   {
-  //     postId: 1,
-  //     title: "게시글 1",
-  //     postType: "board",
-  //     content: "게시글 1입니다.",
-  //     createDate: "2024-04-12 09:51:13",
-  //     updateDate: "2024-04-12 09:51:13",
-  //     member: { memberId: 2, memberName: "홍길동", profileImage: "" },
-  //     postTags: [
-  //       { tagId: 21, tagName: "react" },
-  //       { tagId: 52, tagName: "개발" },
-  //       { tagId: 56, tagName: "기획" },
-  //     ],
-  //     notice: false,
-  //     bookmark: true,
-  //   }
-  // ]
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +60,10 @@ const Page = () => {
         const res = await getBookmarkList(`/my/bookmark/`);
         console.log("res : ", res);
 
-        setBookmarks(res.data.bookmarkResponses);
+        const sortNotice = sortNoticeData(res.data.bookmarkResponses);
+        const sortDate = sortDateData(res.data.bookmarkResponses);
+
+        setBookmarks([...sortNotice, ...sortDate]);
       } catch (err) {
         console.log("err  : ", err);
       }
@@ -82,33 +72,58 @@ const Page = () => {
     fetchData();
   }, []);
 
+  // 공지일 경우 가장 위로 보내기
+  const sortNoticeData = (data: BookmarkType[]) => {
+    return data
+      .filter((item) => item.post.notice)
+      .sort(
+        (a, b) =>
+          Number(new Date(a.post.createDate)) -
+          Number(new Date(b.post.createDate))
+      );
+  };
+
+  // 일반 게시글 최신순 정렬
+  const sortDateData = (data: BookmarkType[]) => {
+    return data
+      .filter((item) => !item.post.notice)
+      .sort(
+        (a, b) =>
+          Number(new Date(b.post.createDate)) -
+          Number(new Date(a.post.createDate))
+      );
+  };
+
   // 북마크 토글
   const handleBookmark = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>, data: Board) => {
+    async (e: React.MouseEvent<HTMLButtonElement>, data: BookmarkType) => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (!data.bookmark) {
-        try {
-          const res = await postBookmark(`/my/bookmark/${data.postId}`);
+      const isBookmarks = bookmarks?.map((item) =>
+        item.post.postId === data.post.postId
+          ? { ...item, bookmark: !item.post.bookmark }
+          : item
+      );
+      setBookmarks(isBookmarks);
 
-          console.log("bookmark add : ", res);
-          // setBookmarks(res.data.postResponses);
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        try {
-          const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+      try {
+        const res = await deleteBookmark(
+          `/my/bookmark/post?postId=${data.post.postId}`
+        );
+        // const res = await deleteBookmark(`/my/bookmark/${data.bookmarkId}`);
 
-          console.log("bookmark remove :", res);
-          // setBookmarks(res.data.postResponses);
-        } catch (err) {
-          console.log(err);
-        }
+        const newBookmarks = bookmarks?.filter(
+          (item) => item.post.postId !== data.post.postId
+        );
+
+        console.log("bookmark remove :", res);
+        setBookmarks(newBookmarks);
+      } catch (err) {
+        console.log(err);
       }
     },
-    []
+    [bookmarks]
   );
 
   return (
