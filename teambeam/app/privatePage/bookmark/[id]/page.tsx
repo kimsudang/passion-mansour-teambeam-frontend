@@ -1,5 +1,6 @@
 "use client";
 
+import { getComment } from "@/app/_api/board";
 import {
   deleteBookmark,
   getBookmarkList,
@@ -9,22 +10,18 @@ import BoardView from "@/app/_components/BoardView";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
-type ContentType = {
-  key: string;
-  value: string;
-};
-
 export type BoardType = {
   postId: number;
   title: string;
   postType: string;
-  content: ContentType[][] | string;
+  content: string;
   member: {
     memberId: number;
     memberName: string;
     profileImage: string;
   };
   projectId: number;
+  boardId: number;
   createDate: string;
   updateDate: string;
   postTags: { tagId: number; tagName: string }[];
@@ -47,114 +44,67 @@ export type CommentType = {
 
 const Page = () => {
   const [boardData, setBoardData] = useState<BoardType | null>(null);
-  const [comments, setComments] = useState<CommentType[]>([
-    {
-      postCommentId: 0,
-      content:
-        "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
-      member: { memberId: 2, memberName: "홍길동", profileImage: "" },
-      profileSrc: "/img/profile_default.png",
-      createDate: "2024-01-03 10:42:12",
-      updateDate: "2024-01-03 10:42:12",
-    },
-    {
-      postCommentId: 1,
-      content:
-        "댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 댓글 내용입니다 ",
-      member: { memberId: 2, memberName: "홍길동", profileImage: "" },
-      profileSrc: "/img/profile_default.png",
-      createDate: "2024-01-03 10:42:12",
-      updateDate: "2024-01-03 10:42:12",
-    },
-  ]);
-
-  // {
-  //   postId: 0,
-  //   title: "게시글 제목",
-  //   postType: "table",
-  //   content: [
-  //     [
-  //       { key: "0_0", value: "HTTP" },
-  //       { key: "0_1", value: "기능" },
-  //       { key: "0_2", value: "URL" },
-  //     ],
-  //     [
-  //       { key: "1_0", value: "GET" },
-  //       { key: "1_1", value: "로그인" },
-  //       { key: "1_2", value: "/api/user/login" },
-  //     ],
-  //     [
-  //       { key: "2_0", value: "POST" },
-  //       { key: "2_1", value: "프로젝트 생성" },
-  //       { key: "2_2", value: "/api/project" },
-  //     ],
-  //   ],
-  //   member: { memberId: 2, memberName: "홍길동", profileImage: "" },
-  //   createDate: "2024-04-23 09:51:13",
-  //   updateDate: "2024-04-23 09:51:13",
-  //   postTags: [
-  //     { tagId: 21, tagName: "react" },
-  //     { tagId: 52, tagName: "개발" },
-  //     { tagId: 56, tagName: "기획" },
-  //   ],
-  //   notice: false,
-  //   bookmark: true,
-  // }
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [isBookmark, setIsBookmark] = useState<boolean>(false);
 
   const params = useParams<{ id: string }>();
 
   useEffect(() => {
+    // 상세 조회
     const fetchData = async () => {
       try {
         const res = await getBookmarkList(`/my/bookmark/${params.id}`);
         console.log("res : ", res);
 
         setBoardData(res.data);
+        setIsBookmark(res.data.bookmark);
+
+        try {
+          const _res = await getComment(
+            `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`
+          );
+          console.log("comment : ", _res);
+
+          setComments(_res.data.postCommentResponseList);
+        } catch (err) {
+          console.log("err  : ", err);
+        }
       } catch (err) {
         console.log("err  : ", err);
       }
     };
-
-    /*
-    const fetchCommentData = async () => {
-      try {
-        const res = await getComment(
-          `/team/${bookmark.projectId}/1/${params.id}/`
-        );
-        console.log("res : ", res);
-
-        setComments(res.data.postCommentResponseList);
-      } catch (err) {
-        console.log("err  : ", err);
-      }
-    };
-    */
 
     fetchData();
-    //fetchCommentData();
   }, [params]);
 
   // 북마크 토글
-  const handleBookmark = useCallback(async (data: BoardType) => {
-    if (!data.bookmark) {
-      try {
-        const res = await postBookmark(`/my/bookmark/${data.postId}`);
+  const handleBookmark = useCallback(
+    async (data: BoardType) => {
+      if (!isBookmark) {
+        try {
+          const res = await postBookmark(`/my/bookmark/${data.postId}`);
 
-        console.log("bookmark add : ", res);
-        // setBoardData(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      try {
-        const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+          console.log("bookmark add : ", res);
+          setIsBookmark(!isBookmark);
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        try {
+          const res = await deleteBookmark(
+            `/my/bookmark/post?postId=${data.postId}`
+          );
+          // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
 
-        console.log("bookmark remove :", res);
-      } catch (err) {
-        console.log(err);
+          console.log("bookmark remove :", res);
+          setIsBookmark(!isBookmark);
+        } catch (err) {
+          console.log(err);
+        }
       }
-    }
-  }, []);
+    },
+    [isBookmark]
+  );
 
   return (
     <div>
@@ -168,6 +118,7 @@ const Page = () => {
             setComments={setComments}
             handleBookmark={handleBookmark}
             type={"bookmark"}
+            isBookmark={isBookmark}
           />
         </>
       )}

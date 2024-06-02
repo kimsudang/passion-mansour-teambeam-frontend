@@ -13,6 +13,7 @@ import "@/app/_styles/Board.scss";
 import Comment from "./Comment";
 import { BoardType, CommentType } from "../privatePage/bookmark/[id]/page";
 import { deletePost, postComment } from "../_api/board";
+import { getBookmarkList } from "../_api/bookmark";
 
 export default function BoardView({
   projectId,
@@ -21,6 +22,7 @@ export default function BoardView({
   setComments,
   handleBookmark,
   type,
+  isBookmark,
 }: {
   projectId: string;
   boardData: BoardType;
@@ -28,6 +30,7 @@ export default function BoardView({
   setComments: React.Dispatch<React.SetStateAction<CommentType[]>>;
   handleBookmark: (data: any) => void;
   type: string;
+  isBookmark: boolean;
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
 
@@ -39,6 +42,12 @@ export default function BoardView({
   }>();
   const memberId = localStorage.getItem("MemberId");
 
+  // contnet 파싱
+  let parseData;
+  if (boardData.postType === "table") {
+    parseData = JSON.parse(boardData.content);
+  }
+
   const handleComment = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setCommentContent(e.target.value);
@@ -49,7 +58,9 @@ export default function BoardView({
   // 게시글 수정
   const handlePostUpdate = useCallback(() => {
     if (type === "bookmark") {
-      router.push(`/privatePage/bookmark/edit/${boardData.postId}`);
+      router.push(
+        `/teamPage/${boardData.projectId}/teamBoard/${boardData.boardId}/${boardData.postId}/edit`
+      );
     } else {
       router.push(
         `/teamPage/${projectId}/teamBoard/${params.boardId}/${boardData.postId}/edit`
@@ -68,8 +79,13 @@ export default function BoardView({
         console.log(res);
 
         alert("게시글이 삭제되었습니다.");
-        if (type === "bookmark") router.push("/privatePage/bookmark");
-        else router.push(`/teamPage/${projectId}/teamBoard/${params.boardId}`);
+        if (type === "bookmark") {
+          router.push(
+            `/teamPage/${boardData.projectId}/teamBoard/${boardData.boardId}/${boardData.postId}`
+          );
+        } else {
+          router.push(`/teamPage/${projectId}/teamBoard/${params.boardId}`);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -78,23 +94,41 @@ export default function BoardView({
     }
   }, [router, params, projectId, boardData, type]);
 
+  // 코멘트 작성
   const onSubmit = useCallback(async () => {
-    try {
-      const data = {
-        content: commentContent,
-      };
+    const data = {
+      content: commentContent,
+    };
 
-      const res = await postComment(
-        `/team/${params.projectId}/${params.boardId}/${params.id}/`,
-        data
-      );
+    if (type === "bookmark") {
+      try {
+        const res = await getBookmarkList(`/my/bookmark/${params.id}`);
+        try {
+          const _res = await postComment(
+            `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`,
+            data
+          );
+          setComments((prev) => [...prev, _res.data]);
+        } catch (err) {
+          console.log(err);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        const res = await postComment(
+          `/team/${params.projectId}/${params.boardId}/${params.id}/`,
+          data
+        );
 
-      console.log("comment : ", res);
-      setComments((prev) => [...prev, res.data]);
-    } catch (err) {
-      console.log(err);
+        console.log("comment : ", res);
+        setComments((prev) => [...prev, res.data]);
+      } catch (err) {
+        console.log(err);
+      }
     }
-  }, [commentContent, params]);
+  }, [commentContent, setComments, params]);
 
   return (
     <>
@@ -114,10 +148,10 @@ export default function BoardView({
 
         <button
           type='button'
-          className={`bookmark-btn ${boardData.bookmark ? "active" : ""}`}
+          className={`bookmarkBtn ${isBookmark ? "active" : ""}`}
           onClick={() => handleBookmark(boardData)}
         >
-          {boardData.bookmark ? (
+          {isBookmark ? (
             <BookmarkIcon size={15} />
           ) : (
             <BookmarkLineIcon size={15} />
@@ -125,6 +159,7 @@ export default function BoardView({
         </button>
       </div>
       <div className='view-tags'>
+        {boardData.notice ? <span className='tag notice'>공지</span> : null}
         {boardData.postTags.map((tag) => {
           return (
             <span key={tag.tagId} className='tag'>
@@ -143,19 +178,19 @@ export default function BoardView({
           ) : null
         ) : null}
 
-        {boardData.postType === "table" && Array.isArray(boardData.content) ? (
+        {boardData.postType === "table" && Array.isArray(parseData) ? (
           <table className='viewTable'>
             <thead>
               <tr>
-                {boardData.content[0].map((cell) => (
+                {parseData[0].map((cell: { key: number; value: string }) => (
                   <th key={cell.key}>{cell.value}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {boardData.content.slice(1).map((row, rowIndex) => (
+              {parseData.slice(1).map((row: any, rowIndex: number) => (
                 <tr key={rowIndex}>
-                  {row.map((cell) => (
+                  {row.map((cell: { key: number; value: string }) => (
                     <td key={cell.key}>{cell.value}</td>
                   ))}
                 </tr>

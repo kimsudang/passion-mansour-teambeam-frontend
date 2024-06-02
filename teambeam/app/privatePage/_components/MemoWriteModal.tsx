@@ -48,7 +48,7 @@ export default function MemoWriteModal({
 
       alert("메모 생성이 완료되었습니다.");
       onCloseModal();
-      setMemoList((prev) => [...prev, res.data]);
+      setMemoList((prev) => [res.data, ...prev]);
     } catch (err) {
       console.log("err  : ", err);
     }

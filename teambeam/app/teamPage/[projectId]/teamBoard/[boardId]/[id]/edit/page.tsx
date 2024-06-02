@@ -45,8 +45,8 @@ const Page = () => {
   const [isTagsMenu, setIsTagsMenu] = useState<boolean>(false);
 
   // postType이 table일 경우 array.length로 숫자 넣기 혹은 데이터 넣기
-  const [cols, setCols] = useState<number>(3);
-  const [rows, setRows] = useState<number>(2);
+  const [cols, setCols] = useState<number>(0);
+  const [rows, setRows] = useState<number>(0);
   const [cells, setCells] = useState<CellType[][]>([]);
 
   const memberId = localStorage.getItem("MemberId");
@@ -80,14 +80,20 @@ const Page = () => {
           alert("작성자만 접근 가능합니다");
           router.back();
         } else {
+          // content 파싱
+          if (res.data.postType === "table") {
+            const contentParse = JSON.parse(res.data.content);
+            setCells(contentParse);
+            setCols(contentParse[0].length);
+            setRows(contentParse.length);
+          }
+
           setBoardData(res.data);
           setTitle(res.data.title);
           setNotice(res.data.notice ? true : false);
           setTemplate(res.data.postType === "text" ? "text" : "table");
           setInputContent(res.data.content);
           setTagSelect(res.data.postTags);
-          setCols(res.data.content.length);
-          setRows(res.data.content[0].length);
         }
       } catch (err) {
         console.log("err  : ", err);
@@ -192,7 +198,7 @@ const Page = () => {
   const onSubmit = useCallback(async () => {
     const data = {
       title,
-      content: template !== "text" ? cells : inputContent,
+      content: template !== "text" ? JSON.stringify(cells) : inputContent,
       postType: template,
       notice,
       postTagIds: tagSelect.map((tag) => tag.tagId),
