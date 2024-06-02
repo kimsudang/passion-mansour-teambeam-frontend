@@ -1,10 +1,11 @@
 "use client";
 
 import { getComment, getPostDetail } from "@/app/_api/board";
+import { deleteBookmark, postBookmark } from "@/app/_api/bookmark";
 import BoardView from "@/app/_components/BoardView";
 import Comment from "@/app/_components/Comment";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 type ContentType = {
   key: string;
@@ -111,6 +112,29 @@ const Page = () => {
     fetchCommentData();
   }, [params]);
 
+  // 북마크 토글
+  const handleBookmark = useCallback(async (data: BoardType) => {
+    if (!data.bookmark) {
+      console.log("북마크 등록");
+      try {
+        const res = await postBookmark(`/my/bookmark/${data.postId}`);
+
+        console.log("bookmark add : ", res);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      console.log("북마크 해제");
+      try {
+        const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+
+        console.log("bookmark remove :", res);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, []);
+
   return (
     <div>
       {boardData ? (
@@ -121,6 +145,8 @@ const Page = () => {
             boardData={boardData}
             comments={comments}
             setComments={setComments}
+            handleBookmark={handleBookmark}
+            type={"board"}
           />
         </>
       ) : null}

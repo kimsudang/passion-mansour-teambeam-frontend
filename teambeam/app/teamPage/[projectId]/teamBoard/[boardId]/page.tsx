@@ -2,11 +2,12 @@
 
 import BoardList from "@/app/_components/BoardList";
 import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./TeamBoard.scss";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getPostList, getPostTag, getPostTagList } from "@/app/_api/board";
+import { deleteBookmark, postBookmark } from "@/app/_api/bookmark";
 
 export type Board = {
   postId: number;
@@ -49,9 +50,10 @@ const Page = () => {
         const res = await getPostTagList(
           `/team/${params.projectId}/1/tags?${queryString}`
         );
+        const sortPostData = sortNoticeData(res.data.postResponses);
 
         console.log("tagToggle : ", res.data.postResponses);
-        setBoards(res.data.postResponses);
+        setBoards(sortPostData);
       } catch (err) {
         console.log(err);
       }
@@ -65,9 +67,10 @@ const Page = () => {
         const res = await getPostList(
           `/team/${params.projectId}/${params.boardId}/`
         );
+        const sortPostData = sortNoticeData(res.data.postResponses);
         console.log("res : ", res);
 
-        setBoards(res.data.postResponses);
+        setBoards(sortPostData);
       } catch (err) {
         console.log("err  : ", err);
       }
@@ -97,6 +100,12 @@ const Page = () => {
     }
   }, [params, activeTags, fetchTagToggleData]);
 
+  // 공지일 경우 가장 위로 보내기
+  const sortNoticeData = (data: Board[]) => {
+    return data.sort((a, b) => Number(b.notice) - Number(a.notice));
+  };
+
+  // 태그 토글 기능
   const onTagToggle = useCallback((tag: TagType) => {
     setActiveTags((prevTags: TagType[]) =>
       prevTags.map((_tag) => _tag.tagName).includes(tag.tagName)
@@ -105,9 +114,39 @@ const Page = () => {
     );
   }, []);
 
+  // All 태그 클릭 - 초기화
   const onAllToggle = useCallback(() => {
     setActiveTags([]);
   }, []);
+
+  // 북마크 토글
+  const handleBookmark = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>, data: Board) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!data.bookmark) {
+        console.log("북마크 등록");
+        try {
+          const res = await postBookmark(`/my/bookmark/${data.postId}`);
+
+          console.log("bookmark add : ", res);
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        console.log("북마크 해제");
+        try {
+          const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
+
+          console.log("bookmark remove :", res);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    },
+    []
+  );
 
   return (
     <div>
@@ -179,6 +218,7 @@ const Page = () => {
                     boardId={params.boardId}
                     board={board}
                     bookmark={null}
+                    handleBookmark={handleBookmark}
                     type={"board"}
                   />
                 );

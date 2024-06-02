@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { BackBtnIcon, BookmarkIcon } from "./Icons";
 import {
-  useParams,
-  useRouter,
-  useSelectedLayoutSegment,
-} from "next/navigation";
+  BackBtnIcon,
+  BookmarkIcon,
+  BookmarkLineIcon,
+  DeleteBtnIcon,
+  EditBtnIcon,
+} from "./Icons";
+import { useParams, useRouter } from "next/navigation";
 import "@/app/_styles/Board.scss";
 import Comment from "./Comment";
 import { BoardType, CommentType } from "../privatePage/bookmark/[id]/page";
@@ -17,16 +19,19 @@ export default function BoardView({
   boardData,
   comments,
   setComments,
+  handleBookmark,
+  type,
 }: {
   projectId: string;
   boardData: BoardType;
   comments: CommentType[];
   setComments: React.Dispatch<React.SetStateAction<CommentType[]>>;
+  handleBookmark: (data: any) => void;
+  type: string;
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
 
   const router = useRouter();
-  const segment = useSelectedLayoutSegment();
   const params = useParams<{
     projectId: string;
     boardId: string;
@@ -43,30 +48,35 @@ export default function BoardView({
 
   // 게시글 수정
   const handlePostUpdate = useCallback(() => {
-    if (segment === "bookmark")
+    if (type === "bookmark") {
       router.push(`/privatePage/bookmark/edit/${boardData.postId}`);
-    else
+    } else {
       router.push(
         `/teamPage/${projectId}/teamBoard/${params.boardId}/${boardData.postId}/edit`
       );
-  }, [router, params, segment, projectId, boardData]);
+    }
+  }, [router, params, projectId, boardData, type]);
 
   // 게시글 삭제
   const handlePostDelete = useCallback(async () => {
-    try {
-      const res = await deletePost(
-        `/team/${projectId}/${params.boardId}/${boardData.postId}`
-      );
+    if (confirm("정말 삭제하시겠습니까?")) {
+      try {
+        const res = await deletePost(
+          `/team/${projectId}/${params.boardId}/${boardData.postId}`
+        );
 
-      console.log(res);
+        console.log(res);
 
-      alert("게시글이 삭제되었습니다.");
-      if (segment === "bookmark") router.push("/privatePage/bookmark");
-      else router.push(`/teamPage/${projectId}/teamBoard/${params.boardId}`);
-    } catch (err) {
-      console.log(err);
+        alert("게시글이 삭제되었습니다.");
+        if (type === "bookmark") router.push("/privatePage/bookmark");
+        else router.push(`/teamPage/${projectId}/teamBoard/${params.boardId}`);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      return;
     }
-  }, [router, params, segment, projectId, boardData]);
+  }, [router, params, projectId, boardData, type]);
 
   const onSubmit = useCallback(async () => {
     try {
@@ -102,8 +112,16 @@ export default function BoardView({
           <span>{boardData.createDate}</span>
         </div>
 
-        <button className='bookmark-btn'>
-          <BookmarkIcon size={15} />
+        <button
+          type='button'
+          className={`bookmark-btn ${boardData.bookmark ? "active" : ""}`}
+          onClick={() => handleBookmark(boardData)}
+        >
+          {boardData.bookmark ? (
+            <BookmarkIcon size={15} />
+          ) : (
+            <BookmarkLineIcon size={15} />
+          )}
         </button>
       </div>
       <div className='view-tags'>
@@ -148,11 +166,19 @@ export default function BoardView({
 
         {memberId === String(boardData.member.memberId) && (
           <div className='editButtons'>
-            <button type='button' onClick={handlePostUpdate}>
-              수정
+            <button
+              type='button'
+              className='deleteBtn'
+              onClick={handlePostDelete}
+            >
+              <DeleteBtnIcon size={13} />
             </button>
-            <button type='button' onClick={handlePostDelete}>
-              삭제
+            <button
+              type='button'
+              className='editBtn'
+              onClick={handlePostUpdate}
+            >
+              <EditBtnIcon size={14} />
             </button>
           </div>
         )}

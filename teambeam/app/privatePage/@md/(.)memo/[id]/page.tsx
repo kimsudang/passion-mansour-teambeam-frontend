@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./MemoModal.scss";
 import { useParams, useRouter } from "next/navigation";
 import { getMemoList, deleteMemo, editMemo } from "@/app/_api/memo";
+import { DeleteBtnIcon, EditBtnIcon } from "@/app/_components/Icons";
 
 type MemoAddType = {
   memoTitle: string;
@@ -51,17 +52,21 @@ const MemoViewModal = () => {
 
   // 메모 삭제
   const handleMemoDelete = useCallback(async () => {
-    try {
-      const res = await deleteMemo(`/my/memo/${params.id}`);
+    if (confirm("정말 삭제하시겠습니까?")) {
+      try {
+        const res = await deleteMemo(`/my/memo/${params.id}`);
 
-      console.log("memo delete : ", res.data);
+        console.log("memo delete : ", res.data);
 
-      alert("삭제 되었습니다");
-      onCancelBtn();
-    } catch (err) {
-      console.log(err);
+        alert("삭제 되었습니다");
+        onCancelBtn();
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      return;
     }
-  }, []);
+  }, [params]);
 
   const handleTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,18 +111,23 @@ const MemoViewModal = () => {
               <div className='modal-header'>
                 <input
                   type='text'
+                  className='titleInput'
                   value={form.memoTitle}
                   onChange={handleTitle}
                 />
               </div>
 
               <div className='modal-body'>
-                <textarea value={form.memoContent} onChange={handleContent} />
+                <textarea
+                  className='contentInput'
+                  value={form.memoContent}
+                  onChange={handleContent}
+                />
               </div>
 
-              <div className='buttons'>
+              <div className='utilButtons'>
                 <button type='submit'>수정</button>
-                <button type='button' onClick={onCancelBtn}>
+                <button type='button' onClick={() => setIsEdit(false)}>
                   취소
                 </button>
               </div>
@@ -141,15 +151,25 @@ const MemoViewModal = () => {
                 <p>{memo.memoContent}</p>
               </div>
 
-              <div className='buttons'>
+              <div className='memoButtons'>
+                <div className='utilBtn'>
+                  <button
+                    type='button'
+                    className='deleteBtn'
+                    onClick={handleMemoDelete}
+                  >
+                    <DeleteBtnIcon size={13} />
+                  </button>
+                  <button
+                    type='button'
+                    className='editBtn'
+                    onClick={handleMemoEdit}
+                  >
+                    <EditBtnIcon size={14} />
+                  </button>
+                </div>
                 <button onClick={onCancelBtn} className='closeBtn'>
                   닫기
-                </button>
-                <button type='button' onClick={handleMemoEdit}>
-                  수정
-                </button>
-                <button type='button' onClick={handleMemoDelete}>
-                  삭제
                 </button>
               </div>
             </>

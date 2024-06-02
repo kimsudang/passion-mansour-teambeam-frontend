@@ -150,7 +150,7 @@ const Page = () => {
   const onSubmit = useCallback(async () => {
     const data = {
       title,
-      content: template !== "text" ? cells : inputContent,
+      content: template !== "text" ? JSON.stringify(cells) : inputContent,
       postType: template,
       notice,
       postTagIds: tagSelect.map((tag) => tag.tagId),
@@ -159,11 +159,14 @@ const Page = () => {
     console.log(data);
 
     try {
-      const res = await postAddPost(`/team/${params.projectId}/1/`, data);
+      const res = await postAddPost(
+        `/team/${params.projectId}/${params.boardId}/`,
+        data
+      );
       console.log("res : ", res);
 
       alert("게시글 생성이 완료되었습니다.");
-      router.push(`/teamPage/${params.projectId}/teamBoard`);
+      router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
     }
@@ -229,6 +232,7 @@ const Page = () => {
             value={title}
             onChange={handleTitle}
             placeholder='제목'
+            required
           />
 
           <div className='tagWrap'>

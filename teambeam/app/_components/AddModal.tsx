@@ -36,8 +36,6 @@ export default function AddModal({
     [form]
   );
 
-  const onCancelBtn = useCallback(() => {}, []);
-
   const onSubmit = useCallback(async () => {
     // "use server";
 
@@ -46,12 +44,13 @@ export default function AddModal({
 
     try {
       const res = await postPorject("/project", form);
-      console.log("res : ", res);
+      console.log("project data : ", res);
 
       alert("프로젝트 생성이 완료되었습니다.");
       router.push(`/teamPage/${res.data.project.projectId}/teamMain`);
     } catch (err) {
       console.log("err  : ", err);
+      alert("프로젝트 생성에 문제가 발생했습니다");
     }
   }, [form, router]);
 
