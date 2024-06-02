@@ -1,0 +1,126 @@
+@mixin input_styled {
+  width: 50%;
+  height: 50px;
+  margin-top: 5px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+@mixin button_styled_a {
+  width: 90px;
+  height: 50px;
+  margin-top: 10px;
+  margin-left: 10px;
+  border: 0px;
+  border-radius: 10px;   
+  font-size: medium;
+  font-weight: 200;
+}
+
+@mixin button_styled_b {
+  height: 50px;
+  margin-top: 10px;
+  border: 0px;
+  border-radius: 10px;   
+  font-size: medium;
+  font-weight: 200;
+}
+
+.mySettingContainer {
+  display: flex;
+  width: 100%;
+}
+
+.layoutContainer {
+  width: 100%;
+  padding: 48px 28px;
+  font-size: large;
+  font-weight: bold;
+
+  & .otherInfo {
+    display: flex;
+    margin-top: 20px;
+
+    & .profileImg {
+      width: 35%;
+      margin-right: 3%;
+    }
+
+    & .subInfo {
+      width: 70%;
+    }
+  }
+   
+  & input {
+    @include input_styled();
+  }
+
+  & .changeMail {
+    @include button_styled_a();
+    background-color: #FFC300;
+
+    &:hover {
+      background-color: #E6B411;
+      font-weight: bold;
+    }
+  }
+
+  & .warning_msg {
+    font-size: small;
+    color: #fd5f5f;
+  }
+
+  & .pageTitle {
+    margin: 10px 0px;
+  }
+
+} 
+
+.otherInfo {
+  margin-bottom: 30px;
+
+  & h2 {
+    margin-bottom: 20px;
+  }
+
+  & hr {
+    width: 70%;
+    margin: 10px 0px;
+    border: 2px solid;
+  }
+  
+}
+
+
+
+.changePassword {
+  margin-left: 35%;
+  & hr {
+    width: 70%;
+    margin: 10px 0px;
+    border: 2px solid;
+  }
+}
+
+.changePart {
+  @include button_styled_b();
+  width: 50%;
+  background-color: #FFC300;
+
+    &:hover {
+      background-color: #E6B411;
+      font-weight: bold;
+    }
+}
+
+.deleteAccount {
+  @include button_styled_b();
+  width: 15%;
+  background-color: #E0E0E0;
+  margin-left: 70%;
+  margin-top: 30px;
+
+  &:hover {
+    background-color: #DADADA;
+  }
+} 
