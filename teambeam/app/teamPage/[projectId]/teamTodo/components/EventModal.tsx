@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Participant } from "../types";
@@ -20,6 +18,10 @@ type EventModalProps = {
   title: string;
   showAssignee?: boolean;
   participants: Participant[];
+  upperStartDate?: string;
+  upperEndDate?: string;
+  middleStartDate?: string;
+  middleEndDate?: string;
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -29,6 +31,10 @@ const EventModal: React.FC<EventModalProps> = ({
   title,
   showAssignee,
   participants,
+  upperStartDate,
+  upperEndDate,
+  middleStartDate,
+  middleEndDate,
 }) => {
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -61,6 +67,32 @@ const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
+    // 날짜 검증 로직 추가
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (start > end) {
+      alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+      return;
+    }
+
+    if (upperStartDate && upperEndDate) {
+      const upperStart = new Date(upperStartDate);
+      const upperEnd = new Date(upperEndDate);
+      if (start < upperStart || end > upperEnd) {
+        alert("하위 투두는 상위 투두 기간 내에 있어야 합니다.");
+        return;
+      }
+    }
+
+    if (middleStartDate && middleEndDate) {
+      const middleStart = new Date(middleStartDate);
+      const middleEnd = new Date(middleEndDate);
+      if (start < middleStart || end > middleEnd) {
+        alert("하위 투두는 중위 투두 기간 내에 있어야 합니다.");
+        return;
+      }
+    }
+
     const event = {
       title: eventTitle,
       startDate,
@@ -86,8 +118,12 @@ const EventModal: React.FC<EventModalProps> = ({
       <div className="modal">
         <div className="modalContent">
           <div className="modalButtons">
-            <button className="saveButton" onClick={handleSubmit}>저장</button>
-            <button className="cancelButton" onClick={onClose}>닫기</button>
+            <button className="saveButton" onClick={handleSubmit}>
+              저장
+            </button>
+            <button className="cancelButton" onClick={onClose}>
+              닫기
+            </button>
           </div>
           <input
             className="eventTitle"

@@ -22,10 +22,10 @@ const TeamTodo: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [showAssignee, setShowAssignee] = useState(false);
-  const [currentUpperTodoId, setCurrentUpperTodoId] = useState<string | null>(
+  const [currentUpperTodo, setCurrentUpperTodo] = useState<TodoList | null>(
     null
   );
-  const [currentMiddleTodoId, setCurrentMiddleTodoId] = useState<string | null>(
+  const [currentMiddleTodo, setCurrentMiddleTodo] = useState<TodoItem | null>(
     null
   );
   const [token, setToken] = useState(""); // 실제 토큰 값 설정
@@ -69,15 +69,23 @@ const TeamTodo: React.FC = () => {
     );
     setModalTitle(type);
     if (type === "하위 투두 추가 모달") {
-      setCurrentUpperTodoId(upperTodoId);
-      setCurrentMiddleTodoId(middleTodoId);
-      console.log("Setting Current Middle Todo ID:", middleTodoId); // 디버깅 로그 추가
+      const upperTodo = todoLists.find(
+        (todo) => todo.topTodoId === upperTodoId
+      );
+      const middleTodo = upperTodo?.middleTodos.find(
+        (todo) => todo.middleTodoId === middleTodoId
+      );
+      setCurrentUpperTodo(upperTodo || null);
+      setCurrentMiddleTodo(middleTodo || null);
     } else if (type === "중위 투두 추가 모달") {
-      setCurrentUpperTodoId(upperTodoId);
-      setCurrentMiddleTodoId(null);
+      const upperTodo = todoLists.find(
+        (todo) => todo.topTodoId === upperTodoId
+      );
+      setCurrentUpperTodo(upperTodo || null);
+      setCurrentMiddleTodo(null);
     } else {
-      setCurrentUpperTodoId(null);
-      setCurrentMiddleTodoId(null);
+      setCurrentUpperTodo(null);
+      setCurrentMiddleTodo(null);
     }
     setShowAssignee(type === "하위 투두 추가 모달");
     setIsModalOpen(true);
@@ -99,8 +107,8 @@ const TeamTodo: React.FC = () => {
   ) => {
     try {
       console.log("handleEventSave called with:", type, event);
-      console.log("Current Upper Todo ID:", currentUpperTodoId);
-      console.log("Current Middle Todo ID:", currentMiddleTodoId);
+      console.log("Current Upper Todo ID:", currentUpperTodo);
+      console.log("Current Middle Todo ID:", currentMiddleTodo);
       if (type === "상위 투두 추가 모달") {
         const upperTodo = {
           title: event.title,
@@ -119,9 +127,9 @@ const TeamTodo: React.FC = () => {
           middleTodos: [],
         };
         setTodoLists([...todoLists, newUpperTodo]);
-      } else if (type === "중위 투두 추가 모달" && currentUpperTodoId) {
+      } else if (type === "중위 투두 추가 모달" && currentUpperTodo) {
         const middleTodo = {
-          topTodoId: currentUpperTodoId,
+          topTodoId: currentUpperTodo.topTodoId,
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
@@ -131,7 +139,7 @@ const TeamTodo: React.FC = () => {
         console.log("Middle Todo added:", response);
         setTodoLists((prevTodoLists) =>
           prevTodoLists.map((todoList) =>
-            todoList.topTodoId === currentUpperTodoId
+            todoList.topTodoId === currentUpperTodo.topTodoId
               ? {
                   ...todoList,
                   middleTodos: [
@@ -149,8 +157,8 @@ const TeamTodo: React.FC = () => {
         );
       } else if (
         type === "하위 투두 추가 모달" &&
-        currentUpperTodoId &&
-        currentMiddleTodoId
+        currentUpperTodo &&
+        currentMiddleTodo
       ) {
         if (!event.assignees || event.assignees.length === 0) {
           throw new Error("Assignee must be selected");
@@ -163,15 +171,15 @@ const TeamTodo: React.FC = () => {
           endDate: event.endDate,
           status: true,
           assignees: event.assignees.map(String),
-          middleTodoId: currentMiddleTodoId,
-          topTodoId: currentUpperTodoId,
+          middleTodoId: currentMiddleTodo.middleTodoId,
+          topTodoId: currentUpperTodo.topTodoId,
           memo: event.memo ?? "",
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo);
 
         const response = await addLowerTodo("1", {
-          middleTodoId: currentMiddleTodoId,
+          middleTodoId: currentMiddleTodo.middleTodoId || "", // Provide a default value if undefined
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
@@ -181,11 +189,11 @@ const TeamTodo: React.FC = () => {
 
         setTodoLists((prevTodoLists) =>
           prevTodoLists.map((todoList) =>
-            todoList.topTodoId === currentUpperTodoId
+            todoList.topTodoId === currentUpperTodo.topTodoId
               ? {
                   ...todoList,
                   middleTodos: todoList.middleTodos.map((middleTodo) =>
-                    middleTodo.middleTodoId === currentMiddleTodoId
+                    middleTodo.middleTodoId === currentMiddleTodo.middleTodoId
                       ? {
                           ...middleTodo,
                           bottomTodos: [
@@ -343,6 +351,10 @@ const TeamTodo: React.FC = () => {
         title={modalTitle}
         showAssignee={showAssignee}
         participants={participants}
+        upperStartDate={currentUpperTodo?.startDate || ""}
+        upperEndDate={currentUpperTodo?.endDate || ""}
+        middleStartDate={currentMiddleTodo?.startDate || ""}
+        middleEndDate={currentMiddleTodo?.endDate || ""}
       />
     </div>
   );
