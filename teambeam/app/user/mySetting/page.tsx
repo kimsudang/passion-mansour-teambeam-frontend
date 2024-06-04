@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import "./layout.scss";
 
-interface MemberInfo {
+interface Member {
   memberId: number;
   memberName: string;
   mail: string;
@@ -16,7 +16,14 @@ interface MemberInfo {
 
 const PrivateSetting = () => {
   const router = useRouter();
-  const [memberInfo, setMemberInfo] = useState<MemberInfo | null>(null);
+  const [memberInfo, setMemberInfo] = useState<Member>({
+    memberId: 0,
+    memberName: "",
+    mail: "",
+    startPage: "",
+    notificationCount: 0,
+    profileImage: ""
+  });
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,14 +41,12 @@ const PrivateSetting = () => {
       'RefreshToken': `${refreshToken}`
     };
 
-    console.log(accessToken);
-
     // 회원 정보를 가져오는 비동기 함수
     const fetchMemberInfo = async () => {
       try {
         // 회원 정보를 API로부터 가져옴
         const response = await axios.get("http://34.22.108.250:8080/api/member", { headers });
-        setMemberInfo(response.data);
+        setMemberInfo(response.data.member);
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching member info:", error);  // 에러가 발생하면 콘솔에 출력
@@ -106,15 +111,15 @@ const PrivateSetting = () => {
 
         // 회원 정보를 수정하는 API 호출
         const response = await axios.patch("http://34.22.108.250:8080/api/member", {
-          memberName: memberInfo?.memberName || "", // 현재 값을 유지
+          memberName: memberInfo.memberName, // 현재 값을 유지
           mail, 
-          profileImage: memberInfo?.profileImage || "",// 현재 값을 유지
-          startPage: memberInfo?.startPage || "MY_PAGE"  // 현재 값을 유지
+          profileImage: memberInfo.profileImage,// 현재 값을 유지
+          startPage: memberInfo.startPage || "MY_PAGE"  // 현재 값을 유지
         }, { headers });
 
         if (response.status === 200) {
           alert("회원 정보가 성공적으로 수정되었습니다.");
-          setMemberInfo(response.data.updatedMember);  // 응답 받은 수정된 회원 정보를 상태에 저장
+          setMemberInfo(response.data.updatedMember);
         }
       } catch (error) {
         console.error("회원 정보 수정 중 오류 발생:", error);
@@ -182,10 +187,7 @@ const PrivateSetting = () => {
       alert("회원 탙퇴에 실패했습니다.");
       console.error("Error:", error);
     }
-  };
-
-  // // 회원 정보가 로딩 중일 때 로딩 메시지 표시
-  if (!memberInfo) return <div>Loading...</div>;
+  }
 
   return (
     <div className='mySettingContainer'>
@@ -198,14 +200,14 @@ const PrivateSetting = () => {
             <p>이미지</p>
           </div>
           <div className="subInfo">
-            <span>이름 : </span>
-            <span>{memberInfo?.memberName}</span>
+            <span className="name">이름 : </span>
+            <span>{memberInfo.memberName}</span>
             <hr />
             <form className="mailArea">
             <p className="pageTitle">메일 주소 수정</p>
               <div>
                 <span>메일 주소: </span>
-                <span>{memberInfo?.mail}</span>
+                <span>{memberInfo.mail}</span>
                 <div>
                 <label htmlFor="mail"></label>
                   <input 

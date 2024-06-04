@@ -10,7 +10,7 @@ import "./layout.scss";
 const SettingPassword = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string>("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -40,15 +40,16 @@ const SettingPassword = () => {
     }
 
     try {
-      const response = await axios.post("http://34.22.108.250:8080/api/reset-password", {
-        token, // URL에서 추출한 토큰을 함께 전송
+      axios.post("http://34.22.108.250:8080/api/reset-password", {
+        token,
         newPassword,
       });
       setMessage("비밀번호가 성공적으로 변경되었습니다.");
+      console.log(token);
       alert("비밀번호가 수정되었습니다.");
       router.push("/user/login");
-    } catch (error: any) {
-      setMessage(error.response?.data?.message || "비밀번호가 변경되지 않았습니다.");
+    } catch (error) {
+      console.log(token);
       console.error("Error:", error);
     }
   };
