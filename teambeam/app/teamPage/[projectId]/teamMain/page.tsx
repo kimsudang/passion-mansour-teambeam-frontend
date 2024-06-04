@@ -69,11 +69,13 @@ const FullCalendarComponent = dynamic(
 
 
 const TeamPage: React.FC = () => {
+  // 프로젝트 정보 & 공지사항
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     projectName: "",
     description: "",
   }); 
   const [notices, setNotices] = useState<Notice[]>([]);
+  // 캘린더
   const [events, setEvents] = useState<any[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
