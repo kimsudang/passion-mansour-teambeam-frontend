@@ -28,7 +28,7 @@
 
 .mySettingContainer {
   display: flex;
-  width: 100%;
+  width: 100vw;
 }
 
 .layoutContainer {
@@ -41,8 +41,8 @@
     display: flex;
     margin-top: 20px;
 
-    & .profileImg {
-      width: 35%;
+    & .profileImgArea {
+      width: 40%;
       margin-right: 3%;
     }
 
@@ -91,15 +91,24 @@
   
 }
 
+.mailArea {
+  padding: 10px;
+}
 
 
 .changePassword {
-  margin-left: 35%;
+  margin-left: 38%;
+  padding: 10px;
+
   & hr {
     width: 70%;
     margin: 10px 0px;
     border: 2px solid;
   }
+  & .passwordArea {
+    padding: 10px;
+  }
+
 }
 
 .changePart {
