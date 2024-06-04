@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import UpperTodoList from "./components/UpperTodoList";
 import EventModal from "./components/EventModal";
 import { TodoList, Participant, TodoItem } from "./types";
@@ -17,6 +18,11 @@ import {
 import { fetchParticipants } from "@/app/_api/calendar";
 
 const TeamTodo: React.FC = () => {
+  const params = useParams();
+  const projectId = Array.isArray(params.projectId)
+    ? params.projectId[0]
+    : params.projectId;
+
   const [todoLists, setTodoLists] = useState<TodoList[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,9 +40,11 @@ const TeamTodo: React.FC = () => {
   useEffect(() => {
     const loadTodos = async () => {
       try {
-        const todos = await fetchTodos("1");
-        console.log("Loaded Todos:", todos);
-        setTodoLists(todos);
+        if (projectId) {
+          const todos = await fetchTodos(projectId);
+          console.log("Loaded Todos:", todos);
+          setTodoLists(todos);
+        }
       } catch (error) {
         console.error("Error fetching todos:", error);
       }
@@ -44,9 +52,11 @@ const TeamTodo: React.FC = () => {
 
     const loadParticipants = async () => {
       try {
-        const participants = await fetchParticipants("1");
-        console.log("Loaded Participants:", participants);
-        setParticipants(participants);
+        if (projectId) {
+          const participants = await fetchParticipants(projectId);
+          console.log("Loaded Participants:", participants);
+          setParticipants(participants);
+        }
       } catch (error) {
         console.error("Error fetching participants:", error);
       }
@@ -54,7 +64,7 @@ const TeamTodo: React.FC = () => {
 
     loadTodos();
     loadParticipants();
-  }, [token, refreshToken]);
+  }, [token, refreshToken, projectId]);
 
   const handleAddButtonClick = (
     type: string,
@@ -109,14 +119,14 @@ const TeamTodo: React.FC = () => {
       console.log("handleEventSave called with:", type, event);
       console.log("Current Upper Todo ID:", currentUpperTodo);
       console.log("Current Middle Todo ID:", currentMiddleTodo);
-      if (type === "상위 투두 추가 모달") {
+      if (type === "상위 투두 추가 모달" && projectId) {
         const upperTodo = {
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
         };
 
-        const response = await addUpperTodo("1", upperTodo);
+        const response = await addUpperTodo(projectId, upperTodo);
         console.log("Upper Todo added:", response);
         const newUpperTodo: TodoList = {
           topTodoId: response.topTodoId,
@@ -127,7 +137,11 @@ const TeamTodo: React.FC = () => {
           middleTodos: [],
         };
         setTodoLists([...todoLists, newUpperTodo]);
-      } else if (type === "중위 투두 추가 모달" && currentUpperTodo) {
+      } else if (
+        type === "중위 투두 추가 모달" &&
+        currentUpperTodo &&
+        projectId
+      ) {
         const middleTodo = {
           topTodoId: currentUpperTodo.topTodoId,
           title: event.title,
@@ -135,7 +149,7 @@ const TeamTodo: React.FC = () => {
           endDate: event.endDate,
         };
 
-        const response = await addMiddleTodo("1", middleTodo);
+        const response = await addMiddleTodo(projectId, middleTodo);
         console.log("Middle Todo added:", response);
         setTodoLists((prevTodoLists) =>
           prevTodoLists.map((todoList) =>
@@ -158,7 +172,8 @@ const TeamTodo: React.FC = () => {
       } else if (
         type === "하위 투두 추가 모달" &&
         currentUpperTodo &&
-        currentMiddleTodo
+        currentMiddleTodo &&
+        projectId
       ) {
         if (!event.assignees || event.assignees.length === 0) {
           throw new Error("Assignee must be selected");
@@ -178,7 +193,7 @@ const TeamTodo: React.FC = () => {
 
         console.log("Lower Todo Before Sending:", lowerTodo);
 
-        const response = await addLowerTodo("1", {
+        const response = await addLowerTodo(projectId, {
           middleTodoId: currentMiddleTodo.middleTodoId || "", // Provide a default value if undefined
           title: event.title,
           startDate: event.startDate,
@@ -224,23 +239,25 @@ const TeamTodo: React.FC = () => {
     }
 
     try {
-      const response = await deleteUpperTodo("1", id);
-      if (response.status === "200") {
-        setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
-        // 성공 메시지 표시
-        toast.success("목표가 성공적으로 삭제되었습니다.", {
-          autoClose: 10000,
-        });
-        // 일정 시간이 지나고 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 10000); // 10초 후에 새로고침
-      } else {
-        console.error("Failed to delete upper todo");
-        // 실패 메시지 표시
-        toast.error("목표 삭제 중 오류가 발생했습니다.", {
-          autoClose: 10000,
-        });
+      if (projectId) {
+        const response = await deleteUpperTodo(projectId, id);
+        if (response.status === "200") {
+          setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
+          // 성공 메시지 표시
+          toast.success("목표가 성공적으로 삭제되었습니다.", {
+            autoClose: 10000,
+          });
+          // 일정 시간이 지나고 새로고침
+          setTimeout(() => {
+            window.location.reload();
+          }, 10000); // 10초 후에 새로고침
+        } else {
+          console.error("Failed to delete upper todo");
+          // 실패 메시지 표시
+          toast.error("목표 삭제 중 오류가 발생했습니다.", {
+            autoClose: 10000,
+          });
+        }
       }
     } catch (error: any) {
       console.error("Error deleting upper todo:", error);

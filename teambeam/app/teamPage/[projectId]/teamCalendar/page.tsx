@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import EventModal from "./components/EventModal";
 import "./styles/TeamCalendar.scss";
@@ -36,6 +37,11 @@ const TeamCalendar: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  const params = useParams();
+  const projectId = Array.isArray(params.projectId)
+    ? params.projectId[0]
+    : params.projectId;
+
   const fetchEvents = useCallback(
     async (projectId: string, year: number, month: number) => {
       try {
@@ -65,10 +71,19 @@ const TeamCalendar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const projectId = "1";
-    fetchEvents(projectId, year, month);
-    fetchParticipantsList(projectId);
-  }, [year, month, token, refreshToken, fetchEvents, fetchParticipantsList]);
+    if (projectId) {
+      fetchEvents(projectId, year, month);
+      fetchParticipantsList(projectId);
+    }
+  }, [
+    year,
+    month,
+    token,
+    refreshToken,
+    fetchEvents,
+    fetchParticipantsList,
+    projectId,
+  ]);
 
   const fetchEventDetail = async (projectId: string, scheduleId: string) => {
     try {
@@ -112,7 +127,7 @@ const TeamCalendar: React.FC = () => {
 
   const handleEventSave = async (event: any) => {
     try {
-      const projectId = "1";
+      if (!projectId) return; // projectId가 없으면 return
       const savedEvent = await addCalendarEvent(projectId, {
         ...event,
         memberId: event.assignees.map(
@@ -132,7 +147,7 @@ const TeamCalendar: React.FC = () => {
 
   const handleEventDelete = async (scheduleId: number) => {
     try {
-      const projectId = "1"; // 실제 프로젝트 ID 사용
+      if (!projectId) return; // projectId가 없으면 return
       const response = await deleteCalendarEvent(
         projectId,
         scheduleId,
@@ -160,7 +175,7 @@ const TeamCalendar: React.FC = () => {
   };
 
   const handleEventClick = (clickInfo: any) => {
-    const projectId = "1"; // 실제 프로젝트 ID 사용
+    if (!projectId) return; // projectId가 없으면 return
     console.log("Clicked event info:", clickInfo);
     console.log("Event details:", clickInfo.event);
     console.log("Extended Props:", clickInfo.event.extendedProps);

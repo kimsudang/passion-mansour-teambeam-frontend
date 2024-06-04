@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
+import { searchPlace } from "@/app/_api/calendar";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -44,6 +45,8 @@ const EventModal: React.FC<EventModalProps> = ({
   const [assignees, setAssignees] = useState<{ id: number; name: string }[]>(
     initialEvent?.assignees || []
   );
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -53,6 +56,8 @@ const EventModal: React.FC<EventModalProps> = ({
       setContent(initialEvent?.content || "");
       setLink(initialEvent?.link || "");
       setAssignees(initialEvent?.assignees || []);
+      setSearchKeyword("");
+      setSearchResults([]);
     }
   }, [isOpen, initialEvent]);
 
@@ -62,6 +67,16 @@ const EventModal: React.FC<EventModalProps> = ({
       name: option.label,
     }));
     setAssignees(assignees);
+  };
+
+  const handleSearchPlace = async () => {
+    const results = await searchPlace(searchKeyword);
+    setSearchResults(results);
+  };
+
+  const handleSelectPlace = (place: any) => {
+    setLocation(place.place_name);
+    setLink(`https://map.kakao.com/link/map/${place.id}`);
   };
 
   const handleSubmit = () => {
@@ -155,11 +170,24 @@ const EventModal: React.FC<EventModalProps> = ({
             <input
               type="text"
               placeholder="장소를 입력하세요."
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
               readOnly={readonly}
-              required
             />
+            <button
+              type="button"
+              onClick={handleSearchPlace}
+              disabled={readonly}
+            >
+              검색
+            </button>
+            <ul>
+              {searchResults.map((place) => (
+                <li key={place.id} onClick={() => handleSelectPlace(place)}>
+                  {place.place_name}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="inputGroup">
             <label>링크</label>

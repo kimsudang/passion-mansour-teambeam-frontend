@@ -238,3 +238,26 @@ export const deleteCalendarEvent = async (
     throw error;
   }
 };
+
+//카카오 지도 API
+const KAKAO_API_KEY = process.env.NEXT_PUBLIC_KAKAO_API_KEY;
+
+export const searchPlace = async (keyword: string) => {
+  try {
+    const response = await axios.get(
+      "https://dapi.kakao.com/v2/local/search/keyword.json",
+      {
+        params: {
+          query: keyword,
+        },
+        headers: {
+          Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+        },
+      }
+    );
+    return response.data.documents;
+  } catch (error) {
+    console.error("Error fetching place:", error);
+    return [];
+  }
+};
