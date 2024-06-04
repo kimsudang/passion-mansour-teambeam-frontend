@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import axios from 'axios';
 import "./layout.scss";
-import InviteMemberModal from "./_components/InviteMemberModal";
+// import InviteMemberModal from "./_components/InviteMemberModal";
 
 interface ProjectInfo {
   projectName: string;
@@ -20,9 +21,9 @@ interface MemberInfo {
 }
 
 // 프로젝트 정보 API 호출 함수
-const fetchProjectInfo = async (token: string | null, refreshToken: string | null) => {
+const fetchProjectInfo = async (projectId: string, token: string | null, refreshToken: string | null) => {
   try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/5/setting`, {
+    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/setting`, {
       headers: {
         Authorization: token,
         RefreshToken: refreshToken,
@@ -37,9 +38,9 @@ const fetchProjectInfo = async (token: string | null, refreshToken: string | nul
 };
 
 // 멤버 정보 API 호출 함수
-const fetchMembersInfo = async (projectId: number, token: string | null, refreshToken: string | null) => {
+const fetchMembersInfo = async (projectId: string, token: string | null, refreshToken: string | null) => {
   try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/5/joinMember`, {
+    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/joinMember`, {
       headers: {
         Authorization: token,   
         RefreshToken: refreshToken,  
@@ -54,6 +55,7 @@ const fetchMembersInfo = async (projectId: number, token: string | null, refresh
 };
 
 const TeamSetting: React.FC = () => {
+  const { projectId } = useParams<{ projectId: string }>();
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     projectName: '',
     description: '',
@@ -69,7 +71,7 @@ const TeamSetting: React.FC = () => {
 
     // 프로젝트 정보 가져오기
     const getProjectData = async () => {
-      const projectData = await fetchProjectInfo(token, refreshToken);
+      const projectData = await fetchProjectInfo(projectId, token, refreshToken);
       if (projectData) {
         setProjectInfo({
           projectName: projectData.projectName, 
@@ -78,7 +80,7 @@ const TeamSetting: React.FC = () => {
         });
 
         // 멤버 정보 가져오기
-        const membersData = await fetchMembersInfo(projectData.projectId, token, refreshToken);
+        const membersData = await fetchMembersInfo(projectId, token, refreshToken);
         setMembers(membersData);
 
         const currentUserEmail = membersData.mail; 
@@ -88,7 +90,7 @@ const TeamSetting: React.FC = () => {
     };
 
     getProjectData();
-  }, []);
+  }, [projectId]);
 
   return (
     <div className="projectSettingContaine">

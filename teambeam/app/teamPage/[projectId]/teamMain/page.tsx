@@ -1,10 +1,20 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import axios from 'axios';
 import Link from 'next/link';
 import "./layout.scss";
+import {
+  fetchCalendarEvents,
+  fetchParticipants,
+  fetchEventDetails,
+  addCalendarEvent,
+  deleteCalendarEvent,
+} from "@/app/_api/calendar";
+import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
+
 
 interface ProjectInfo {
   projectName: string;
@@ -17,43 +27,37 @@ interface Notice {
   createDate: string;
 }
 
-import {
-  fetchCalendarEvents,
-  fetchParticipants,
-  fetchEventDetails,
-  addCalendarEvent,
-  deleteCalendarEvent,
-} from "@/app/_api/calendar";
-import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
+
 
 // 프로젝트 정보 API 호출 함수
-const fetchProjectInfo = async (token: string | null, refreshToken: string | null): Promise<ProjectInfo | null> => {
+const fetchProjectInfo = async (projectId: string, token: string | null, refreshToken: string | null): Promise<ProjectInfo | null> => {
+  
   try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/5/setting`, {
+    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/setting`, {
       headers: {
-        Authorization: token ?? "",
-        RefreshToken: refreshToken ?? "",
+        Authorization: token,
+        RefreshToken: refreshToken,
       },
     });
     return response.data.project;
   } catch (error) {
-    alert("프로젝트 정보를 확인할 수 없습니다.");
+    // alert("프로젝트 정보를 확인할 수 없습니다.");
     console.error("Error fetching project info:", error);
     return null;
   }
 };
 
 // 공지사항 API 호출 함수
-const fetchNotices = async (token: string | null): Promise<Notice[] | null> => {
+const fetchNotices = async (projectId: string, token: string | null): Promise<Notice[] | null> => {
   try {
-    const response = await axios.get('http://34.22.108.250:8080/api/team/5/notice', {
+    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/notice`, {
       headers: {
-        Authorization: token ?? '',
+        Authorization: token,
       },
     });
     return response.data.postResponses;
   } catch (error) {
-    alert('공지사항을 확인할 수 없습니다.');
+    // alert('공지사항을 확인할 수 없습니다.');
     console.error('Error fetching notices:', error);
     return null;
   }
@@ -68,7 +72,8 @@ const FullCalendarComponent = dynamic(
 );
 
 
-const TeamPage: React.FC = () => {
+const TeamPage: React.FC = () => { 
+  const { projectId } = useParams<{ projectId: string }>();
   // 프로젝트 정보 & 공지사항
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     projectName: "",
@@ -80,13 +85,8 @@ const TeamPage: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [token, setToken] = useState(
-    localStorage.getItem("Authorization") || ""
-  );
-  const [refreshToken, setRefreshToken] = useState(
-    localStorage.getItem("RefreshToken") || ""
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const token = localStorage.getItem("Authorization") || "";
+  const refreshToken = localStorage.getItem("RefreshToken") || "";
 
   const fetchEvents = useCallback(
     async (projectId: string, year: number, month: number) => {
@@ -120,16 +120,19 @@ const TeamPage: React.FC = () => {
     const token = localStorage.getItem('Authorization');
     const refreshToken = localStorage.getItem('RefreshToken');
 
-    // 프로젝트 정보 가져오기
+    // 프로젝트 데이터를 불러오는 함수
     const getProjectData = async () => {
-      const projectData = await fetchProjectInfo(token, refreshToken);
-      if (projectData) {
-        setProjectInfo(projectData);
+      if (projectId) {
+        const projectData = await fetchProjectInfo(projectId, token, refreshToken);
+        if (projectData) {
+          setProjectInfo(projectData);
+        }
       }
     };
 
+    // 공지사항 가져오기
     const getNotices = async () => {
-      const noticesData = await fetchNotices(token);
+      const noticesData = await fetchNotices(projectId, token);
       if (noticesData) {
         setNotices(noticesData);
       }
@@ -137,10 +140,11 @@ const TeamPage: React.FC = () => {
 
     getProjectData();
     getNotices();
-  }, [year, month, token, refreshToken, fetchEvents, fetchParticipantsList]);
+    fetchEvents(projectId, year, month);
+    fetchParticipantsList(projectId);
+  }, [year, month, token, refreshToken, fetchEvents, fetchParticipantsList, projectId]);
 
   const handleEventClick = (clickInfo: any) => {
-    const projectId = "1"; // 실제 프로젝트 ID 사용
     console.log("Clicked event info:", clickInfo);
     console.log("Event details:", clickInfo.event);
     console.log("Extended Props:", clickInfo.event.extendedProps);
@@ -159,27 +163,29 @@ const TeamPage: React.FC = () => {
   return (
     <div className="teamDashContainer">
       <div className="title">
-        <p>{projectInfo.projectName}</p>
+        <h1>{projectInfo.projectName}</h1>
       </div>
       <div className="description">
-        <p>프로젝트 설명</p>
+        <p className="subTitle">프로젝트 설명</p>
         <p>{projectInfo.description}</p>
       </div>
       <div className="notices">
-        <p>공지사항</p>
+        <p  className="subTitle">공지사항</p>
         <ul>
           {notices.map(notice => (
             <li key={notice.postId}>
-              <Link className="link" href={`/teamPage/5/teamBoard/5/${notice.postId}`}>
-                <p>{notice.title}</p>
-                <p>{notice.createDate}</p>
+              <Link className="link" href={`/teamPage/${projectId}/teamBoard/${projectId}/${notice.postId}`}>
+                <div className="noticeBox">
+                  <p>{notice.title}</p>
+                  <p>{notice.createDate}</p>
+                </div>
               </Link>
             </li>
           ))}
         </ul>
       </div>
       <div className="calendar">
-        <Link className="link" href={`/teamPage/5/teamCalendar`}>
+        <Link className="link" href={`/teamPage/${projectId}/teamCalendar`}>
           <FullCalendarComponent events={events} eventClick={handleEventClick} />
         </Link>
       </div>
