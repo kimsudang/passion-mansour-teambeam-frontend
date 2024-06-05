@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import "./layout.scss";
 import useForm from "../../_hooks/useForm";
-import ForgotPasswordModal from "./_components/ForgotPasswordModal";
+import ForgotPasswordModal from "../_components/ForgotPasswordModal";
 
 interface ILoginForm {
   mail: string;
@@ -18,6 +18,7 @@ const Login: React.FC = () => {
   const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
   const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
 
+  // 이메일 로그인
   const { values, errors, isLoading, handleChange, handleSubmit } =
     useForm<ILoginForm>({
       initialValues: { mail: "", password: "" },
@@ -28,8 +29,6 @@ const Login: React.FC = () => {
           // 헤더에서 토큰 추출
           const authorizationToken = response?.headers['authorization'];
           const refreshToken = response?.headers['refreshtoken'];
-          console.log("authorizationToken : ", authorizationToken);
-          console.log("refreshToken : ", refreshToken);
 
           // 본문에서 데이터 추출
           const { message, memberId } = response.data;
@@ -67,6 +66,9 @@ const Login: React.FC = () => {
       },
     }
   );
+
+  // 카카오 로그인
+  
 
   // 비밀번호 변경 모달 
   const [isModalOpen, setIsModalOpen] = useState(false);
