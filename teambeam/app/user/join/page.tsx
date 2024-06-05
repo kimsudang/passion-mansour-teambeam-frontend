@@ -20,8 +20,7 @@ const Join: React.FC = () => {
   const router = useRouter();
   const params = useSearchParams();
   const token = params.get("token"); // 라우터에서 토큰을 가져옵니다.
-
-  // 새로운 랜덤 코드를 생성하고 상태에 저장
+  
   const handleSendCode = async () => {
     try {
       // axios를 사용하여 백엔드로 이메일과 코드를 전송
