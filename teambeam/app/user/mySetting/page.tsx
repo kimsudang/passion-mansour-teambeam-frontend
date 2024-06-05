@@ -41,20 +41,19 @@ const PrivateSetting = () => {
       'RefreshToken': `${refreshToken}`
     };
 
-    // 회원 정보를 가져오는 비동기 함수
+    // 회원 정보를 가져오는 함수
     const fetchMemberInfo = async () => {
       try {
-        // 회원 정보를 API로부터 가져옴
         const response = await axios.get("http://34.22.108.250:8080/api/member", { headers });
         setMemberInfo(response.data.member);
         console.log(response.data);
       } catch (error) {
-        console.error("Error fetching member info:", error);  // 에러가 발생하면 콘솔에 출력
+        console.error("Error fetching member info:", error);
         alert("회원 정보를 불러오는 중 오류가 발생했습니다.");
       }
     };
 
-    fetchMemberInfo();  // 컴포넌트가 마운트될 때 회원 정보를 가져오는 함수 호출
+    fetchMemberInfo();
   }, []);
 
   // 메일 변경 메일 전송
@@ -118,8 +117,9 @@ const PrivateSetting = () => {
         }, { headers });
 
         if (response.status === 200) {
-          alert("회원 정보가 성공적으로 수정되었습니다.");
           setMemberInfo(response.data.updatedMember);
+          alert("회원 정보가 성공적으로 수정되었습니다.");
+          window.location.reload();
         }
       } catch (error) {
         console.error("회원 정보 수정 중 오류 발생:", error);
