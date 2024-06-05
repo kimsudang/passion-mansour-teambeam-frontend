@@ -116,7 +116,12 @@ const PrivateSetting = () => {
           startPage: memberInfo.startPage || "MY_PAGE"  // 현재 값을 유지
         }, { headers });
 
-        if (response.status === 200) {
+        const newAuthorizationToken = response?.headers['authorization'];
+        const newRefreshToken = response?.headers['refreshtoken'];
+
+        if (response.status === 200 && newAuthorizationToken && newRefreshToken) {
+          localStorage.setItem("Authorization", newAuthorizationToken);
+            localStorage.setItem("RefreshToken", newRefreshToken);
           setMemberInfo(response.data.updatedMember);
           alert("회원 정보가 성공적으로 수정되었습니다.");
           window.location.reload();
