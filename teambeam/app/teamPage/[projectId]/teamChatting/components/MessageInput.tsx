@@ -16,8 +16,10 @@ const MessageInput: React.FC<{ onSubmit: (content: string) => void }> = ({
   };
 
   const handleSubmit = () => {
-    onSubmit(editorContent);
-    setEditorContent("");
+    if (editorContent.trim()) {
+      onSubmit(editorContent);
+      setEditorContent("");
+    }
   };
 
   return (
@@ -26,9 +28,10 @@ const MessageInput: React.FC<{ onSubmit: (content: string) => void }> = ({
         value={editorContent}
         onChange={handleEditorChange}
         className="quillEditor"
+        placeholder="댓글을 입력하세요"
       />
       <button onClick={handleSubmit} className="submitButton">
-        전송
+        등록
       </button>
     </div>
   );
