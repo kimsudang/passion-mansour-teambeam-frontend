@@ -16,6 +16,24 @@ const getToken = () => {
   return token;
 };
 
+// 로컬 스토리지에서 사용자 이름을 가져오는 함수
+const getUsername = () => {
+  const username = localStorage.getItem("Username");
+  if (!username) {
+    throw new Error("Username is missing");
+  }
+  return username;
+};
+
+// 로컬 스토리지에서 프로필 이미지를 가져오는 함수
+const getProfilePicture = () => {
+  const profilePicture = localStorage.getItem("ProfilePicture");
+  if (!profilePicture) {
+    throw new Error("Profile picture is missing");
+  }
+  return profilePicture;
+};
+
 type Comment = {
   id: string;
   text: string;
@@ -161,6 +179,8 @@ const ChatList: React.FC = () => {
     if (activeMessage && socketRef.current && projectId) {
       try {
         const token = getToken();
+        const username = getUsername();
+        const profilePicture = getProfilePicture();
         const newComment = {
           token,
           projectId: Number(projectId),
@@ -180,8 +200,8 @@ const ChatList: React.FC = () => {
               {
                 id: `${msg.id}-${(msg.comments?.length || 0) + 1}`,
                 text: content,
-                profilePicture: "https://via.placeholder.com/40",
-                username: "현재 사용자", // 현재 사용자의 이름으로 대체
+                profilePicture,
+                username,
                 timestamp: new Date().toISOString(),
               },
             ];
@@ -204,6 +224,8 @@ const ChatList: React.FC = () => {
     if (socketRef.current && projectId) {
       try {
         const token = getToken();
+        const username = getUsername();
+        const profilePicture = getProfilePicture();
         const newMessage = {
           token,
           projectId: Number(projectId),
