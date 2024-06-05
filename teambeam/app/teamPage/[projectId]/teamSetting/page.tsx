@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from 'axios';
 import "./layout.scss";
-// import InviteMemberModal from "./_components/InviteMemberModal";
+import InviteMemberModal from "./_components/InviteMemberModal";
 
 interface ProjectInfo {
   projectName: string;
@@ -19,6 +19,7 @@ interface MemberInfo {
   memberRole: string;
   host: boolean;
 }
+
 
 // 프로젝트 정보 API 호출 함수
 const fetchProjectInfo = async (projectId: string, token: string | null, refreshToken: string | null) => {
@@ -63,7 +64,8 @@ const TeamSetting: React.FC = () => {
   });
 
   const [members, setMembers] = useState<MemberInfo[]>([]);
-  const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(false); 
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('Authorization');
@@ -83,14 +85,26 @@ const TeamSetting: React.FC = () => {
         const membersData = await fetchMembersInfo(projectId, token, refreshToken);
         setMembers(membersData);
 
-        const currentUserEmail = membersData.mail; 
-        const currentUser = membersData.find((member: MemberInfo) => member.mail === currentUserEmail);
+        const currentUserId = localStorage.getItem("MemberId"); 
+        const currentUser = membersData.find((member: MemberInfo) => member.memberId === Number(currentUserId));
         setIsHost(currentUser ? currentUser.host : false); 
       }
     };
 
     getProjectData();
   }, [projectId]);
+
+  const handleInviteMember = async (mail: string) => {
+    const token = localStorage.getItem('Authorization');
+    const refreshToken = localStorage.getItem('RefreshToken');
+    await axios.post(`http://34.22.108.250:8080/api/team/${projectId}/setting/member`, { mail }, {
+      headers: {
+        Authorization: token,
+        RefreshToken: refreshToken,
+      },
+    });
+    setShowInviteModal(false);
+  };
 
   return (
     <div className="projectSettingContaine">
@@ -100,47 +114,47 @@ const TeamSetting: React.FC = () => {
           <div className="projectName">
             <h4>프로젝트 이름</h4>
             {isHost ? (
-              <input type="text" value={projectInfo.projectName} onChange={(e) => setProjectInfo({ ...projectInfo, projectName: e.target.value })} />
+              <input className="projectTitle" type="text" value={projectInfo.projectName} onChange={(e) => setProjectInfo({ ...projectInfo, projectName: e.target.value })} />
             ) : (
-              <span className="functionTag">{projectInfo.projectName}</span>
+              <span className="projectTitle">{projectInfo.projectName}</span>
             )}
           </div>
           <div className="projectDescription">
             <h4>프로젝트 설명</h4>
             {isHost ? (
-              <input type="textarea" value={projectInfo.description} onChange={(e) => setProjectInfo({ ...projectInfo, description: e.target.value })} />
+              <input className="projectDis" type="textarea" value={projectInfo.description} onChange={(e) => setProjectInfo({ ...projectInfo, description: e.target.value })} />
             ) : (
-              <span className="functionTag">{projectInfo.description}</span>
+              <span className="projectDis">{projectInfo.description}</span>
             )}
           </div>
           <div className="projectStatus">
             <h4>프로젝트 상태</h4>
             {isHost ? (
               <>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '진행중인 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '진행중인 프로젝트' })} />
+                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROCESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROCESS' })} />
                 <label>진행중인 프로젝트</label>
                 <input type="radio" name="projectState" checked={projectInfo.projectStatus === '완료된 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '완료된 프로젝트' })} />
                 <label>완료된 프로젝트</label>
               </>
             ) : (
               <>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '진행중인 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROCESS' })} />
+                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROCESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROCESS' })} disabled  />
                 <label>진행중인 프로젝트</label>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '완료된 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '완료된 프로젝트' })} />
+                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '완료된 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '완료된 프로젝트' })} disabled />
                 <label>완료된 프로젝트</label>
               </>
             )}
           </div>
-          {!isHost && <button className="settingButton">변경한 설정 저장하기</button>}
+          {isHost && <button className="settingButton">변경한 설정 저장하기</button>}
         </form>
       </div>
       <div className="memberManagement">
         <form>
           <div className="title">
             <h3>프로젝트 팀원 관리</h3>
-            {!isHost ? (
+            {isHost ? (
               <>
-                <button className="settingButton">팀원 초대</button>
+                <button className="settingButton"type="button" onClick={() => setShowInviteModal(true)}>팀원 초대</button>
               </>
             ) : <></>}
           </div>
@@ -148,7 +162,6 @@ const TeamSetting: React.FC = () => {
             <ul className="memberList">
               {members.map(member => (
                 <li key={member.memberId} className="memberItem">
-                  {/* <img src={member.profilePicture} alt={member.memberName} /> */}
                   <p className="memberName">{member.memberName}</p>
                   <select value={member.memberRole}>
                     <option value="leader">팀장</option>
@@ -167,7 +180,7 @@ const TeamSetting: React.FC = () => {
               ))}
             </ul>
           </div>
-          {!isHost ? (
+          {isHost ? (
             <>
               <button className="settingButton changeSetting">변경한 설정 저장하기</button>
             </>
@@ -177,7 +190,7 @@ const TeamSetting: React.FC = () => {
       <div className="tagManagement">
         <div className="title">
           <h3>프로젝트 태그 관리</h3>
-          {!isHost ? (
+          {isHost ? (
             <>
               <button  className="settingButton">태그 추가</button> 
             </>
@@ -190,6 +203,7 @@ const TeamSetting: React.FC = () => {
           <div className="tagItem">태그4</div>
         </div>
       </div>
+      {showInviteModal && <InviteMemberModal projectId={projectId} onClose={() => setShowInviteModal(false)} onInvite={handleInviteMember} />}
     </div>
   );
 
