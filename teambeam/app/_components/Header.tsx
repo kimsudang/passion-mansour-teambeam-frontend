@@ -12,6 +12,9 @@ export default function Header() {
   const [isMenu, setIsMenu] = useState<boolean>(false);
 
   const router = useRouter();
+  
+  const token = localStorage.getItem("Authorization");
+  const refreshToken = localStorage.getItem("RefreshToken");
 
   const handleModalMenu = useCallback(() => {
     setIsMenu(!isMenu);
@@ -30,27 +33,47 @@ export default function Header() {
 
   return (
     <header>
-      <Link href='/main'>
+      {token && refreshToken ? (
+        <>
+          <Link href='/main'>
+            <Logo size={88}></Logo>
+          </Link>
+        </>
+      ) : (    
+      <Link href='/'>
         <Logo size={88}></Logo>
       </Link>
+      )}
 
       <div className='right-menu'>
-        <div className='channel-menu'>
-          <Link href='/privatePage/main'>개인채널</Link>
-          <Link href='/main'>팀채널</Link>
-        </div>
+        {token && refreshToken ? (
+          <>
+            <div className='channel-menu'>
+              <Link href='/privatePage/main'>개인채널</Link>
+              <Link href='/main'>팀채널</Link>
+            </div>
+          </>) : (
+          <></>
+        )}
+        
         <div className='setting-menu'>
-          <button onClick={handleModalMenu}>
-            <Image
-              src={profileDefault}
-              alt='마이 프로필'
-              className='img-profile'
-              width={48}
-              height={48}
-            />
-          </button>
+          { token && refreshToken ? (
+            <>
+              <button onClick={handleModalMenu}>
+                <Image
+                  src={profileDefault}
+                  alt='마이 프로필'
+                  className='img-profile'
+                  width={48}
+                  height={48}
+                />
+              </button>
+            </>
+          ) : (
+            <></>
+          )}
 
-          {isMenu ? (
+          {isMenu && token && refreshToken ? (
             <>
               <div className='modalMenuWrap'>
                 <ul>
