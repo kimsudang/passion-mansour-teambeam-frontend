@@ -1,0 +1,73 @@
+.inviteModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3); // 반투명 배경
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; // 모달이 다른 요소들 위에 오도록 z-index 설정
+
+  .inviteModalContent {
+    position: relative;
+    background-color: #F1F1F1;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+
+    .close {
+      position: absolute;
+      top: 25px;
+      right: 20px;
+      font-size: xx-large;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin: 15px 0px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+
+      input {
+        height: 50px;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #D5D5D5;
+        border-radius: 10px;
+      }
+
+      button {
+        padding: 10px;
+        height: 50px;
+        background-color: #FFC300;
+        color: #242424;
+        font-size: medium;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 20px;
+
+        &:hover {
+          background-color: #E6B411;
+        }
+      }
+
+      p {
+        margin-top: 10px;
+        color: red;
+      }
+    }
+  }
+}
