@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
+import axios from "axios";
 
 // 로컬 스토리지에서 토큰을 가져오는 함수
 const getToken = () => {
@@ -41,8 +42,36 @@ const ChatList: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>(null);
 
+  // 기존 채팅 메시지 불러오기
+  const fetchMessages = async (projectId: string) => {
+    try {
+      const response = await axios.get(
+        `http://34.22.108.250:8080/api/team/chat/${projectId}`
+      );
+      const fetchedMessages = response.data.map((message: any) => ({
+        id: message.messageId.toString(),
+        text: message.messageContent,
+        profilePicture: message.member.profileImg,
+        username: message.member.memberName,
+        timestamp: message.createDate,
+        comments: message.messageComments.map((comment: any) => ({
+          id: comment.messageCommentId.toString(),
+          text: comment.messageCommentContent,
+          profilePicture: comment.member.profileImg,
+          username: comment.member.memberName,
+          timestamp: comment.createDate,
+        })),
+      }));
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
   useEffect(() => {
     if (!projectId) return;
+
+    fetchMessages(projectId);
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
     const newSocket = io(socketUrl || ""); // 기본값을 빈 문자열로 설정

@@ -56,6 +56,10 @@ html {
   .quillEditor {
     flex: 1;
 
+    .ql-toolbar {
+      background-color: #f1f1f1;
+    }
+
     .ql-container {
       height: auto;
       min-height: 100px;
