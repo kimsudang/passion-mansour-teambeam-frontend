@@ -16,28 +16,10 @@ const getToken = () => {
   return token;
 };
 
-// 로컬 스토리지에서 사용자 이름을 가져오는 함수
-const getUsername = () => {
-  const username = localStorage.getItem("Username");
-  if (!username) {
-    throw new Error("Username is missing");
-  }
-  return username;
-};
-
-// 로컬 스토리지에서 프로필 이미지를 가져오는 함수
-const getProfilePicture = () => {
-  const profilePicture = localStorage.getItem("ProfilePicture");
-  if (!profilePicture) {
-    throw new Error("Profile picture is missing");
-  }
-  return profilePicture;
-};
-
 type Comment = {
   id: string;
   text: string;
-  profilePicture: string;
+  profileImage: string;
   username: string;
   timestamp: string;
 };
@@ -45,7 +27,7 @@ type Comment = {
 type Message = {
   id: string;
   text: string;
-  profilePicture: string;
+  profileImage: string;
   username: string;
   timestamp: string;
   comments?: Comment[];
@@ -69,13 +51,13 @@ const ChatList: React.FC = () => {
       const fetchedMessages = response.data.map((message: any) => ({
         id: message.messageId.toString(),
         text: message.messageContent,
-        profilePicture: message.member.profileImg,
+        profileImage: message.member.profileImg,
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profilePicture: comment.member.profileImg,
+          profileImage: comment.member.profileImg,
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
@@ -127,13 +109,13 @@ const ChatList: React.FC = () => {
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profilePicture: message.member.profileImg,
+        profileImage: message.member.profileImg,
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profilePicture: comment.member.profileImg,
+          profileImage: comment.member.profileImg,
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
@@ -147,13 +129,13 @@ const ChatList: React.FC = () => {
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profilePicture: message.member.profileImg,
+        profileImage: message.member.profileImg,
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profilePicture: comment.member.profileImg,
+          profileImage: comment.member.profileImg,
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
@@ -179,8 +161,6 @@ const ChatList: React.FC = () => {
     if (activeMessage && socketRef.current && projectId) {
       try {
         const token = getToken();
-        const username = getUsername();
-        const profilePicture = getProfilePicture();
         const newComment = {
           token,
           projectId: Number(projectId),
@@ -200,8 +180,8 @@ const ChatList: React.FC = () => {
               {
                 id: `${msg.id}-${(msg.comments?.length || 0) + 1}`,
                 text: content,
-                profilePicture,
-                username,
+                profileImage: msg.profileImage, // 기존 메시지의 사용자 정보 사용
+                username: msg.username, // 기존 메시지의 사용자 정보 사용
                 timestamp: new Date().toISOString(),
               },
             ];
@@ -224,8 +204,6 @@ const ChatList: React.FC = () => {
     if (socketRef.current && projectId) {
       try {
         const token = getToken();
-        const username = getUsername();
-        const profilePicture = getProfilePicture();
         const newMessage = {
           token,
           projectId: Number(projectId),
@@ -261,7 +239,7 @@ const ChatList: React.FC = () => {
           {messages.map((msg) => (
             <div key={msg.id} className="message">
               <img
-                src={msg.profilePicture}
+                src={msg.profileImage}
                 alt={msg.username}
                 className="profilePicture"
               />
