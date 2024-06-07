@@ -1,6 +1,10 @@
 "use client";
 
 import React from "react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 type Comment = {
   id: string;
@@ -24,6 +28,18 @@ type Props = {
   messages: Message[];
 };
 
+const formatTimestamp = (timestamp: string) => {
+  const date = dayjs(timestamp);
+  const now = dayjs();
+  const differenceInDays = now.diff(date, "day");
+
+  if (differenceInDays < 1) {
+    return date.fromNow();
+  } else {
+    return date.format("YYYY-MM-DD HH:mm");
+  }
+};
+
 const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
   return (
     <div className="messageThread">
@@ -37,7 +53,9 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
           <div className="messageContent">
             <div className="messageHeader">
               <span className="username">{msg.username}</span>
-              <span className="timestamp">{msg.timestamp}</span>
+              <span className="timestamp">
+                {formatTimestamp(msg.timestamp)}
+              </span>
             </div>
             <div
               className="messageText"
@@ -55,7 +73,9 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
                     <div className="commentContent">
                       <div className="commentHeader">
                         <span className="username">{comment.username}</span>
-                        <span className="timestamp">{comment.timestamp}</span>
+                        <span className="timestamp">
+                          {formatTimestamp(comment.timestamp)}
+                        </span>
                       </div>
                       <div
                         className="commentText"

@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import api from "@/app/_api/api";
+
+dayjs.extend(relativeTime);
 
 // 로컬 스토리지에서 토큰을 가져오는 함수
 const getToken = () => {
@@ -96,6 +100,18 @@ type Message = {
   username: string;
   timestamp: string;
   comments?: Comment[];
+};
+
+const formatTimestamp = (timestamp: string) => {
+  const date = dayjs(timestamp);
+  const now = dayjs();
+  const differenceInDays = now.diff(date, "day");
+
+  if (differenceInDays < 1) {
+    return date.fromNow();
+  } else {
+    return date.format("YYYY-MM-DD HH:mm");
+  }
 };
 
 const ChatList: React.FC = () => {
@@ -370,7 +386,9 @@ const ChatList: React.FC = () => {
                 <div className="messageContent">
                   <div className="messageHeader">
                     <span className="username">{msg.username}</span>
-                    <span className="timestamp">{msg.timestamp}</span>
+                    <span className="timestamp">
+                      {formatTimestamp(msg.timestamp)}
+                    </span>
                   </div>
                   <div
                     className="messageText"
