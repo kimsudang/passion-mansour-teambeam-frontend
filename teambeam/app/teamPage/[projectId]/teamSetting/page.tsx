@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import axios from 'axios';
+import { fetchProjectInfo, fetchMembersInfo, updateMemberRole, inviteMember } from '../../../_api/teamSetting';
 import "./layout.scss";
 import InviteMemberModal from "./_components/InviteMemberModal";
 
@@ -20,41 +20,6 @@ interface MemberInfo {
   host: boolean;
 }
 
-
-// 프로젝트 정보 API 호출 함수
-const fetchProjectInfo = async (projectId: string, token: string | null, refreshToken: string | null) => {
-  try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/setting`, {
-      headers: {
-        Authorization: token,
-        RefreshToken: refreshToken,
-      },
-    });
-    return response.data.project;
-  } catch (error) {
-    alert("프로젝트 정보를 확인할 수 없습니다.");
-    console.error("Error fetching project info:", error);
-    return null;
-  }
-};
-
-// 멤버 정보 API 호출 함수
-const fetchMembersInfo = async (projectId: string, token: string | null, refreshToken: string | null) => {
-  try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/joinMember`, {
-      headers: {
-        Authorization: token,   
-        RefreshToken: refreshToken,  
-      },
-    });
-    return response.data.joinMemberList; // API 응답에서 멤버 리스트 반환
-  } catch (error) {
-    alert("멤버 정보를 확인할 수 없습니다.");
-    console.error("Error fetching members info:", error);
-    return [];                         // 에러 발생 시 빈 배열 반환
-  }
-};
-
 const TeamSetting: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
@@ -68,12 +33,9 @@ const TeamSetting: React.FC = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('Authorization');
-    const refreshToken = localStorage.getItem('RefreshToken');
-
     // 프로젝트 정보 가져오기
     const getProjectData = async () => {
-      const projectData = await fetchProjectInfo(projectId, token, refreshToken);
+      const projectData = await fetchProjectInfo(projectId);
       if (projectData) {
         setProjectInfo({
           projectName: projectData.projectName, 
@@ -82,8 +44,8 @@ const TeamSetting: React.FC = () => {
         });
 
         // 멤버 정보 가져오기
-        const membersData = await fetchMembersInfo(projectId, token, refreshToken);
-        setMembers(membersData);
+        const membersData = await fetchMembersInfo(projectId);
+        setMembers(membersData.sort((a: MemberInfo, b: MemberInfo) => b.host === true ? 1 : -1));
 
         const currentUserId = localStorage.getItem("MemberId"); 
         const currentUser = membersData.find((member: MemberInfo) => member.memberId === Number(currentUserId));
@@ -95,19 +57,35 @@ const TeamSetting: React.FC = () => {
   }, [projectId]);
 
   const handleInviteMember = async (mail: string) => {
-    const token = localStorage.getItem('Authorization');
-    const refreshToken = localStorage.getItem('RefreshToken');
-    await axios.post(`http://34.22.108.250:8080/api/team/${projectId}/setting/member`, { mail }, {
-      headers: {
-        Authorization: token,
-        RefreshToken: refreshToken,
-      },
-    });
     setShowInviteModal(false);
+
+    const membersData = await fetchMembersInfo(projectId);
+    setMembers(membersData.sort((a: MemberInfo, b: MemberInfo) => b.host === true ? 1 : -1));
   };
 
+  const handleRoleChange = (memberId: number, newRole: string) => {
+    const updatedMembers = members.map(member =>
+      member.memberId === memberId ? { ...member, memberRole: newRole } : member
+    );
+    setMembers(updatedMembers);
+  };
+
+  const handleSaveSettings = async () => {
+    const currentLeader = members.find(member => member.host);
+    const memberRoles = members.map(member => ({
+      memberId: member.memberId,
+      memberRole: member.memberRole,
+    }));
+
+    if (currentLeader) {
+      await updateMemberRole(projectId, currentLeader.memberId);
+    }
+    window.location.reload();
+  };
+
+
   return (
-    <div className="projectSettingContaine">
+    <div className="projectSettingContainer">
       <h1>프로젝트 관리</h1>
       <div className="projectInfoSetting">
         <form>
@@ -133,14 +111,14 @@ const TeamSetting: React.FC = () => {
               <>
                 <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROCESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROCESS' })} />
                 <label>진행중인 프로젝트</label>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '완료된 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '완료된 프로젝트' })} />
+                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'END' })} />
                 <label>완료된 프로젝트</label>
               </>
             ) : (
               <>
                 <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROCESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROCESS' })} disabled  />
                 <label>진행중인 프로젝트</label>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === '완료된 프로젝트'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: '완료된 프로젝트' })} disabled />
+                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'END' })} disabled />
                 <label>완료된 프로젝트</label>
               </>
             )}
@@ -162,27 +140,27 @@ const TeamSetting: React.FC = () => {
             <ul className="memberList">
               {members.map(member => (
                 <li key={member.memberId} className="memberItem">
-                  <p className="memberName">{member.memberName}</p>
-                  <select value={member.memberRole}>
-                    <option value="leader">팀장</option>
-                    <option value="follower">팀원</option>
-                  </select>
-                  <select value={member.memberRole}>
-                    <option value="">직무</option>
-                    <option value="PM">PM</option>
-                    <option value="기획">기획</option>
-                    <option value="FE">FE</option>
-                    <option value="BE">BE</option>
-                    <option value="디자인">디자인</option>
-                  </select>
-                  <p>{member.mail}</p>
-                </li>
+                <p className="memberName">{member.memberName}</p>
+                <select value={member.host ? "leader" : "follower"} onChange={(e) => handleRoleChange(member.memberId, e.target.value)}>
+                  <option value="leader">팀장</option>
+                  <option value="follower">팀원</option>
+                </select>
+                <select value={member.memberRole} onChange={(e) => handleRoleChange(member.memberId, e.target.value)}>
+                  <option value="">직무</option>
+                  <option value="PM">PM</option>
+                  <option value="기획">기획</option>
+                  <option value="FE">FE</option>
+                  <option value="BE">BE</option>
+                  <option value="디자인">디자인</option>
+                </select>
+                <p>{member.mail}</p>
+              </li>
               ))}
             </ul>
           </div>
           {isHost ? (
             <>
-              <button className="settingButton changeSetting">변경한 설정 저장하기</button>
+              <button className="settingButton changeSetting" type="button" onClick={handleSaveSettings}>변경한 설정 저장하기</button>
             </>
           ) : <></>}
         </form>

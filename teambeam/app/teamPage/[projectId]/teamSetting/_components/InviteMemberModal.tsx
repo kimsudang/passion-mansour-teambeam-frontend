@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import axios from 'axios';
+import { inviteMember } from '../../../../_api/teamSetting';
 import "./InviteMemberModal.scss";
 
 interface InviteMemberModalProps {
@@ -13,42 +13,67 @@ interface InviteMemberModalProps {
 const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClose, onInvite }) => {
   const [mail, setMail] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      await axios.post(`http://34.22.108.250:8080/api/team/${projectId}/setting/member`, { mail }, {
-        headers: {
-          Authorization: localStorage.getItem('Authorization'),
-          RefreshToken: localStorage.getItem('RefreshToken'),
-        },
-      });
+    if (!validateEmail(mail)) {
+      setIsValidEmail(false);
+      setMessage('유효한 이메일 주소를 입력하세요.');
+      return;
+    }
+
+    setIsSubmitted(true);
+    const result = await inviteMember(projectId, mail);
+    setMessage(result.message);
+
+    if (result.success) {
       onInvite(mail);
-      setMessage('메일 전송이 성공했습니다.');
-    } catch (error) {
-      setMessage('메일 전송에 실패했습니다.');
-      console.error('Error:', error);
+    }
+  };
+
+  const handleModalClick = (e: React.MouseEvent) => {
+    if ((e.target as Element).classList.contains('inviteModal')) {
+      onClose();
     }
   };
 
   return (
-    <div className="inviteModal">
+    <div className="inviteModal" onClick={handleModalClick}>
       <div className="inviteModalContent">
         <span className="close" onClick={onClose}>&times;</span>
         <h2>팀원 초대</h2>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="mail"></label>
-          <input 
-            type="mail" 
-            id="mail"
-            value={mail} 
-            onChange={(e) => setMail(e.target.value)} 
-            required 
-          />
-          <button type="submit">전송</button>
-          {message && <p>{message}</p>}
-        </form>
+        {!isSubmitted ? (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="mail"></label>
+            <input 
+              type="mail" 
+              id="mail"
+              value={mail} 
+              onChange={(e) => {
+                setMail(e.target.value);
+                setIsValidEmail(true);
+                setMessage('');
+              }} 
+              placeholder='mailAddress@example.com'
+              required
+            />
+            {!isValidEmail && <p>유효한 이메일 주소를 입력하세요.</p>}
+            <button type="submit">전송</button>
+          </form>
+        ) : (
+          <div className="inviteModalContent">
+            {isSubmitted && <p>메일이 성공적으로 전송되었습니다.</p>}
+            {!isSubmitted && <p>메일 전송이 실패헀습니다.</p>}
+          </div>
+        )}
       </div>
     </div>
   );
