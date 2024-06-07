@@ -6,6 +6,7 @@ import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
 import axios from "axios";
+import api from "@/app/_api/api";
 
 // 로컬 스토리지에서 토큰을 가져오는 함수
 const getToken = () => {
@@ -14,6 +15,70 @@ const getToken = () => {
     throw new Error("Authorization token is missing");
   }
   return token;
+};
+
+// 로컬 스토리지에서 memberId를 가져오는 함수
+const getMemberId = () => {
+  const memberId = localStorage.getItem("MemberId");
+  if (!memberId) {
+    throw new Error("Member ID is missing");
+  }
+  return memberId;
+};
+
+// Participant 타입 정의
+type Participant = {
+  id: string;
+  name: string;
+  profileImage: string;
+};
+
+// 참가자 조회 함수
+export const fetchParticipants = async (
+  projectId: string
+): Promise<Participant[]> => {
+  try {
+    const token = getToken();
+
+    const response = await api.get(`/team/${projectId}/joinMember`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    console.log("Participants response:", response.data);
+
+    if (response.data && response.data.joinMemberList) {
+      const participants: Participant[] = response.data.joinMemberList.map(
+        (member: any) => ({
+          id: String(member.memberId),
+          name: member.memberName,
+          profileImage: member.profileImg, // 프로필 이미지 추가
+        })
+      );
+      return participants;
+    } else {
+      throw new Error("Invalid response data format");
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "Error fetching participants:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching participants:", error);
+    }
+    throw error;
+  }
+};
+
+// 사용자 정보를 가져오는 함수
+const getUserInfo = async (projectId: string, memberId: string) => {
+  const participants = await fetchParticipants(projectId);
+  return participants.find(
+    (participant: Participant) => participant.id === memberId
+  );
 };
 
 type Comment = {
@@ -41,6 +106,7 @@ const ChatList: React.FC = () => {
   const [activeMessage, setActiveMessage] = useState<Message | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>(null);
+  const chatAreaRef = useRef<HTMLDivElement>(null);
 
   // 기존 채팅 메시지 불러오기
   const fetchMessages = async (projectId: string) => {
@@ -63,6 +129,12 @@ const ChatList: React.FC = () => {
         })),
       }));
       setMessages(fetchedMessages);
+      // Scroll to the bottom to show the latest messages
+      setTimeout(() => {
+        if (chatAreaRef.current) {
+          chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+        }
+      }, 0);
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -120,7 +192,13 @@ const ChatList: React.FC = () => {
           timestamp: comment.createDate,
         })),
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages, newMessage];
+        if (chatAreaRef.current) {
+          chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+        }
+        return updatedMessages;
+      });
     });
 
     // 서버로부터 새 메시지 전송 확인 후 UI 업데이트
@@ -140,7 +218,45 @@ const ChatList: React.FC = () => {
           timestamp: comment.createDate,
         })),
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages, newMessage];
+        if (chatAreaRef.current) {
+          chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+        }
+        return updatedMessages;
+      });
+    });
+
+    // 댓글 수신 및 실시간 업데이트
+    newSocket.on("commentAdded", (comment: any) => {
+      console.log("Received comment:", comment);
+      setMessages((prevMessages) => {
+        const updatedMessages = prevMessages.map((msg) => {
+          if (msg.id === comment.messageId.toString()) {
+            const updatedComments = [
+              ...(msg.comments || []),
+              {
+                id: comment.messageCommentId.toString(),
+                text: comment.messageCommentContent,
+                profileImage: comment.member.profileImg,
+                username: comment.member.memberName,
+                timestamp: comment.createDate,
+              },
+            ];
+            return { ...msg, comments: updatedComments };
+          }
+          return msg;
+        });
+        if (activeMessage) {
+          const updatedActiveMessage = updatedMessages.find(
+            (msg) => msg.id === activeMessage.id
+          );
+          if (updatedActiveMessage) {
+            setActiveMessage(updatedActiveMessage);
+          }
+        }
+        return updatedMessages;
+      });
     });
 
     // 디버깅을 위한 추가 이벤트 리스너
@@ -153,66 +269,73 @@ const ChatList: React.FC = () => {
     };
   }, [projectId]);
 
+  useEffect(() => {
+    // 새로고침 시 활성 메시지 유지
+    const storedActiveMessage = localStorage.getItem("activeMessage");
+    if (storedActiveMessage) {
+      setActiveMessage(JSON.parse(storedActiveMessage));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeMessage) {
+      localStorage.setItem("activeMessage", JSON.stringify(activeMessage));
+    } else {
+      localStorage.removeItem("activeMessage");
+    }
+  }, [activeMessage]);
+
   const handleBackClick = () => {
     setActiveMessage(null);
   };
 
-  const handleCommentSubmit = (content: string) => {
+  const handleCommentSubmit = async (content: string) => {
     if (activeMessage && socketRef.current && projectId) {
       try {
         const token = getToken();
+        const memberId = getMemberId();
+        const userInfo = await getUserInfo(projectId, memberId);
+        if (!userInfo) throw new Error("User not found");
+        const { name: username, profileImage } = userInfo;
+
         const newComment = {
           token,
           projectId: Number(projectId),
           messageComment: content,
           messageId: Number(activeMessage.id),
+          username,
+          profileImage,
         };
 
         // 서버에 새로운 댓글 전송
         socketRef.current.emit("addComment", newComment);
         console.log("Sent comment:", newComment);
-
-        // 클라이언트 측에서 UI 업데이트
-        const updatedMessages = messages.map((msg) => {
-          if (msg.id === activeMessage.id) {
-            const updatedComments = [
-              ...(msg.comments || []),
-              {
-                id: `${msg.id}-${(msg.comments?.length || 0) + 1}`,
-                text: content,
-                profileImage: msg.profileImage, // 기존 메시지의 사용자 정보 사용
-                username: msg.username, // 기존 메시지의 사용자 정보 사용
-                timestamp: new Date().toISOString(),
-              },
-            ];
-            return { ...msg, comments: updatedComments };
-          }
-          return msg;
-        });
-        setMessages(updatedMessages);
-        setActiveMessage(
-          updatedMessages.find((msg) => msg.id === activeMessage.id) || null
-        );
-        console.log(`Submitted comment: ${content}`);
       } catch (error) {
-        console.error("Error getting token:", error);
+        console.error("Error getting token or user info:", error);
       }
     }
   };
 
-  const handleMainMessageSubmit = (content: string) => {
+  const handleMainMessageSubmit = async (content: string) => {
     if (socketRef.current && projectId) {
       try {
         const token = getToken();
+        const memberId = getMemberId();
+        const userInfo = await getUserInfo(projectId, memberId);
+        if (!userInfo) throw new Error("User not found");
+        const { name: username, profileImage } = userInfo;
+
         const newMessage = {
           token,
           projectId: Number(projectId),
           messageContent: content,
+          username,
+          profileImage,
         };
         socketRef.current.emit("message", newMessage);
         console.log("Sent message:", newMessage);
       } catch (error) {
-        console.error("Error getting token:", error);
+        console.error("Error getting token or user info:", error);
       }
     }
   };
@@ -222,50 +345,52 @@ const ChatList: React.FC = () => {
   };
 
   return (
-    <div className="chatArea">
-      {activeMessage ? (
-        <div className="commentsView">
-          <button className="backButton" onClick={handleBackClick}>
-            ← Back
-          </button>
-          <MessageThread
-            messageId={activeMessage.id}
-            messages={[activeMessage]}
-          />
-          <MessageInput onSubmit={handleCommentSubmit} />
-        </div>
-      ) : (
-        <>
-          {messages.map((msg) => (
-            <div key={msg.id} className="message">
-              <img
-                src={msg.profileImage}
-                alt={msg.username}
-                className="profilePicture"
-              />
-              <div className="messageContent">
-                <div className="messageHeader">
-                  <span className="username">{msg.username}</span>
-                  <span className="timestamp">{msg.timestamp}</span>
-                </div>
-                <div
-                  className="messageText"
-                  dangerouslySetInnerHTML={{ __html: msg.text }}
-                ></div>
-                <div
-                  className="replyButton"
-                  onClick={() => handleReplyButtonClick(msg)}
-                >
-                  {msg.comments && msg.comments.length > 0
-                    ? `${msg.comments.length}개의 댓글`
-                    : "댓글 달기"}
+    <div className="chatContainer">
+      <div className="chatArea" ref={chatAreaRef}>
+        {activeMessage ? (
+          <div className="commentsView">
+            <button className="backButton" onClick={handleBackClick}>
+              ← Back
+            </button>
+            <MessageThread
+              messageId={activeMessage.id}
+              messages={[activeMessage]}
+            />
+            <MessageInput onSubmit={handleCommentSubmit} />
+          </div>
+        ) : (
+          <div className="messageList">
+            {messages.map((msg) => (
+              <div key={msg.id} className="message">
+                <img
+                  src={msg.profileImage}
+                  alt={msg.username}
+                  className="profilePicture"
+                />
+                <div className="messageContent">
+                  <div className="messageHeader">
+                    <span className="username">{msg.username}</span>
+                    <span className="timestamp">{msg.timestamp}</span>
+                  </div>
+                  <div
+                    className="messageText"
+                    dangerouslySetInnerHTML={{ __html: msg.text }}
+                  ></div>
+                  <div
+                    className="replyButton"
+                    onClick={() => handleReplyButtonClick(msg)}
+                  >
+                    {msg.comments && msg.comments.length > 0
+                      ? `${msg.comments.length}개의 댓글`
+                      : "댓글 달기"}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-          <MessageInput onSubmit={handleMainMessageSubmit} />
-        </>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
+      {!activeMessage && <MessageInput onSubmit={handleMainMessageSubmit} />}
     </div>
   );
 };

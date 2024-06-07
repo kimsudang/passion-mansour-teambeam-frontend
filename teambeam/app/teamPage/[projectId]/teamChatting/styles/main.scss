@@ -18,13 +18,12 @@ html {
 }
 
 .chatArea {
-  height: 100%;
+  height: calc(100vh - 350px);
   flex: 1;
   padding: 20px;
-  padding-bottom: 80px;
   overflow-y: auto;
   position: relative;
-  // margin-left: 240px;
+  z-index: 1;
 }
 
 .commentsView {
@@ -52,6 +51,7 @@ html {
   left: 240px; 
   width: calc(100% - 240px);
   box-sizing: border-box;
+  z-index: 10; 
 
   .quillEditor {
     flex: 1;
@@ -88,6 +88,7 @@ html {
 
   .chatArea {
     margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -140,7 +141,6 @@ html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    // margin-bottom: 5px;
   }
 
   .username {
@@ -152,10 +152,6 @@ html {
     font-size: 0.85em;
     color: #464646;
   }
-
-  // .messageText {
-  //   margin-top: 5px;
-  // }
 
   .replyButton {
     margin-top: 10px;
@@ -193,7 +189,6 @@ html {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      // margin-bottom: 5px;
     }
   }
 }

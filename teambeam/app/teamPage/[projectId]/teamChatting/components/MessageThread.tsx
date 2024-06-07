@@ -5,7 +5,7 @@ import React from "react";
 type Comment = {
   id: string;
   text: string;
-  profilePicture: string;
+  profileImage: string;
   username: string;
   timestamp: string;
 };
@@ -13,7 +13,7 @@ type Comment = {
 type Message = {
   id: string;
   text: string;
-  profilePicture: string;
+  profileImage: string;
   username: string;
   timestamp: string;
   comments?: Comment[];
@@ -30,7 +30,7 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
       {messages.map((msg) => (
         <div key={msg.id} className="message">
           <img
-            src={msg.profilePicture}
+            src={msg.profileImage}
             alt={msg.username}
             className="profilePicture"
           />
@@ -48,7 +48,7 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
                 {msg.comments.map((comment) => (
                   <div key={comment.id} className="comment">
                     <img
-                      src={comment.profilePicture}
+                      src={comment.profileImage}
                       alt={comment.username}
                       className="profilePicture"
                     />
