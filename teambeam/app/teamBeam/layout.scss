@@ -55,4 +55,13 @@
   }
     }
   }
+
+  & .main_button {
+    @include button_styled;
+    background-color: #FFC300;
+
+    &:hover {
+      background-color: #E6B411;
+}
+  }
 }
