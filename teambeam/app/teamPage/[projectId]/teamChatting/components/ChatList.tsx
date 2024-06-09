@@ -12,7 +12,6 @@ import api from "@/app/_api/api";
 
 dayjs.extend(relativeTime);
 
-// 로컬 스토리지에서 토큰을 가져오는 함수
 const getToken = () => {
   const token = localStorage.getItem("Authorization");
   if (!token) {
@@ -21,7 +20,6 @@ const getToken = () => {
   return token;
 };
 
-// 로컬 스토리지에서 memberId를 가져오는 함수
 const getMemberId = () => {
   const memberId = localStorage.getItem("MemberId");
   if (!memberId) {
@@ -30,14 +28,12 @@ const getMemberId = () => {
   return memberId;
 };
 
-// Participant 타입 정의
 type Participant = {
   id: string;
   name: string;
   profileImage: string;
 };
 
-// 참가자 조회 함수
 export const fetchParticipants = async (
   projectId: string
 ): Promise<Participant[]> => {
@@ -57,7 +53,7 @@ export const fetchParticipants = async (
         (member: any) => ({
           id: String(member.memberId),
           name: member.memberName,
-          profileImage: member.profileImg, // 프로필 이미지 추가
+          profileImage: member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         })
       );
       return participants;
@@ -77,7 +73,6 @@ export const fetchParticipants = async (
   }
 };
 
-// 사용자 정보를 가져오는 함수
 const getUserInfo = async (projectId: string, memberId: string) => {
   const participants = await fetchParticipants(projectId);
   return participants.find(
@@ -124,7 +119,6 @@ const ChatList: React.FC = () => {
   const socketRef = useRef<any>(null);
   const chatAreaRef = useRef<HTMLDivElement>(null);
 
-  // 기존 채팅 메시지 불러오기
   const fetchMessages = async (projectId: string) => {
     try {
       const response = await axios.get(
@@ -133,19 +127,18 @@ const ChatList: React.FC = () => {
       const fetchedMessages = response.data.map((message: any) => ({
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: message.member.profileImg,
+        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg,
+          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
       }));
       setMessages(fetchedMessages);
-      // Scroll to the bottom to show the latest messages
       setTimeout(() => {
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
@@ -162,19 +155,17 @@ const ChatList: React.FC = () => {
     fetchMessages(projectId);
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-    const newSocket = io(socketUrl || ""); // 기본값을 빈 문자열로 설정
+    const newSocket = io(socketUrl || "");
     socketRef.current = newSocket;
 
-    // 소켓 연결 상태 확인
     newSocket.on("connect", () => {
       console.log("Connected to socket server");
       console.log("Socket ID:", newSocket.id);
 
       try {
         const token = getToken();
-        const projectIdNumber = Number(projectId); // ensure projectId is a number
+        const projectIdNumber = Number(projectId);
 
-        // 채팅방 입장
         console.log("Sending joinRoom event with:", projectIdNumber);
         newSocket.emit("joinRoom", projectIdNumber);
         console.log("Joined room with projectId:", projectIdNumber);
@@ -191,25 +182,28 @@ const ChatList: React.FC = () => {
       console.error("Socket connection error:", error);
     });
 
-    // 채팅 메시지 수신
     newSocket.on("message", (message: any) => {
       console.log("Received message:", message);
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: message.member.profileImg,
+        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg,
+          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
+        console.log(
+          "Updated messages after receiving message:",
+          updatedMessages
+        );
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
         }
@@ -217,25 +211,25 @@ const ChatList: React.FC = () => {
       });
     });
 
-    // 서버로부터 새 메시지 전송 확인 후 UI 업데이트
     newSocket.on("messageSent", (message: any) => {
       console.log("Server acknowledged message sent:", message);
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: message.member.profileImg,
+        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         username: message.member.memberName,
         timestamp: message.createDate,
         comments: message.messageComments.map((comment: any) => ({
           id: comment.messageCommentId.toString(),
           text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg,
+          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
           username: comment.member.memberName,
           timestamp: comment.createDate,
         })),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
+        console.log("Updated messages after sending message:", updatedMessages);
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
         }
@@ -243,7 +237,6 @@ const ChatList: React.FC = () => {
       });
     });
 
-    // 댓글 수신 및 실시간 업데이트
     newSocket.on("commentAdded", (comment: any) => {
       console.log("Received comment:", comment);
       setMessages((prevMessages) => {
@@ -254,7 +247,8 @@ const ChatList: React.FC = () => {
               {
                 id: comment.messageCommentId.toString(),
                 text: comment.messageCommentContent,
-                profileImage: comment.member.profileImg,
+                profileImage:
+                  comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
                 username: comment.member.memberName,
                 timestamp: comment.createDate,
               },
@@ -263,19 +257,26 @@ const ChatList: React.FC = () => {
           }
           return msg;
         });
-        if (activeMessage) {
+        console.log("Updated messages after adding comment:", updatedMessages);
+        if (
+          activeMessage &&
+          activeMessage.id === comment.messageId.toString()
+        ) {
           const updatedActiveMessage = updatedMessages.find(
             (msg) => msg.id === activeMessage.id
           );
           if (updatedActiveMessage) {
             setActiveMessage(updatedActiveMessage);
+            console.log(
+              "Updated activeMessage after adding comment:",
+              updatedActiveMessage
+            );
           }
         }
         return updatedMessages;
       });
     });
 
-    // 디버깅을 위한 추가 이벤트 리스너
     newSocket.onAny((event, ...args) => {
       console.log(`Received event ${event} with args:`, args);
     });
@@ -286,18 +287,23 @@ const ChatList: React.FC = () => {
   }, [projectId]);
 
   useEffect(() => {
-    // 새로고침 시 활성 메시지 유지
     const storedActiveMessage = localStorage.getItem("activeMessage");
     if (storedActiveMessage) {
       setActiveMessage(JSON.parse(storedActiveMessage));
+      console.log(
+        "Restored activeMessage from localStorage:",
+        storedActiveMessage
+      );
     }
   }, []);
 
   useEffect(() => {
     if (activeMessage) {
       localStorage.setItem("activeMessage", JSON.stringify(activeMessage));
+      console.log("Stored activeMessage in localStorage:", activeMessage);
     } else {
       localStorage.removeItem("activeMessage");
+      console.log("Removed activeMessage from localStorage");
     }
   }, [activeMessage]);
 
@@ -320,12 +326,12 @@ const ChatList: React.FC = () => {
           messageComment: content,
           messageId: Number(activeMessage.id),
           username,
-          profileImage,
+          profileImage: profileImage || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         };
 
-        // 서버에 새로운 댓글 전송
+        console.log("Sending comment:", newComment);
+
         socketRef.current.emit("addComment", newComment);
-        console.log("Sent comment:", newComment);
       } catch (error) {
         console.error("Error getting token or user info:", error);
       }
@@ -346,10 +352,10 @@ const ChatList: React.FC = () => {
           projectId: Number(projectId),
           messageContent: content,
           username,
-          profileImage,
+          profileImage: profileImage || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
         };
+        console.log("Sending message:", newMessage);
         socketRef.current.emit("message", newMessage);
-        console.log("Sent message:", newMessage);
       } catch (error) {
         console.error("Error getting token or user info:", error);
       }
@@ -379,7 +385,7 @@ const ChatList: React.FC = () => {
             {messages.map((msg) => (
               <div key={msg.id} className="message">
                 <img
-                  src={msg.profileImage}
+                  src={msg.profileImage || "/img/memberImage.jpeg"} // 기본 이미지 경로 설정
                   alt={msg.username}
                   className="profilePicture"
                 />
