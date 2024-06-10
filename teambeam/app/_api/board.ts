@@ -32,6 +32,54 @@ export const getBoardList = async (url: string) => {
   }
 };
 
+// 게시판 생성
+export const postBoard = async (url: string, name: string) => {
+  try {
+    const res = await api.post(url, name, {
+      headers: {
+        Authorization: token,
+      },
+      withCredentials: true,
+    });
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
+// 게시판 삭제
+export const deleteBoard = async (url: string) => {
+  try {
+    const res = await api.delete(url, {
+      headers: {
+        Authorization: token,
+      },
+      withCredentials: true,
+    });
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
 // 전체 게시글 리스트 조회
 export const getPostList = async (url: string) => {
   try {

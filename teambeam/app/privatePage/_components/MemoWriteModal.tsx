@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import "./MemoWriteModal.scss";
+import "@/app/_styles/Modal.scss";
 import { postMemo } from "@/app/_api/memo";
 import { MemoType } from "../memo/page";
 

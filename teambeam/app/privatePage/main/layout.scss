@@ -1,3 +1,4 @@
+// layout.scss
 .privateContainer {
   padding: 20px;
   overflow-x: hidden;
@@ -7,10 +8,6 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-
-  & p {
-    margin-bottom: 10px;
-  }
 }
 
 .header p:first-child {
@@ -31,14 +28,13 @@
   border-radius: 10px;
 }
 
-.myTodoContainer {
+.todoContainer {
   display: flex;
   padding-bottom: 10px;
   width: max-content;
-  
 }
 
-.projectContainer {
+.projectSection {
   background-color: #F1F1F1;
   padding: 20px;
   border-radius: 5px;
@@ -51,24 +47,13 @@
   box-sizing: border-box;
 }
 
-.projectContainer:last-child {
+.projectSection:last-child {
   margin-right: 0; 
 }
 
-.projectContainer h2 {
+.projectSection p {
   font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.todoList {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.todoList button {
-  border: 1px solid #DEDEDE;
+  margin-bottom: 10px;
 }
 
 .todoItem {
@@ -78,18 +63,13 @@
   margin-bottom: 10px;
   border-bottom: 1px solid #D5D5D5;
   padding-bottom: 10px;
-  background-color: #F1F1F1;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 
-  &.completed {
-    text-decoration: line-through;
+  input[type="checkbox"] {
+    margin-right: 10px;
   }
 
-  &:hover {
-    background-color: #DADADA;
+  &.completed span {
+    text-decoration: line-through;
   }
 }
 
@@ -98,33 +78,8 @@
   margin-bottom: 10px;
 }
 
-.checkTodoTitle {
-  display: flex;
-}
-
-.bottomTodoTitle {
-  font-size: medium;
-  font-weight: bold;
-  margin: 5px;
-}
-
-.bottomTodoDate {
-  font-size: 15px;
-  margin: 5px;
-}
-
-.assignees {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10px 0px;
-}
-
-.assignees p {
-  background-color: #E0E0E0;
-  border: 1px solid #D5D5D5;
-  padding: 5px 10px;
-  margin-right: 5px;
-  border-radius: 10px;
+.todoItem span {
+  margin: 0;
 }
 
 .tagContainer {

@@ -5,6 +5,8 @@
 }
 
 .layout-container {
-  width: 100%;
+  width: calc(100% - var(--sideSize));
   padding: 48px 28px;
+  margin-top: var(--headerSize);
+  margin-left: var(--sideSize);
 }

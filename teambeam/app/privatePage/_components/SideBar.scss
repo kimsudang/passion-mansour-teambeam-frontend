@@ -1,21 +1,47 @@
 nav {
-  min-width: 240px;
+  position: fixed;
+  top: var(--headerSize);
+  left: 0;
+  min-width: var(--sideSize);
   height: auto;
-  min-height: calc(100dvh - 84px);
+  min-height: calc(100dvh - var(--headerSize));
   background: var(--bg);
   border-right: 1px solid #d5d5d5;
   padding: 40px 24px;
+  z-index: 5;
+
+  &.noActive {
+    h2 {
+      display: none;
+    }
+
+    .side-menu {
+      span {
+        display: none;
+      }
+    }
+  }
 }
 
 .top-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  height: 44px;
   margin-bottom: 12px;
   padding: 0 0 12px;
   border-bottom: 1px solid #d5d5d5;
 
   h2 {
     font-size: 24px;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
   }
 }
 

@@ -10,11 +10,6 @@ interface ProjectTodos {
   todos: Todo[];
 }
 
-interface Assignee {
-  memberId: number;
-  memberName: string;
-}
-
 // 캘린더
 const FullCalendarComponent = dynamic(
   () => import("../../teamPage/[projectId]/teamCalendar/components/FullCalendarComponent"),
@@ -38,6 +33,7 @@ const PrivatePage: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+  // const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
 
   const fetchEvents = useCallback(
     async (userId:string, year: number, month: number) => {
@@ -56,13 +52,6 @@ const PrivatePage: React.FC = () => {
     []
   );
 
-  const handleTodoStatusChange = async (projectIndex: number, todoIndex: number) => {
-    const updatedTodos = [...projectTodos];
-    const todo = updatedTodos[projectIndex].todos[todoIndex];
-    todo.status = !todo.status;
-    setProjectTodos(updatedTodos);
-  };
-
   useEffect(() => {
     const date = new Date().toISOString().split("T")[0];
     setTodayDate(date);
@@ -75,10 +64,9 @@ const PrivatePage: React.FC = () => {
 
   useEffect(() => {
     if (userId) {
-      const fetchTodos = async (userId: string, date: string) => {
+      const fetchTodos = async () => {
         try {
-          const todos = await getTodos(userId, date);
-          console.log("Fetched todos:", todos);
+          const todos = await getTodos(userId, todayDate);
           setProjectTodos(todos);
         } catch (err) {
           console.log(err);
@@ -86,54 +74,28 @@ const PrivatePage: React.FC = () => {
         }
       };
 
-      fetchTodos(userId, todayDate);
+      fetchTodos();
       fetchEvents(userId, year, month);
     }
   }, [userId, todayDate, year, month, fetchEvents]);
 
-  const getUserName = () => {
-    for (const project of projectTodos) {
-      for (const todo of project.todos) {
-        if (todo.assignees.memberId.toString() === userId) {
-          return todo.assignees.memberName;
-        }
-      }
-    }
-    return "사용자";
-  };
-
   return (
     <div className="privateContainer">
       <div className="header">
-        <p>{getUserName()}님</p>        
+        <p>OOO님의 일정 및 할 일</p>
         <p>오늘은 {todayDate} 입니다.</p>
       </div>
-      {error && <div className="error">{error}</div>}
       <div className="todoContainerWrapper">
-        <div className="myTodoContainer">
-          {projectTodos.map((project, projectIndex) => (
-            <div key={projectIndex} className="projectContainer">
-              <h2 className="todoTitle">{project.projectName}</h2>
-              <div className="todoList">
-                {project.todos.map((todo, todoIndex) => (
-                  <button key={todo.topTodoId} className={`todoItem ${todo.status ? 'completed' : ''}`}>
-                     <div className="checkTodoTitle">
-                      <input 
-                        type="checkbox" 
-                        checked={todo.status} 
-                        onChange={() => handleTodoStatusChange(projectIndex, todoIndex)} 
-                        />
-                      <p className="bottomTodoTitle">{todo.title}</p>
-                    </div>
-                    <p className="bottomTodoDate">{todo.startDate} ~ {todo.endDate}</p>
-                    <div className="assignees">
-                      {Array.isArray(todo.assignees) ? (
-                        todo.assignees.map(assignee => <p key={assignee.memberId}>{assignee.memberName}</p>)
-                      ) : (
-                        <p>{todo.assignees.memberName}</p>
-                      )}
-                    </div>
-                  </button>
+      {error && <div className="error">{error}</div>}
+        <div className="todoContainer">
+          {projectTodos.map((project, index) => (
+            <div key={index} className="projectContainer">
+              <h2>{project.projectName}</h2>
+              <div className="todoContainer">
+                {project.todos.map((todo) => (
+                  <div key={todo.topTodoId} className={`todoItem ${todo.status ? 'completed' : ''}`}>
+                    <p>{todo.title}</p>
+                  </div>
                 ))}
               </div>
             </div>
