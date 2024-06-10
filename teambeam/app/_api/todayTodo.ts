@@ -65,8 +65,6 @@ export const fetchCalendarEvents = async (
       }
     );
 
-    console.log("Calendar events response:", response.data);
-
     const data = response.data[0];
 
     if (data && data.status === "200") {
