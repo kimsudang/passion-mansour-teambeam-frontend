@@ -110,7 +110,7 @@ const PrivatePage: React.FC = () => {
       </div>
       {error && <div className="error">{error}</div>}
       <div className="todoContainerWrapper">
-        <div className="todoContainer">
+        <div className="myTodoContainer">
           {projectTodos.map((project, projectIndex) => (
             <div key={projectIndex} className="projectContainer">
               <h2 className="todoTitle">{project.projectName}</h2>
