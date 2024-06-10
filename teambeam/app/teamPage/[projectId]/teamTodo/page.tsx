@@ -372,6 +372,9 @@ const TeamTodo: React.FC = () => {
         upperEndDate={currentUpperTodo?.endDate || ""}
         middleStartDate={currentMiddleTodo?.startDate || ""}
         middleEndDate={currentMiddleTodo?.endDate || ""}
+        projectId={projectId} // 추가된 부분
+        token={token} // 추가된 부분
+        refreshToken={refreshToken} // 추가된 부분
       />
     </div>
   );

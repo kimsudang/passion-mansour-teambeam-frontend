@@ -226,3 +226,39 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
     throw error;
   }
 };
+
+// 태그 리스트 조회 함수
+export const fetchTags = async (
+  projectId: string,
+  token: string,
+  refreshToken: string
+) => {
+  try {
+    const response = await api.get(`/team/${projectId}/todo/tag`, {
+      headers: {
+        Authorization: token,
+        RefreshToken: refreshToken,
+      },
+    });
+
+    if (response.data && response.data.tagResponses) {
+      return response.data.tagResponses.map((tag: any) => ({
+        id: tag.tagId,
+        name: tag.tagName,
+        category: tag.tagCategory,
+      }));
+    } else {
+      throw new Error("Invalid response data format");
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching tags:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching tags:", error);
+    }
+    throw error;
+  }
+};

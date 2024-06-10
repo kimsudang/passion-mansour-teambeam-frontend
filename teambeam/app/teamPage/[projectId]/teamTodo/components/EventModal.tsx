@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { Participant } from "../types";
+import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
+import { fetchTags } from "@/app/_api/todo";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -13,6 +14,7 @@ type EventModalProps = {
       endDate: string;
       assignees?: number[];
       memo?: string;
+      tags?: number[]; // 추가된 부분
     }
   ) => void;
   title: string;
@@ -22,6 +24,9 @@ type EventModalProps = {
   upperEndDate?: string;
   middleStartDate?: string;
   middleEndDate?: string;
+  projectId: string; // 추가된 부분
+  token: string; // 추가된 부분
+  refreshToken: string; // 추가된 부분
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -35,12 +40,19 @@ const EventModal: React.FC<EventModalProps> = ({
   upperEndDate,
   middleStartDate,
   middleEndDate,
+  projectId,
+  token,
+  refreshToken,
 }) => {
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [assignees, setAssignees] = useState<number[]>([]);
   const [memo, setMemo] = useState("");
+  const [tags, setTags] = useState<number[]>([]); // 추가된 부분
+  const [tagOptions, setTagOptions] = useState<
+    { value: number; label: string }[]
+  >([]); // 추가된 부분
 
   useEffect(() => {
     if (!isOpen) {
@@ -49,11 +61,27 @@ const EventModal: React.FC<EventModalProps> = ({
       setEndDate("");
       setAssignees([]);
       setMemo("");
+      setTags([]);
+    } else {
+      const loadTags = async () => {
+        const fetchedTags = await fetchTags(projectId, token, refreshToken);
+        const tagOptions = fetchedTags.map((tag: any) => ({
+          value: tag.id,
+          label: tag.name,
+        }));
+        setTagOptions(tagOptions);
+      };
+      loadTags();
     }
-  }, [isOpen]);
+  }, [isOpen, projectId, token, refreshToken]);
 
   const handleAssigneeChange = (selectedOption: any) => {
     setAssignees([selectedOption.value]);
+  };
+
+  const handleTagChange = (selectedOptions: any) => {
+    const selectedTagIds = selectedOptions.map((option: any) => option.value);
+    setTags(selectedTagIds);
   };
 
   const handleSubmit = () => {
@@ -99,6 +127,7 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate,
       assignees: showAssignee ? assignees : [],
       memo,
+      tags, // 추가된 부분
     };
 
     console.log("Event being submitted to onSave:", event);
@@ -147,6 +176,20 @@ const EventModal: React.FC<EventModalProps> = ({
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          <div className="todoAssignee">
+            <label>태그</label>
+            <Select
+              isMulti
+              value={tags.map((tag) => ({
+                value: tag,
+                label: tagOptions.find((t) => t.value === tag)?.label || "",
+              }))}
+              className="selectBox"
+              onChange={handleTagChange}
+              options={tagOptions}
+              placeholder="태그를 선택하세요."
             />
           </div>
           {showAssignee && (

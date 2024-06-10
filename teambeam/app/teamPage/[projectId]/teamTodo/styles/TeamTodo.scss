@@ -146,10 +146,10 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
-  max-height: 90vh; 
-  overflow-y: auto; 
+  width: 450px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
 }
@@ -192,6 +192,10 @@
     justify-content: flex-start !important;
   }
 }
+
+// .selectBox .css-13cymwt-control {
+//   width: 70% !important;
+// }
 
 .modalContent button {
   color: #242424;

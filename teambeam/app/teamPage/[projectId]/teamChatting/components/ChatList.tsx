@@ -237,8 +237,9 @@ const ChatList: React.FC = () => {
       });
     });
 
+    // commentAdded 이벤트 핸들러 등록
     newSocket.on("commentAdded", (comment: any) => {
-      console.log("Received comment:", comment);
+      console.log("Received comment:", comment); // 로그 추가
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages.map((msg) => {
           if (msg.id === comment.messageId.toString()) {
