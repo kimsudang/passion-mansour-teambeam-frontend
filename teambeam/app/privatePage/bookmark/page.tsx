@@ -53,11 +53,21 @@ export type BookmarkType = {
 
 const Page = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkType[] | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getBookmarkList(`/my/bookmark/`);
+        const res = await getBookmarkList(`/my/bookmark/`, token);
         console.log("res : ", res);
 
         const sortNotice = sortNoticeData(res.data.bookmarkResponses);
@@ -70,7 +80,7 @@ const Page = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // 공지일 경우 가장 위로 보내기
   const sortNoticeData = (data: BookmarkType[]) => {
@@ -100,6 +110,7 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
+      if (!token) return;
       if (!bookmarks) return;
 
       const isBookmarks = bookmarks?.map((item) =>
@@ -111,7 +122,8 @@ const Page = () => {
 
       try {
         const res = await deleteBookmark(
-          `/my/bookmark/post?postId=${data.post.postId}`
+          `/my/bookmark/post?postId=${data.post.postId}`,
+          token
         );
         // const res = await deleteBookmark(`/my/bookmark/${data.bookmarkId}`);
 
@@ -125,7 +137,7 @@ const Page = () => {
         console.log(err);
       }
     },
-    [bookmarks]
+    [bookmarks, token]
   );
 
   return (

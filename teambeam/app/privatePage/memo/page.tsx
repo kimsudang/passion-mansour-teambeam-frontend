@@ -17,11 +17,21 @@ export type MemoType = {
 const Page = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const [memoList, setMemoList] = useState<MemoType[]>([]);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getMemoList("/my/memo/");
+        const res = await getMemoList("/my/memo/", token);
         console.log("res : ", res);
 
         const sortDate = sortDateData(res.data.memoResponses);
@@ -32,7 +42,7 @@ const Page = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   // 최신순 정렬
   const sortDateData = (data: MemoType[]) => {

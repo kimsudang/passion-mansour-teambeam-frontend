@@ -6,15 +6,23 @@ import { Logo } from "./Icons";
 import Link from "next/link";
 import Image from "next/image";
 import profileDefault from "../../public/img/profile_default.png";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Header() {
   const [isMenu, setIsMenu] = useState<boolean>(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   const router = useRouter();
-  
-  const token = localStorage.getItem("Authorization");
-  const refreshToken = localStorage.getItem("RefreshToken");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      const storedRefeshToken = localStorage.getItem("RefreshToken");
+      setToken(storedToken);
+      setRefreshToken(storedRefeshToken);
+    }
+  }, []);
 
   const handleModalMenu = useCallback(() => {
     setIsMenu(!isMenu);
@@ -39,10 +47,10 @@ export default function Header() {
             <Logo size={88}></Logo>
           </Link>
         </>
-      ) : (    
-      <Link href='/'>
-        <Logo size={88}></Logo>
-      </Link>
+      ) : (
+        <Link href='/'>
+          <Logo size={88}></Logo>
+        </Link>
       )}
 
       <div className='right-menu'>
@@ -52,12 +60,13 @@ export default function Header() {
               <Link href='/privatePage/main'>개인채널</Link>
               <Link href='/main'>팀채널</Link>
             </div>
-          </>) : (
+          </>
+        ) : (
           <></>
         )}
-        
+
         <div className='setting-menu'>
-          { token && refreshToken ? (
+          {token && refreshToken ? (
             <>
               <button onClick={handleModalMenu}>
                 <Image

@@ -1,10 +1,8 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
-const token = localStorage.getItem("Authorization");
-
 // 전체 북마크 리스트 조회
-export const getBookmarkList = async (url: string) => {
+export const getBookmarkList = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -28,7 +26,7 @@ export const getBookmarkList = async (url: string) => {
 };
 
 // 북마크 상세 조회
-export const getBookmarkDetail = async (url: string) => {
+export const getBookmarkDetail = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -52,7 +50,7 @@ export const getBookmarkDetail = async (url: string) => {
 };
 
 // 북마크 등록
-export const postBookmark = async (url: string) => {
+export const postBookmark = async (url: string, token: string) => {
   try {
     const res = await api.post(
       url,
@@ -80,7 +78,7 @@ export const postBookmark = async (url: string) => {
 };
 
 // 북마크 제거
-export const deleteBookmark = async (url: string) => {
+export const deleteBookmark = async (url: string, token: string) => {
   try {
     const res = await api.delete(url, {
       headers: {

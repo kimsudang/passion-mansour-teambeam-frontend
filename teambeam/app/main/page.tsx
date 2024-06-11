@@ -18,13 +18,23 @@ export type Project = {
 export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [lists, setLists] = useState<Project[]>([]);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
 
   useEffect(() => {
     console.log("Access Token: ", process.env.NEXT_PUBLIC_ACCESS_TOKEN);
 
     const fetchData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getPorjectList("/projectList");
+        const res = await getPorjectList("/projectList", token);
         console.log("res : ", res);
 
         setLists(res.data.projectList);
@@ -34,25 +44,30 @@ export default function Page() {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
-  const handleChange = useCallback(async (e: any) => {
-    try {
-      const res = await getPorjectList("/projectList");
+  const handleChange = useCallback(
+    async (e: any) => {
+      if (!token) return;
 
-      e.target.value === "all"
-        ? setLists(res.data.projectList)
-        : setLists(
-            res.data.projectList.filter(
-              (list: any) =>
-                list.projectStatus?.toLocaleLowerCase() ===
-                e.target.value.toLocaleLowerCase()
-            )
-          );
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+      try {
+        const res = await getPorjectList("/projectList", token);
+
+        e.target.value === "all"
+          ? setLists(res.data.projectList)
+          : setLists(
+              res.data.projectList.filter(
+                (list: any) =>
+                  list.projectStatus?.toLocaleLowerCase() ===
+                  e.target.value.toLocaleLowerCase()
+              )
+            );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [token]
+  );
 
   const handleAddBtn = useCallback(() => {
     setIsModalOpen(true);

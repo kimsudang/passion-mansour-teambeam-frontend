@@ -18,14 +18,23 @@ const MemoViewModal = () => {
   });
   const [memo, setMemo] = useState<MemoType | undefined>();
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [token, setToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
   const router = useRouter();
   const params = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getMemoList(`/my/memo/${params.id}`);
+        const res = await getMemoList(`/my/memo/${params.id}`, token);
         console.log("res : ", res);
 
         setMemo(res.data);
@@ -39,7 +48,7 @@ const MemoViewModal = () => {
     };
 
     fetchData();
-  }, [params]);
+  }, [params, token]);
 
   const onCancelBtn = useCallback(() => {
     router.back();
@@ -52,9 +61,11 @@ const MemoViewModal = () => {
 
   // 메모 삭제
   const handleMemoDelete = useCallback(async () => {
+    if (!token) return;
+
     if (confirm("정말 삭제하시겠습니까?")) {
       try {
-        const res = await deleteMemo(`/my/memo/${params.id}`);
+        const res = await deleteMemo(`/my/memo/${params.id}`, token);
 
         console.log("memo delete : ", res.data);
 
@@ -66,7 +77,7 @@ const MemoViewModal = () => {
     } else {
       return;
     }
-  }, [params, onCancelBtn]);
+  }, [params, token, onCancelBtn]);
 
   const handleTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,9 +99,10 @@ const MemoViewModal = () => {
       memoTitle: form.memoTitle,
       memoContent: form.memoContent,
     };
+    if (!token) return;
 
     try {
-      const res = await editMemo(`/my/memo/${params.id}`, data);
+      const res = await editMemo(`/my/memo/${params.id}`, token, data);
 
       console.log("memo edit : ", res);
 
@@ -100,7 +112,7 @@ const MemoViewModal = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [form, params]);
+  }, [form, token, params]);
 
   if (isEdit) {
     return (

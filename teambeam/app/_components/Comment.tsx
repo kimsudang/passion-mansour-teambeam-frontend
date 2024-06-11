@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { CommentType } from "../privatePage/bookmark/[id]/page";
 import "@/app/_styles/Comment.scss";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Comment({
   isEditComment,
@@ -17,7 +17,14 @@ export default function Comment({
   handleCommentDelete: (commentId: number) => void;
 }) {
   const [content, setContent] = useState<string>(comment.content);
-  const memberId = localStorage.getItem("MemberId");
+  const [memberId, setMemberId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedMemberId = localStorage.getItem("MemberId");
+      setMemberId(storedMemberId);
+    }
+  }, []);
 
   const handleContent = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

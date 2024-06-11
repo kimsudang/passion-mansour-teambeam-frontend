@@ -49,7 +49,17 @@ const Page = () => {
   const [rows, setRows] = useState<number>(0);
   const [cells, setCells] = useState<CellType[][]>([]);
 
-  const memberId = localStorage.getItem("MemberId");
+  const [token, setToken] = useState<string | null>(null);
+  const [memberId, setMemberId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      const storedMemberId = localStorage.getItem("MemberId");
+      setToken(storedToken);
+      setMemberId(storedMemberId);
+    }
+  }, []);
   const router = useRouter();
   const params = useParams<{
     projectId: string;
@@ -69,9 +79,12 @@ const Page = () => {
     setCells(newCells);
 
     const fetchData = async () => {
+      if (!token) return;
+
       try {
         const res = await getPostDetail(
-          `/team/${params.projectId}/${params.boardId}/${params.id}`
+          `/team/${params.projectId}/${params.boardId}/${params.id}`,
+          token
         );
         console.log("memberId : ", memberId);
         console.log("res : ", res);
@@ -101,8 +114,10 @@ const Page = () => {
     };
 
     const fetchTagData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getPostTag(`/team/${params.projectId}/tag`);
+        const res = await getPostTag(`/team/${params.projectId}/tag`, token);
         console.log("res : ", res);
 
         setTags(res.data.tagResponses);
@@ -113,7 +128,7 @@ const Page = () => {
 
     fetchData();
     fetchTagData();
-  }, [router, params]);
+  }, [router, params, token]);
 
   const filterTag: TagType[] = tags.filter((tag: TagType) => {
     return (
@@ -204,21 +219,32 @@ const Page = () => {
       postTagIds: tagSelect.map((tag) => tag.tagId),
     };
 
-    console.log(data);
+    if (!token) return;
 
     try {
       const res = await editPost(
         `/team/${params.projectId}/${params.boardId}/${params.id}`,
+        token,
         data
       );
-      console.log("res : ", res);
 
       alert("게시글 수정이 완료되었습니다.");
       router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
+      alert("게시글 수정에 문제가 발생했습니다.");
     }
-  }, [notice, title, template, inputContent, tagSelect, cells, router, params]);
+  }, [
+    notice,
+    title,
+    template,
+    inputContent,
+    tagSelect,
+    cells,
+    router,
+    params,
+    token,
+  ]);
 
   if (boardData === null) {
     return <></>;

@@ -38,17 +38,27 @@ const Page = () => {
   const [tagLists, setTagLists] = useState<TagType[]>([]);
   const [activeTags, setActiveTags] = useState<TagType[]>([]);
   const [isToggle, setIsToggle] = useState<boolean>(true);
+  const [token, setToken] = useState<string | null>(null);
 
   const params = useParams<{ projectId: string; boardId: string }>();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
+
   const fetchTagToggleData = useCallback(
     async (tag: number[]) => {
-      console.log("tag : ", tag);
       const queryString = tag.map((tag) => `tags=${tag}`).join("&");
+
+      if (!token) return;
 
       try {
         const res = await getPostTagList(
-          `/team/${params.projectId}/${params.boardId}/tags?${queryString}`
+          `/team/${params.projectId}/${params.boardId}/tags?${queryString}`,
+          token
         );
 
         const sortNotice = sortNoticeData(res.data.postResponses);
@@ -59,14 +69,17 @@ const Page = () => {
         console.log(err);
       }
     },
-    [params]
+    [params, token]
   );
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
+
       try {
         const res = await getPostList(
-          `/team/${params.projectId}/${params.boardId}/`
+          `/team/${params.projectId}/${params.boardId}/`,
+          token
         );
         console.log("post list : ", res);
 
@@ -80,8 +93,13 @@ const Page = () => {
     };
 
     const fetchTagData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getPostTag(`/team/${params.projectId}/post/tag`);
+        const res = await getPostTag(
+          `/team/${params.projectId}/post/tag`,
+          token
+        );
         console.log("res : ", res);
 
         setTagLists(res.data.tagResponses);
@@ -101,7 +119,7 @@ const Page = () => {
     if (activeTags.length > 0 && activeTags[0].tagName !== "all") {
       fetchTagToggleData(activeTags.map((_tag) => _tag.tagId));
     }
-  }, [params, activeTags, fetchTagToggleData]);
+  }, [params, token, activeTags, fetchTagToggleData]);
 
   // 공지일 경우 가장 위로 보내기
   const sortNoticeData = (data: Board[]) => {
@@ -138,6 +156,7 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
+      if (!token) return;
       if (!boards) return;
 
       const isBoards = boards?.map((item) =>
@@ -150,7 +169,7 @@ const Page = () => {
       if (!data.bookmark) {
         console.log("북마크 등록");
         try {
-          const res = await postBookmark(`/my/bookmark/${data.postId}`);
+          const res = await postBookmark(`/my/bookmark/${data.postId}`, token);
 
           console.log("bookmark add : ", res);
         } catch (err) {
@@ -160,7 +179,8 @@ const Page = () => {
         console.log("북마크 해제");
         try {
           const res = await deleteBookmark(
-            `/my/bookmark/post?postId=${data.postId}`
+            `/my/bookmark/post?postId=${data.postId}`,
+            token
           );
           // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
 
@@ -170,7 +190,7 @@ const Page = () => {
         }
       }
     },
-    [boards]
+    [token, boards]
   );
 
   return (

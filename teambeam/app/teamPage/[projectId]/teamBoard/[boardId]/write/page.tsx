@@ -37,7 +37,14 @@ const Page = () => {
   const [cols, setCols] = useState<number>(3);
   const [rows, setRows] = useState<number>(2);
   const [cells, setCells] = useState<CellType[][]>([]);
+  const [token, setToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
   const params = useParams<{ projectId: string; boardId: string }>();
 
   useEffect(() => {
@@ -52,8 +59,10 @@ const Page = () => {
     setCells(newCells);
 
     const fetchTagData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getPostTag(`/team/${params.projectId}/tag`);
+        const res = await getPostTag(`/team/${params.projectId}/tag`, token);
         console.log("res : ", res);
 
         setTags(res.data.tagResponses);
@@ -63,7 +72,7 @@ const Page = () => {
     };
 
     fetchTagData();
-  }, [params]);
+  }, [params, token]);
 
   const filterTag: TagType[] = tags.filter((tag: TagType) => {
     return (
@@ -155,12 +164,12 @@ const Page = () => {
       notice,
       postTagIds: tagSelect.map((tag) => tag.tagId),
     };
-
-    console.log(data);
+    if (!token) return;
 
     try {
       const res = await postAddPost(
         `/team/${params.projectId}/${params.boardId}/`,
+        token,
         data
       );
       console.log("res : ", res);
@@ -170,7 +179,17 @@ const Page = () => {
     } catch (err) {
       console.log("err  : ", err);
     }
-  }, [notice, title, template, inputContent, tagSelect, cells, router, params]);
+  }, [
+    notice,
+    title,
+    template,
+    inputContent,
+    tagSelect,
+    cells,
+    router,
+    params,
+    token,
+  ]);
 
   return (
     <div>

@@ -28,20 +28,31 @@ type BoardType = {
 };
 
 export default function SideBar() {
+  const [boardList, setBoardLists] = useState<BoardType[] | null>(null);
+  const [isOpen, toggleIsOpen] = useReducer((state) => {
+    return !state;
+  }, false);
+  const [token, setToken] = useState<string | null>(null);
+  const [isSidebar, setIsSidebar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      const storedIsSidebar = localStorage.getItem("isSidebar");
+      setToken(storedToken);
+      setIsSidebar(storedIsSidebar);
+    }
+  }, []);
+
   const init = () => {
-    const isSidebar = localStorage.getItem("isSidebar");
     return isSidebar !== null ? JSON.parse(isSidebar) : true;
   };
-
-  const [boardList, setBoardLists] = useState<BoardType[] | null>(null);
   const [isSideToggle, toggleIsSideToggle] = useReducer(
     (state) => !state,
     undefined,
     init
   );
-  const [isOpen, toggleIsOpen] = useReducer((state) => {
-    return !state;
-  }, false);
+
   const segment = useSelectedLayoutSegment();
   const params = useParams<{
     projectId: string;
@@ -61,8 +72,13 @@ export default function SideBar() {
 
     // 게시판 조회
     const fetchData = async () => {
+      if (!token) return;
+
       try {
-        const res = await getBoardList(`/team/${params.projectId}/board`);
+        const res = await getBoardList(
+          `/team/${params.projectId}/board`,
+          token
+        );
         setBoardLists(res.data.boardResponses);
       } catch (err) {
         console.log(err);
@@ -70,7 +86,7 @@ export default function SideBar() {
     };
 
     fetchData();
-  }, [params, isSideToggle]);
+  }, [params, token, isSideToggle]);
 
   const handleSideBarToggle = () => {
     toggleIsSideToggle();
@@ -93,14 +109,22 @@ export default function SideBar() {
       e.preventDefault();
       e.stopPropagation();
 
+      if (!token) return;
+
       if (confirm("정말 삭제하시겠습니까?")) {
         try {
-          const res = await deleteBoard(`/team/${params.projectId}/${boardId}`);
+          const res = await deleteBoard(
+            `/team/${params.projectId}/${boardId}`,
+            token
+          );
 
           if (res.status === 200) {
             // 삭제 성공시 게시판 리스트 재조회
             try {
-              const res = await getBoardList(`/team/${params.projectId}/board`);
+              const res = await getBoardList(
+                `/team/${params.projectId}/board`,
+                token
+              );
 
               alert("게시판이 삭제되었습니다");
               setBoardLists(res.data.boardResponses);
@@ -120,7 +144,7 @@ export default function SideBar() {
         return;
       }
     },
-    [params, router]
+    [params, router, token]
   );
 
   const onCloseModal = useCallback(() => {

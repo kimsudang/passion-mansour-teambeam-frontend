@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "@/app/_styles/AddModal.scss";
 import { postPorject } from "@/app/_api/project";
 
@@ -19,7 +19,14 @@ export default function AddModal({
     title: "",
     content: "",
   });
+  const [token, setToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      setToken(storedToken);
+    }
+  }, []);
   const router = useRouter();
 
   const titleChange = useCallback(
@@ -42,8 +49,10 @@ export default function AddModal({
     console.log("title : ", form.title);
     console.log("content : ", form.content);
 
+    if (!token) return;
+
     try {
-      const res = await postPorject("/project", form);
+      const res = await postPorject("/project", token, form);
       console.log("project data : ", res);
 
       alert("프로젝트 생성이 완료되었습니다.");
@@ -52,7 +61,7 @@ export default function AddModal({
       console.log("err  : ", err);
       alert("프로젝트 생성에 문제가 발생했습니다");
     }
-  }, [form, router]);
+  }, [token, form, router]);
 
   return (
     <div className='modal-bg'>

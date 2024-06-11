@@ -1,15 +1,8 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
-const token = localStorage.getItem("Authorization");
-
-type CellType = {
-  key: string;
-  value: string;
-};
-
 // 전체 게시판 리스트 조회
-export const getBoardList = async (url: string) => {
+export const getBoardList = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -33,7 +26,7 @@ export const getBoardList = async (url: string) => {
 };
 
 // 게시판 생성
-export const postBoard = async (url: string, name: string) => {
+export const postBoard = async (url: string, token: string, name: string) => {
   try {
     const res = await api.post(
       url,
@@ -61,7 +54,7 @@ export const postBoard = async (url: string, name: string) => {
 };
 
 // 게시판 삭제
-export const deleteBoard = async (url: string) => {
+export const deleteBoard = async (url: string, token: string) => {
   try {
     const res = await api.delete(url, {
       headers: {
@@ -85,7 +78,7 @@ export const deleteBoard = async (url: string) => {
 };
 
 // 전체 게시글 리스트 조회
-export const getPostList = async (url: string) => {
+export const getPostList = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -109,7 +102,7 @@ export const getPostList = async (url: string) => {
 };
 
 // 게시글 상세 상세 조회
-export const getPostDetail = async (url: string) => {
+export const getPostDetail = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -135,6 +128,7 @@ export const getPostDetail = async (url: string) => {
 // 게시글 생성
 export const postAddPost = async (
   url: string,
+  token: string,
   data: {
     title: string;
     content: string;
@@ -176,7 +170,7 @@ export const postAddPost = async (
 };
 
 // 게시글 - 태그별 조회
-export const getPostTagList = async (url: string) => {
+export const getPostTagList = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -200,7 +194,7 @@ export const getPostTagList = async (url: string) => {
 };
 
 // 게시글 - 전체 태그 조회
-export const getPostTag = async (url: string) => {
+export const getPostTag = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -226,6 +220,7 @@ export const getPostTag = async (url: string) => {
 // 게시글 수정
 export const editPost = async (
   url: string,
+  token: string,
   data: {
     title: string;
     content: string;
@@ -257,7 +252,7 @@ export const editPost = async (
 };
 
 // 게시글 삭제
-export const deletePost = async (url: string) => {
+export const deletePost = async (url: string, token: string) => {
   try {
     const res = await api.delete(url, {
       headers: {
@@ -281,7 +276,7 @@ export const deletePost = async (url: string) => {
 };
 
 // 댓글 조회
-export const getComment = async (url: string) => {
+export const getComment = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -305,7 +300,11 @@ export const getComment = async (url: string) => {
 };
 
 // 댓글 등록
-export const postComment = async (url: string, data: { content: string }) => {
+export const postComment = async (
+  url: string,
+  token: string,
+  data: { content: string }
+) => {
   try {
     const res = await api.post(
       url,
@@ -335,7 +334,11 @@ export const postComment = async (url: string, data: { content: string }) => {
 };
 
 // 댓글 수정
-export const editComment = async (url: string, content: string) => {
+export const editComment = async (
+  url: string,
+  token: string,
+  content: string
+) => {
   try {
     const res = await api.patch(
       url,
@@ -363,7 +366,7 @@ export const editComment = async (url: string, content: string) => {
 };
 
 // 댓글 삭제
-export const deleteComment = async (url: string) => {
+export const deleteComment = async (url: string, token: string) => {
   try {
     const res = await api.delete(url, {
       headers: {

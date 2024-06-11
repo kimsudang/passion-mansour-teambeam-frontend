@@ -10,11 +10,20 @@ import {
   RightBtnIcon,
 } from "@/app/_components/Icons";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 export default function SideBar() {
+  const [isSidebar, setIsSidebar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedIsSidebar = localStorage.getItem("isSidebar");
+      setIsSidebar(storedIsSidebar);
+    }
+  }, []);
+  const segment = useSelectedLayoutSegment();
+
   const init = () => {
-    const isSidebar = localStorage.getItem("isSidebar");
     return isSidebar !== null ? JSON.parse(isSidebar) : true;
   };
   const [isSideToggle, toggleIsSideToggle] = useReducer(
@@ -22,7 +31,6 @@ export default function SideBar() {
     undefined,
     init
   );
-  const segment = useSelectedLayoutSegment();
 
   useEffect(() => {
     localStorage.setItem("isSidebar", JSON.stringify(isSideToggle));

@@ -1,10 +1,8 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
-const token = localStorage.getItem("Authorization");
-
 // 프로젝트 리스트 조회
-export const getPorjectList = async (url: string) => {
+export const getPorjectList = async (url: string, token: string) => {
   try {
     const res = await api.get(url, {
       headers: {
@@ -30,6 +28,7 @@ export const getPorjectList = async (url: string) => {
 // 프로젝트 생성
 export const postPorject = async (
   url: string,
+  token: string,
   data: { title: string; content: string }
 ) => {
   try {
