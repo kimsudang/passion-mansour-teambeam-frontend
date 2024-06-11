@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { inviteMember } from '../../../../_api/teamSetting';
-import "./InviteMemberModal.scss";
+import "./TeamSettingModal.scss";
 
 interface InviteMemberModalProps {
   projectId: string;
@@ -40,13 +40,13 @@ const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClos
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
-    if ((e.target as Element).classList.contains('inviteModal')) {
+    if ((e.target as Element).classList.contains('teamSettingModal')) {
       onClose();
     }
   };
 
   return (
-    <div className="inviteModal" onClick={handleModalClick}>
+    <div className="teamSettingModal" onClick={handleModalClick}>
       <div className="inviteModalContent">
         <span className="close" onClick={onClose}>&times;</span>
         <h2>팀원 초대</h2>
