@@ -49,6 +49,13 @@
         margin: 20px;
         color: #242424;
       }
+
+      & .warningMsg {
+        margin-left: 25%;
+        font-size: small;
+        color: #fd5f5f;
+        text-align: left;
+      }
     }
   }
 
@@ -88,3 +95,4 @@
   font-weight: bold;
   margin-bottom: 15px;
 }
+
