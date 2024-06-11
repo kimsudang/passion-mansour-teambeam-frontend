@@ -24,7 +24,7 @@
 
 @mixin input_with_button_styled {
 
-  input {
+  & input {
     width: 48%;
     height: 50px;
     margin-top: 10px;
@@ -33,7 +33,7 @@
     padding: 5px;
   }
 
-  button {
+  & button {
     width: 10%;
     height: 50px;
     margin-left: 2%;
@@ -50,47 +50,40 @@
   }
 }
 
-.join_container{
+.joinContainer {
   width: 100vw;
   height: calc(100vh - 84px);
   display: flex;
   justify-content: center;
   align-items: center;
 
-  & .join_box {
+  & .joinBox {
     width: calc(100vw / 2);
     margin: 30px;
     text-align: center;
 
-    & .page_title {
+    & .pageTitle {
       font-size: 36px;
       font-weight: bolder;
       margin-bottom: 30px;
     }
     
-    & .email_join_form {
+    & .emailJoinForm {
       width: 100%;
       
-        & .email_button {
+        & .emailButton {
           @include input_with_button_styled;
         }
     }
 
 
-    & .submit_button {
+    & .submitButton {
       @include button_styled;
     }
   }
 
   & input {
     @include input_styled;
-  }
-
-  & .warning_msg {
-    margin-left: calc(100vw / 10 + 5px);
-    font-size: small;
-    color: #fd5f5f;
-    text-align: left;
   }
 
 }

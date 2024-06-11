@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useForm from "../../_hooks/useForm";
 import { useSearchParams, useRouter } from "next/navigation";
-import axios from "axios";
+import api from "@/app/_api/api";
 import "./layout.scss";
 
 interface IFormValues {
@@ -24,7 +24,7 @@ const Join: React.FC = () => {
   const handleSendCode = async () => {
     try {
       // axios를 사용하여 백엔드로 이메일과 코드를 전송
-      const response = await axios.post('http://34.22.108.250:8080/api/register-request', 
+      const response = await api.post('/register-request', 
       {mail: values.mail}, { headers: { "Content-Type": "application/json" }}
     );
       const { code } = response.data;
@@ -37,15 +37,11 @@ const Join: React.FC = () => {
   };
 
   const handleConfirmCode = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    
     if (values.confirmMailCode === serverCode) {
       setCodeConfirmed(true);
-      console.log("인증 코드 확인 성공");
       alert("인증 코드 확인 성공");
     } else {
       setCodeConfirmed(false);
-      console.error("인증 코드가 일치하지 않습니다.");
       alert("인증 코드가 일치하지 않습니다.");
     }
   };
@@ -64,24 +60,23 @@ const Join: React.FC = () => {
       // 폼 제출 시 실행될 함수
       onSubmit: async (data) => {
         // 더미 데이터로 테스트하기 위해 콘솔에 출력합니다.
-        if (codeConfirmed === true) {
-          console.log("폼 데이터:", data);
-
+        if (codeConfirmed) {
           try {
             // 폼 데이터를 서버로 전송
             const {memberName, mail, password} = data;
-            await axios.post('http://34.22.108.250:8080/api/register', 
+            await api.post('/register', 
             {memberName, mail, password, token},
             { headers: { "Content-Type": "application/json" }}
           );
-            console.log("회원가입 성공");
-            router.push("/user/login"); // 이동할 경로 지정
+            alert("회원가입 성공");
+            router.push("/user/login");
           } 
           catch (error) {
+            alert("회원가입 실패");
             console.error("회원가입 실패:", error);
           }
         } else {
-          console.error("인증 코드가 확인되지 않았습니다.");
+          alert("인증 코드가 확인되지 않았습니다.");
         }
       },
 
@@ -123,11 +118,11 @@ const Join: React.FC = () => {
     });
 
   return (
-    <div className='join_container'>
-      <div className='join_box'>
-        <p className='page_title'>회원가입</p>
+    <div className='joinContainer'>
+      <div className='joinBox'>
+        <p className='pageTitle'>회원가입</p>
         <form onSubmit={handleSubmit}>
-          <div className='email_join_form'>
+          <div className='emailJoinForm'>
             <div>
               <input
                 type='text'
@@ -140,7 +135,7 @@ const Join: React.FC = () => {
                 <p className='error'>{errors.memberName}</p>
               )}
             </div>
-            <div className='email_button'>
+            <div className='emailButton'>
               <input
                 type='text'
                 name='mail'
@@ -149,7 +144,7 @@ const Join: React.FC = () => {
                 onChange={handleChange}
               />
               <button type='button' onClick={handleSendCode}>
-                <p className='button_name' >
+                <p className='buttonName' >
                   인증코드
                   <br />
                   전송
@@ -157,7 +152,7 @@ const Join: React.FC = () => {
               </button>
               {errors.mail && <p className='error'>{errors.mail}</p>}
             </div>
-            <div className='email_button'>
+            <div className='emailButton'>
               <input
                 type='text'
                 name='confirmMailCode'
@@ -166,7 +161,7 @@ const Join: React.FC = () => {
                 onChange={handleChange}
               />
               <button type='button' onClick={handleConfirmCode}>
-                <p className='button_name'>
+                <p className='buttonName'>
                   인증코드
                   <br />
                   확인
@@ -199,7 +194,7 @@ const Join: React.FC = () => {
               )}
             </div>
             <button
-              className='submit_button'
+              className='submitButton'
               type='submit'
               disabled={isLoading}
             >

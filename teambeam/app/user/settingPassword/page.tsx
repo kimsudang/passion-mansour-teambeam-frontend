@@ -1,11 +1,9 @@
-// 기능 구현된 페이지.
-
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import "./layout.scss";
+import api from "@/app/_api/api";
 
 const SettingPassword = () => {
   const router = useRouter();
@@ -19,8 +17,11 @@ const SettingPassword = () => {
     const token = searchParams.get('token');
     if (token) {
       setToken(token);
+    } else {
+      alert("유효하지 않은 토큰입니다.");
+      router.push("/user/login");
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -40,24 +41,20 @@ const SettingPassword = () => {
     }
 
     try {
-      axios.post("http://34.22.108.250:8080/api/reset-password", {
+      await api.post("/reset-password", {
         token,
         newPassword,
       });
       setMessage("비밀번호가 성공적으로 변경되었습니다.");
-      console.log(token);
       alert("비밀번호가 수정되었습니다.");
       router.push("/user/login");
     } catch (error) {
-      console.log(token);
+      setMessage("비밀번호 변경 중 오류가 발생했습니다.");
+      alert("비밀번호 수정 중 오류가 발생했습니다.");
       console.error("Error:", error);
+      router.push("/user/login");
     }
   };
-
-  // token이 없으면 로딩 중 메시지를 표시
-  if (!token) {
-    return <p>이동 중 입니다...</p>; 
-  }
 
   return (
     <div className="setting_password_container">
