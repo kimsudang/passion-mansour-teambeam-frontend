@@ -29,7 +29,7 @@ const TeamTodo: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [showAssignee, setShowAssignee] = useState(false);
-  const [showTags, setShowTags] = useState(false); // showTags 선언
+  const [showTags, setShowTags] = useState(false);
   const [currentUpperTodo, setCurrentUpperTodo] = useState<TodoList | null>(
     null
   );
@@ -43,8 +43,13 @@ const TeamTodo: React.FC = () => {
   useEffect(() => {
     const loadTodos = async () => {
       try {
+        const token = localStorage.getItem("Authorization") || "";
+        const refreshToken = localStorage.getItem("RefreshToken") || "";
+        setToken(token);
+        setRefreshToken(refreshToken);
+
         if (projectId) {
-          const todos = await fetchTodos(projectId);
+          const todos = await fetchTodos(projectId, token, refreshToken);
           console.log("Loaded Todos:", todos);
           setTodoLists(todos);
         }
@@ -56,7 +61,11 @@ const TeamTodo: React.FC = () => {
     const loadParticipants = async () => {
       try {
         if (projectId) {
-          const participants = await fetchParticipants(projectId);
+          const participants = await fetchParticipants(
+            projectId,
+            token,
+            refreshToken
+          );
           console.log("Loaded Participants:", participants);
           setParticipants(participants);
         }
@@ -67,8 +76,6 @@ const TeamTodo: React.FC = () => {
 
     const loadTags = async () => {
       try {
-        const token = localStorage.getItem("Authorization") || "";
-        const refreshToken = localStorage.getItem("RefreshToken") || "";
         if (projectId) {
           const tags = await fetchTags(projectId, token, refreshToken);
           console.log("Loaded Tags:", tags);
@@ -106,7 +113,7 @@ const TeamTodo: React.FC = () => {
       setCurrentUpperTodo(upperTodo || null);
       setCurrentMiddleTodo(middleTodo || null);
       setShowAssignee(true);
-      setShowTags(true); // 하위 투두 추가 모달에서 태그를 추가하도록 설정
+      setShowTags(true);
     } else if (type === "중위 투두 추가 모달") {
       const upperTodo = todoLists.find(
         (todo) => todo.topTodoId === upperTodoId
@@ -114,12 +121,12 @@ const TeamTodo: React.FC = () => {
       setCurrentUpperTodo(upperTodo || null);
       setCurrentMiddleTodo(null);
       setShowAssignee(false);
-      setShowTags(false); // 중위 투두 추가 모달에서는 태그를 추가하지 않음
+      setShowTags(false);
     } else {
       setCurrentUpperTodo(null);
       setCurrentMiddleTodo(null);
       setShowAssignee(false);
-      setShowTags(false); // 상위 투두 추가 모달에서는 태그를 추가하지 않음
+      setShowTags(false);
     }
     setIsModalOpen(true);
   };
@@ -203,29 +210,34 @@ const TeamTodo: React.FC = () => {
           throw new Error("Assignee must be selected");
         }
 
-        const lowerTodo: TodoItem = {
-          bottomTodoId: "",
+        if (!currentMiddleTodo.middleTodoId) {
+          throw new Error("Middle Todo ID is required");
+        }
+
+        const lowerTodo = {
+          middleTodoId: currentMiddleTodo.middleTodoId,
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
-          status: true,
-          assignees: event.assignees.map(String),
-          middleTodoId: currentMiddleTodo.middleTodoId,
-          topTodoId: currentUpperTodo.topTodoId,
-          memo: event.memo ?? "",
-          tags: event.tags || [], // 추가된 부분
+          memo: event.memo,
+          member: event.assignees[0].toString(),
+          tags: event.tags || [],
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo);
 
-        const response = await addLowerTodo(projectId, {
-          middleTodoId: currentMiddleTodo.middleTodoId || "", // Provide a default value if undefined
-          title: event.title,
-          startDate: event.startDate,
-          endDate: event.endDate,
-          member: event.assignees[0].toString(), // API 요구사항에 맞게 member 필드를 별도로 전달
-        });
+        const response = await addLowerTodo(
+          projectId,
+          lowerTodo,
+          token,
+          refreshToken
+        );
         console.log("Lower Todo added:", response);
+
+        const tagNames = (response.taglist || []).map((tagId) => {
+          const tag = tags.find((t) => t.id === tagId);
+          return tag ? tag.name : tagId;
+        });
 
         setTodoLists((prevTodoLists) =>
           prevTodoLists.map((todoList) =>
@@ -239,8 +251,16 @@ const TeamTodo: React.FC = () => {
                           bottomTodos: [
                             ...(middleTodo.bottomTodos ?? []),
                             {
-                              ...lowerTodo,
                               bottomTodoId: response.bottomTodoId,
+                              title: response.title,
+                              startDate: response.startDate,
+                              endDate: response.endDate,
+                              status: response.status,
+                              memo: response.memo,
+                              assignees: response.assignees
+                                ? [response.assignees.memberName]
+                                : [],
+                              tags: tagNames,
                             },
                           ],
                         }
@@ -387,7 +407,7 @@ const TeamTodo: React.FC = () => {
         onSave={handleEventSave}
         title={modalTitle}
         showAssignee={showAssignee}
-        showTags={showTags} // 추가된 부분
+        showTags={showTags}
         participants={participants}
         upperStartDate={currentUpperTodo?.startDate || ""}
         upperEndDate={currentUpperTodo?.endDate || ""}

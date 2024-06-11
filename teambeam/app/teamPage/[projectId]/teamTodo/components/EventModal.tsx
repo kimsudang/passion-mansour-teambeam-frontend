@@ -19,7 +19,7 @@ type EventModalProps = {
   ) => void;
   title: string;
   showAssignee?: boolean;
-  showTags?: boolean; // 추가된 부분
+  showTags?: boolean;
   participants: Participant[];
   upperStartDate?: string;
   upperEndDate?: string;
@@ -36,7 +36,7 @@ const EventModal: React.FC<EventModalProps> = ({
   onSave,
   title,
   showAssignee,
-  showTags, // 추가된 부분
+  showTags,
   participants,
   upperStartDate,
   upperEndDate,
@@ -51,10 +51,10 @@ const EventModal: React.FC<EventModalProps> = ({
   const [endDate, setEndDate] = useState("");
   const [assignees, setAssignees] = useState<number[]>([]);
   const [memo, setMemo] = useState("");
-  const [tags, setTags] = useState<number[]>([]); // 추가된 부분
+  const [tags, setTags] = useState<number[]>([]);
   const [tagOptions, setTagOptions] = useState<
     { value: number; label: string }[]
-  >([]); // 추가된 부분
+  >([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -65,7 +65,6 @@ const EventModal: React.FC<EventModalProps> = ({
       setMemo("");
       setTags([]);
     } else if (showTags) {
-      // showTags가 true일 때만 태그를 불러옴
       const loadTags = async () => {
         const fetchedTags = await fetchTags(projectId, token, refreshToken);
         const tagOptions = fetchedTags.map((tag: any) => ({
@@ -129,9 +128,10 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate,
       assignees: showAssignee ? assignees : [],
       memo,
-      tags: showTags ? tags : [], // showTags가 true일 때만 tags를 추가
+      tags: showTags ? tags : [],
     };
 
+    console.log("Event being submitted to onSave:", event);
     onSave(title, event);
     onClose();
   };
@@ -179,7 +179,7 @@ const EventModal: React.FC<EventModalProps> = ({
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
-          {showTags && ( // showTags가 true일 때만 태그를 보여줌
+          {showTags && (
             <div className="todoAssignee">
               <label>태그</label>
               <Select

@@ -6,7 +6,7 @@ import { TodoItem, Participant } from "../types";
 type Props = {
   subtask: TodoItem;
   onStatusChange: (id: string, newStatus: boolean) => void;
-  participants: Participant[]; // 추가된 부분
+  participants: Participant[];
 };
 
 const LowerTodoList: React.FC<Props> = ({
@@ -42,7 +42,16 @@ const LowerTodoList: React.FC<Props> = ({
         <div className="assigneeTags">
           {subtask.assignees.map((assignee, index) => (
             <span key={index} className="assigneeTag">
-              {getAssigneeName(assignee)}
+              {assignee}
+            </span>
+          ))}
+        </div>
+      )}
+      {subtask.tags && subtask.tags.length > 0 && (
+        <div className="tagList">
+          {subtask.tags.map((tag, index) => (
+            <span key={index} className="tag">
+              {tag}
             </span>
           ))}
         </div>

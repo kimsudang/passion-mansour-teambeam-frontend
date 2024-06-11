@@ -1,12 +1,17 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
-//투두리스트 조회 함수
-export const fetchTodos = async (projectId: string) => {
+// 투두리스트 조회 함수
+export const fetchTodos = async (
+  projectId: string,
+  token: string,
+  refreshToken: string
+) => {
   try {
     const response = await api.get(`/team/${projectId}/todo`, {
       headers: {
-        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        Authorization: token,
+        RefreshToken: refreshToken,
       },
     });
 
@@ -31,7 +36,11 @@ export const fetchTodos = async (projectId: string) => {
           startDate: bottomTodo.startDate,
           endDate: bottomTodo.endDate,
           status: bottomTodo.status,
-          assignees: bottomTodo.member ? [bottomTodo.member.memberName] : [],
+          memo: bottomTodo.memo,
+          assignees: bottomTodo.assignees
+            ? [bottomTodo.assignees.memberName]
+            : [],
+          tags: bottomTodo.taglist || [],
         })),
       })),
     }));
@@ -125,17 +134,26 @@ export const addLowerTodo = async (
     title: string;
     startDate: string;
     endDate: string;
-    member: string; // 필드 이름 변경
-  }
+    memo?: string;
+    member: string;
+    tags: number[];
+  },
+  token: string,
+  refreshToken: string
 ) => {
   try {
     console.log("Sending Lower Todo:", lowerTodo); // 디버그 로그
+    // Ensure taglist is not null or undefined
     const response = await api.post(
       `/team/${projectId}/todo/bottom`,
-      lowerTodo,
+      {
+        ...lowerTodo,
+        taglist: lowerTodo.tags || [],
+      },
       {
         headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+          Authorization: token,
+          RefreshToken: refreshToken,
         },
       }
     );

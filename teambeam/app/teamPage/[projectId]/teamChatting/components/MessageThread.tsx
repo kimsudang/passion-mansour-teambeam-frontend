@@ -3,6 +3,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import Image from "next/image";
 
 dayjs.extend(relativeTime);
 
@@ -45,10 +46,12 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
     <div className="messageThread">
       {messages.map((msg) => (
         <div key={msg.id} className="message">
-          <img
+          <Image
             src={msg.profileImage}
             alt={msg.username}
             className="profilePicture"
+            width={50}
+            height={50}
           />
           <div className="messageContent">
             <div className="messageHeader">
@@ -65,10 +68,12 @@ const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
               <div className="comments">
                 {msg.comments.map((comment) => (
                   <div key={comment.id} className="comment">
-                    <img
+                    <Image
                       src={comment.profileImage}
                       alt={comment.username}
                       className="profilePicture"
+                      width={50}
+                      height={50}
                     />
                     <div className="commentContent">
                       <div className="commentHeader">

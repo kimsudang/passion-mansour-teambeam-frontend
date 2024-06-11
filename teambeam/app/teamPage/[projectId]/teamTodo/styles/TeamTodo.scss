@@ -89,6 +89,24 @@
   padding: 5px;
 }
 
+.lowerTodoList {
+  .tagList {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+
+    .tag {
+      background-color: #f0f0f0;
+      color: #333;
+      border-radius: 5px;
+      padding: 5px 10px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+  }
+}
+
 .assigneeTag {
   display: inline-block;
   justify-content: center;

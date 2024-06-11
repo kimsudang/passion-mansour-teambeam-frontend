@@ -1,15 +1,20 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
-import axios from "axios";
-import api from "@/app/_api/api";
-
+import Image from "next/image";
+import {
+  fetchParticipants,
+  fetchProfileImage,
+  fetchMessages,
+  getUserInfo,
+  Participant,
+} from "@/app/_api/chat";
 dayjs.extend(relativeTime);
 
 const getToken = () => {
@@ -26,58 +31,6 @@ const getMemberId = () => {
     throw new Error("Member ID is missing");
   }
   return memberId;
-};
-
-type Participant = {
-  id: string;
-  name: string;
-  profileImage: string;
-};
-
-export const fetchParticipants = async (
-  projectId: string
-): Promise<Participant[]> => {
-  try {
-    const token = getToken();
-
-    const response = await api.get(`/team/${projectId}/joinMember`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-
-    console.log("Participants response:", response.data);
-
-    if (response.data && response.data.joinMemberList) {
-      const participants: Participant[] = response.data.joinMemberList.map(
-        (member: any) => ({
-          id: String(member.memberId),
-          name: member.memberName,
-          profileImage: member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
-        })
-      );
-      return participants;
-    } else {
-      throw new Error("Invalid response data format");
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        "Error fetching participants:",
-        error.response?.data || error.message
-      );
-    } else {
-      console.error("Error fetching participants:", error);
-    }
-    throw error;
-  }
-};
-
-const getUserInfo = async (projectId: string, memberId: string) => {
-  const participants = await fetchParticipants(projectId);
-  return participants.find(
-    (participant: Participant) => participant.id === memberId
-  );
 };
 
 type Comment = {
@@ -116,46 +69,69 @@ const ChatList: React.FC = () => {
     : params.projectId;
   const [activeMessage, setActiveMessage] = useState<Message | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const socketRef = useRef<any>(null);
+  const socketRef = useRef<Socket | null>(null);
   const chatAreaRef = useRef<HTMLDivElement>(null);
+  const profileImageCache = useRef<Record<string, string>>({});
 
-  const fetchMessages = async (projectId: string) => {
-    try {
-      const response = await axios.get(
-        `http://34.22.108.250:8080/api/team/chat/${projectId}`
+  useEffect(() => {
+    if (!projectId) return;
+
+    const loadMessages = async () => {
+      console.log("Fetching messages..."); // 메시지 로딩 로그
+      const data = await fetchMessages(projectId);
+      console.log("Fetched messages:", data); // 메시지 로딩 결과 로그
+      const fetchedMessages = await Promise.all(
+        data.map(async (message: any) => {
+          const profileImage =
+            profileImageCache.current[message.member.memberId] ||
+            (await fetchProfileImage(message.member.memberId));
+
+          profileImageCache.current[message.member.memberId] = profileImage;
+
+          return {
+            id: message.messageId.toString(),
+            text: message.messageContent,
+            profileImage: profileImage,
+            username: message.member.memberName,
+            timestamp: message.createDate,
+            comments: await Promise.all(
+              message.messageComments.map(async (comment: any) => {
+                const commentProfileImage =
+                  profileImageCache.current[comment.member.memberId] ||
+                  (await fetchProfileImage(comment.member.memberId));
+
+                profileImageCache.current[comment.member.memberId] =
+                  commentProfileImage;
+
+                return {
+                  id: comment.messageCommentId.toString(),
+                  text: comment.messageCommentContent,
+                  profileImage: commentProfileImage,
+                  username: comment.member.memberName,
+                  timestamp: comment.createDate,
+                };
+              })
+            ),
+          };
+        })
       );
-      const fetchedMessages = response.data.map((message: any) => ({
-        id: message.messageId.toString(),
-        text: message.messageContent,
-        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
-        username: message.member.memberName,
-        timestamp: message.createDate,
-        comments: message.messageComments.map((comment: any) => ({
-          id: comment.messageCommentId.toString(),
-          text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
-          username: comment.member.memberName,
-          timestamp: comment.createDate,
-        })),
-      }));
       setMessages(fetchedMessages);
       setTimeout(() => {
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
         }
       }, 0);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (!projectId) return;
+    loadMessages();
 
-    fetchMessages(projectId);
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL as string;
+    console.log("Socket URL:", socketUrl);
+    const newSocket = io(socketUrl, {
+      transports: ["websocket"],
+      upgrade: false,
+    });
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-    const newSocket = io(socketUrl || "");
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
@@ -182,28 +158,41 @@ const ChatList: React.FC = () => {
       console.error("Socket connection error:", error);
     });
 
-    newSocket.on("message", (message: any) => {
-      console.log("Received message:", message);
+    newSocket.on("message", async (message: any) => {
+      console.log("Received message:", message); // 메시지 수신 로그
+      const profileImage =
+        profileImageCache.current[message.member.memberId] ||
+        (await fetchProfileImage(message.member.memberId));
+
+      profileImageCache.current[message.member.memberId] = profileImage;
+
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
+        profileImage: profileImage,
         username: message.member.memberName,
         timestamp: message.createDate,
-        comments: message.messageComments.map((comment: any) => ({
-          id: comment.messageCommentId.toString(),
-          text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
-          username: comment.member.memberName,
-          timestamp: comment.createDate,
-        })),
+        comments: await Promise.all(
+          message.messageComments.map(async (comment: any) => {
+            const commentProfileImage =
+              profileImageCache.current[comment.member.memberId] ||
+              (await fetchProfileImage(comment.member.memberId));
+
+            profileImageCache.current[comment.member.memberId] =
+              commentProfileImage;
+
+            return {
+              id: comment.messageCommentId.toString(),
+              text: comment.messageCommentContent,
+              profileImage: commentProfileImage,
+              username: comment.member.memberName,
+              timestamp: comment.createDate,
+            };
+          })
+        ),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
-        console.log(
-          "Updated messages after receiving message:",
-          updatedMessages
-        );
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
         }
@@ -211,25 +200,41 @@ const ChatList: React.FC = () => {
       });
     });
 
-    newSocket.on("messageSent", (message: any) => {
-      console.log("Server acknowledged message sent:", message);
+    newSocket.on("messageSent", async (message: any) => {
+      console.log("Server acknowledged message sent:", message); // 메시지 전송 확인 로그
+      const profileImage =
+        profileImageCache.current[message.member.memberId] ||
+        (await fetchProfileImage(message.member.memberId));
+
+      profileImageCache.current[message.member.memberId] = profileImage;
+
       const newMessage = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: message.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
+        profileImage: profileImage,
         username: message.member.memberName,
         timestamp: message.createDate,
-        comments: message.messageComments.map((comment: any) => ({
-          id: comment.messageCommentId.toString(),
-          text: comment.messageCommentContent,
-          profileImage: comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
-          username: comment.member.memberName,
-          timestamp: comment.createDate,
-        })),
+        comments: await Promise.all(
+          message.messageComments.map(async (comment: any) => {
+            const commentProfileImage =
+              profileImageCache.current[comment.member.memberId] ||
+              (await fetchProfileImage(comment.member.memberId));
+
+            profileImageCache.current[comment.member.memberId] =
+              commentProfileImage;
+
+            return {
+              id: comment.messageCommentId.toString(),
+              text: comment.messageCommentContent,
+              profileImage: commentProfileImage,
+              username: comment.member.memberName,
+              timestamp: comment.createDate,
+            };
+          })
+        ),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
-        console.log("Updated messages after sending message:", updatedMessages);
         if (chatAreaRef.current) {
           chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
         }
@@ -237,9 +242,14 @@ const ChatList: React.FC = () => {
       });
     });
 
-    // commentAdded 이벤트 핸들러 등록
-    newSocket.on("commentAdded", (comment: any) => {
-      console.log("Received comment:", comment); // 로그 추가
+    newSocket.on("comment", async (comment: any) => {
+      console.log("Received comment:", comment); // 댓글 수신 로그
+      const commentProfileImage =
+        profileImageCache.current[comment.member.memberId] ||
+        (await fetchProfileImage(comment.member.memberId));
+
+      profileImageCache.current[comment.member.memberId] = commentProfileImage;
+
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages.map((msg) => {
           if (msg.id === comment.messageId.toString()) {
@@ -248,8 +258,7 @@ const ChatList: React.FC = () => {
               {
                 id: comment.messageCommentId.toString(),
                 text: comment.messageCommentContent,
-                profileImage:
-                  comment.member.profileImg || "/img/memberImage.jpeg", // 기본 이미지 경로 설정
+                profileImage: commentProfileImage,
                 username: comment.member.memberName,
                 timestamp: comment.createDate,
               },
@@ -258,7 +267,6 @@ const ChatList: React.FC = () => {
           }
           return msg;
         });
-        console.log("Updated messages after adding comment:", updatedMessages);
         if (
           activeMessage &&
           activeMessage.id === comment.messageId.toString()
@@ -268,10 +276,6 @@ const ChatList: React.FC = () => {
           );
           if (updatedActiveMessage) {
             setActiveMessage(updatedActiveMessage);
-            console.log(
-              "Updated activeMessage after adding comment:",
-              updatedActiveMessage
-            );
           }
         }
         return updatedMessages;
@@ -279,7 +283,7 @@ const ChatList: React.FC = () => {
     });
 
     newSocket.onAny((event, ...args) => {
-      console.log(`Received event ${event} with args:`, args);
+      console.log(`Received event ${event} with args:`, args); // 모든 이벤트 로그
     });
 
     return () => {
@@ -291,20 +295,14 @@ const ChatList: React.FC = () => {
     const storedActiveMessage = localStorage.getItem("activeMessage");
     if (storedActiveMessage) {
       setActiveMessage(JSON.parse(storedActiveMessage));
-      console.log(
-        "Restored activeMessage from localStorage:",
-        storedActiveMessage
-      );
     }
   }, []);
 
   useEffect(() => {
     if (activeMessage) {
       localStorage.setItem("activeMessage", JSON.stringify(activeMessage));
-      console.log("Stored activeMessage in localStorage:", activeMessage);
     } else {
       localStorage.removeItem("activeMessage");
-      console.log("Removed activeMessage from localStorage");
     }
   }, [activeMessage]);
 
@@ -331,8 +329,7 @@ const ChatList: React.FC = () => {
         };
 
         console.log("Sending comment:", newComment);
-
-        socketRef.current.emit("addComment", newComment);
+        socketRef.current.emit("comment", newComment);
       } catch (error) {
         console.error("Error getting token or user info:", error);
       }
@@ -365,6 +362,11 @@ const ChatList: React.FC = () => {
 
   const handleReplyButtonClick = (msg: Message) => {
     setActiveMessage(msg);
+    // 답글 채팅방 구독
+    const messageRoom = `message_${msg.id}`;
+    if (socketRef.current) {
+      socketRef.current.emit("joinMessageRoom", messageRoom);
+    }
   };
 
   return (
@@ -385,10 +387,12 @@ const ChatList: React.FC = () => {
           <div className="messageList">
             {messages.map((msg) => (
               <div key={msg.id} className="message">
-                <img
+                <Image
                   src={msg.profileImage || "/img/memberImage.jpeg"} // 기본 이미지 경로 설정
                   alt={msg.username}
                   className="profilePicture"
+                  width={50}
+                  height={50}
                 />
                 <div className="messageContent">
                   <div className="messageHeader">
