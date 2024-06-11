@@ -83,24 +83,24 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className='login_container'>
-      <div className='login_box'>
-        <div className='email_login'>
-          <p className='page_title'>로그인</p>
+    <div className='loginContainer'>
+      <div className='loginBox'>
+        <div className='emailLogin'>
+          <p className='pageTitle'>로그인</p>
           <form onSubmit={handleSubmit}>
-            <div className='email_login_form'>
+            <div className='emailLoginForm'>
               <input
-                className='submit_email'
+                className='submitEmail'
                 type='text'
                 name='mail'
                 value={values.mail}
                 onChange={handleChange}
                 placeholder='이메일를 입력해주세요.'
               ></input>
-              {errors.mail && <p className='warning_msg'>{errors.mail}</p>}
+              {errors.mail && <p className='warningMsg'>{errors.mail}</p>}
               <br />
               <input
-                className='submit_password'
+                className='submitPassword'
                 type='password'
                 name='password'
                 value={values.password}
@@ -108,11 +108,11 @@ const Login: React.FC = () => {
                 placeholder='비밀번호를 입력해주세요.'
               ></input>
               {errors.password && (
-                <p className='warning_msg'>{errors.password}</p>
+                <p className='warningMsg'>{errors.password}</p>
               )}
             </div>
             <button
-              className='login_with_email'
+              className='loginWithEmail'
               type='submit'
               disabled={isLoading}
             >
@@ -120,16 +120,16 @@ const Login: React.FC = () => {
             </button>
           </form>
           <br />
-          <Link className='page_link' href='/user/join'>
+          <Link className='pageLink' href='/user/join'>
             회원가입
           </Link>
-          <Link className='page_link' href="#" onClick={openModal}>
+          <Link className='pageLink' href="#" onClick={openModal}>
             비밀번호 찾기
           </Link>
         </div>
-        <div className='kakao_login'>
-          <p className='or_text'>또는</p>
-          <button className='login_with_kakao'>카카오로 로그인하기</button>
+        <div className='kakaoLogin'>
+          <p className='orText'>또는</p>
+          <button className='loginWithKakao'>카카오로 로그인하기</button>
         </div>
       </div>
       {isModalOpen && <ForgotPasswordModal onClose={closeModal} />}
