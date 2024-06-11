@@ -1,11 +1,6 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
-const getTokenHeaders = () => ({
-  Authorization: localStorage.getItem('Authorization'),
-  RefreshToken: localStorage.getItem('RefreshToken'),
-});
-
 // 받아온 정보를 저장하는 interface
 interface Project {
   projectId: number;
@@ -29,6 +24,11 @@ interface Assignee {
   memberId: number;
   memberName: string;
 }
+
+const getTokenHeaders = () => ({
+  Authorization: localStorage.getItem('Authorization'),
+  RefreshToken: localStorage.getItem('RefreshToken'),
+});
 
 export const getTodos = async (userId: string, date: string): Promise<{ projectName: string, todos: Todo[] }[]> => {
   try {

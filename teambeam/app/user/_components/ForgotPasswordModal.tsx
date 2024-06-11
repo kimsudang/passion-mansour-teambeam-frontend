@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from "@/app/_api/api";
 import { useRouter } from 'next/navigation';
 import './ForgotPasswordModal.scss';
 
@@ -19,7 +19,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ onClose }) =>
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://34.22.108.250:8080/api/password/send-reset-link', { mail });
+      const response = await api.post('/password/send-reset-link', { mail });
       const url = response.data.url;
       
       setMessage('비밀번호 변경 링크가 이메일로 전송되었습니다.');

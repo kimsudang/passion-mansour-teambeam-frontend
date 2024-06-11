@@ -31,8 +31,15 @@ const TeamSetting: React.FC = () => {
   const [members, setMembers] = useState<MemberInfo[]>([]);
   const [isHost, setIsHost] = useState(false); 
   const [showInviteModal, setShowInviteModal] = useState(false);
+  
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("MemberId"); 
+      setUserId(storedUserId);
+    }
+
     // 프로젝트 정보 가져오기
     const getProjectData = async () => {
       const projectData = await fetchProjectInfo(projectId);
@@ -47,14 +54,13 @@ const TeamSetting: React.FC = () => {
         const membersData = await fetchMembersInfo(projectId);
         setMembers(membersData.sort((a: MemberInfo, b: MemberInfo) => b.host === true ? 1 : -1));
 
-        const currentUserId = localStorage.getItem("MemberId"); 
-        const currentUser = membersData.find((member: MemberInfo) => member.memberId === Number(currentUserId));
+        const currentUser = membersData.find((member: MemberInfo) => member.memberId === Number(userId));
         setIsHost(currentUser ? currentUser.host : false); 
       }
     };
 
     getProjectData();
-  }, [projectId]);
+  }, [projectId, userId]);
 
   const handleInviteMember = async (mail: string) => {
     setShowInviteModal(false);

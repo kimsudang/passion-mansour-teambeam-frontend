@@ -3,7 +3,7 @@
 import React, {useState, useEffect} from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import api from "@/app/_api/api";
 import "./layout.scss";
 import useForm from "../../_hooks/useForm";
 import ForgotPasswordModal from "../_components/ForgotPasswordModal";
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
       initialValues: { mail: "", password: "" },
       onSubmit: async (data) => {
         try {
-          const response = await axios.post("http://34.22.108.250:8080/api/login", data);
+          const response = await api.post("/login", data);
 
           // 헤더에서 토큰 추출
           const authorizationToken = response?.headers['authorization'];

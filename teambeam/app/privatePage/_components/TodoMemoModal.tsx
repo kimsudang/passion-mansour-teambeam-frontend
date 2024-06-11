@@ -31,15 +31,26 @@ const TodoMemoModal: React.FC<TodoMemoModalProps> = ({ isOpen, onClose, bottomTo
   const [todo, setTodo] = useState<Todo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [memo, setMemo] = useState<string>("");
+  
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("Authorization");
+      const storedRefreshToken = localStorage.getItem("RefreshToken");
+
+      setAccessToken(storedToken);
+      setRefreshToken(storedRefreshToken);
+    }
+
     if (isOpen) {
       const fetchTodo = async () => {
         try {
           const response = await api.get(`/my/main/${bottomTodoId}`, {
             headers: {
-              Authorization: localStorage.getItem('Authorization'),
-              RefreshToken: localStorage.getItem('RefreshToken'),
+              Authorization: accessToken,
+              RefreshToken: refreshToken,
             },
           });
           setTodo(response.data.data);
@@ -51,7 +62,7 @@ const TodoMemoModal: React.FC<TodoMemoModalProps> = ({ isOpen, onClose, bottomTo
 
       fetchTodo();
     }
-  }, [isOpen, bottomTodoId]);
+  }, [isOpen, bottomTodoId, accessToken, refreshToken]);
 
   const handleSaveMemo = async () => {
     if (!todo) return;

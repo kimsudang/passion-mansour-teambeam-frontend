@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import axios from 'axios';
 import Link from 'next/link';
 import "./layout.scss";
 import {
@@ -13,61 +12,20 @@ import {
   addCalendarEvent,
   deleteCalendarEvent,
 } from "@/app/_api/calendar";
+import {
+  fetchProjectInfo,
+  fetchNotices,
+  ProjectInfo,
+  Notice
+} from "./_components/TeamMainInfo";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
-
-
-interface ProjectInfo {
-  projectName: string;
-  description: string;
-}
-
-interface Notice {
-  postId: number;
-  title: string;
-  createDate: string;
-}
-
-
-
-// 프로젝트 정보 API 호출 함수
-const fetchProjectInfo = async (projectId: string, token: string | null, refreshToken: string | null): Promise<ProjectInfo | null> => {
-  
-  try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/setting`, {
-      headers: {
-        Authorization: token,
-        RefreshToken: refreshToken,
-      },
-    });
-    return response.data.project;
-  } catch (error) {
-    // alert("프로젝트 정보를 확인할 수 없습니다.");
-    console.error("Error fetching project info:", error);
-    return null;
-  }
-};
-
-// 공지사항 API 호출 함수
-const fetchNotices = async (projectId: string, token: string | null): Promise<Notice[] | null> => {
-  try {
-    const response = await axios.get(`http://34.22.108.250:8080/api/team/${projectId}/notice`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-    return response.data.postResponses;
-  } catch (error) {
-    // alert('공지사항을 확인할 수 없습니다.');
-    console.error('Error fetching notices:', error);
-    return null;
-  }
-};
 
 // 캘린더
 const FullCalendarComponent = dynamic(
   () => import("../teamCalendar/components/FullCalendarComponent"),
   {
     ssr: false,
+    loading: () => <p>Loading...</p>,
   }
 );
 
@@ -85,11 +43,12 @@ const TeamPage: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const token = localStorage.getItem("Authorization") || "";
-  const refreshToken = localStorage.getItem("RefreshToken") || "";
+
+  const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   const fetchEvents = useCallback(
-    async (projectId: string, year: number, month: number) => {
+    async (projectId: string, year: number, month: number, token: string, refreshToken: string) => {
       try {
         const events = await fetchCalendarEvents(
           projectId,
@@ -103,7 +62,7 @@ const TeamPage: React.FC = () => {
         console.error("Error fetching events:", error);
       }
     },
-    [token, refreshToken]
+    []
   );
 
   const fetchParticipantsList = useCallback(async (projectId: string) => {
@@ -117,12 +76,18 @@ const TeamPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('Authorization');
-    const refreshToken = localStorage.getItem('RefreshToken');
+
+    if (typeof window !== "undefined") {
+      const savedAccessToken = localStorage.getItem("Authorization");
+      const savedRefreshToken = localStorage.getItem("RefreshToken");
+      
+      setToken(savedAccessToken);
+      setRefreshToken(savedRefreshToken);
+    }
 
     // 프로젝트 데이터를 불러오는 함수
     const getProjectData = async () => {
-      if (projectId) {
+      if (projectId && token && refreshToken) {
         const projectData = await fetchProjectInfo(projectId, token, refreshToken);
         if (projectData) {
           setProjectInfo(projectData);
@@ -132,25 +97,24 @@ const TeamPage: React.FC = () => {
 
     // 공지사항 가져오기
     const getNotices = async () => {
-      const noticesData = await fetchNotices(projectId, token);
-      if (noticesData) {
-        setNotices(noticesData);
+      if (projectId && token) {
+        const noticesData = await fetchNotices(projectId, token);
+        if (noticesData) {
+          setNotices(noticesData);
+        }
       }
     };
 
-    getProjectData();
-    getNotices();
-    fetchEvents(projectId, year, month);
-    fetchParticipantsList(projectId);
+    if (projectId && token && refreshToken) {
+      fetchEvents(projectId, year, month, token, refreshToken);
+      fetchParticipantsList(projectId);
+      getProjectData();
+      getNotices();
+    }
   }, [year, month, token, refreshToken, fetchEvents, fetchParticipantsList, projectId]);
 
   const handleEventClick = (clickInfo: any) => {
-    console.log("Clicked event info:", clickInfo);
-    console.log("Event details:", clickInfo.event);
-    console.log("Extended Props:", clickInfo.event.extendedProps);
-
     const eventId = clickInfo.event.id || clickInfo.event.extendedProps.id;
-    console.log("Event ID:", eventId);
 
     if (eventId) {
       // 캘린더 페이지로 이동

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/app/_api/api";
 import { useRouter } from "next/navigation";
 import "./layout.scss";
 
@@ -33,9 +33,18 @@ const PrivateSetting = () => {
   const [codeConfirmed, setCodeConfirmed] = useState<boolean>(false);
   const [message, setMessage] = useState("");
 
+  const [accessToken, setAccessToken] = useState<string | null>(null); 
+  const [refreshToken, setRefreshToken] = useState<string | null>(null); 
+
   useEffect(() => {
-    const accessToken = localStorage.getItem('Authorization');
-    const refreshToken = localStorage.getItem('RefreshToken');
+    if (typeof window !== "undefined") {
+      const accessToken = localStorage.getItem("Authorization");
+      const refreshToken = localStorage.getItem("RefreshToken");
+
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
+    };
+
     const headers = {
       'Authorization': `${accessToken}`,
       'RefreshToken': `${refreshToken}`
@@ -44,7 +53,7 @@ const PrivateSetting = () => {
     // 회원 정보를 가져오는 함수
     const fetchMemberInfo = async () => {
       try {
-        const response = await axios.get("http://34.22.108.250:8080/api/member", { headers });
+        const response = await api.get("/member", { headers });
         setMemberInfo(response.data.member);
         console.log(response.data);
       } catch (error) {
@@ -54,18 +63,16 @@ const PrivateSetting = () => {
     };
 
     fetchMemberInfo();
-  }, []);
+  }, [accessToken, refreshToken]);
 
-  // 메일 변경 메일 전송
+  // 메일 주소 변경 메일 전송
   const handleMailChange = async () => {
     try {
-      const accessToken = localStorage.getItem('Authorization');
-      const refreshToken = localStorage.getItem('RefreshToken');
       const headers = {
         'Authorization': `${accessToken}`,
         'RefreshToken': `${refreshToken}`
       };
-      const response = await axios.post("http://34.22.108.250:8080/api/member/mail", {
+      const response = await api.post("/member/mail", {
         mail
       }, { headers });
 
@@ -101,15 +108,13 @@ const PrivateSetting = () => {
   const handleUpdateMemberInfo = async () => {
     if (codeConfirmed) {
       try {
-        const accessToken = localStorage.getItem('Authorization');
-        const refreshToken = localStorage.getItem('RefreshToken');
         const headers = {
           'Authorization': `${accessToken}`,
           'RefreshToken': `${refreshToken}`
         };
 
         // 회원 정보를 수정하는 API 호출
-        const response = await axios.patch("http://34.22.108.250:8080/api/member", {
+        const response = await api.patch("/member", {
           memberName: memberInfo.memberName, // 현재 값을 유지
           mail, 
           profileImage: memberInfo.profileImage,// 현재 값을 유지
@@ -152,14 +157,12 @@ const PrivateSetting = () => {
     }
 
     try {
-      const accessToken = localStorage.getItem('Authorization');
-      const refreshToken = localStorage.getItem('RefreshToken');
       const headers = {
         'Authorization': `${accessToken}`,
         'RefreshToken': `${refreshToken}`
       };
 
-      axios.patch("http://34.22.108.250:8080/api/member/password", {
+      api.patch("/member/password", {
         oldPassword,
         newPassword,
       }, { headers });
@@ -174,23 +177,18 @@ const PrivateSetting = () => {
   // 회원 탈퇴 기능
   const handleDeleteAccount = async () => {
     try {
-      const accessToken = localStorage.getItem('Authorization');
-      const refreshToken = localStorage.getItem('RefreshToken');
-
-      // 요청 헤더에 토큰 추가
       const headers = {
         'Authorization': `${accessToken}`,
         'RefreshToken': `${refreshToken}`
       };
 
-      await axios.delete("http://34.22.108.250:8080/api/member", { headers });
+      await api.delete("/member", { headers });
       
       alert("회원 탙퇴가 완료되었습니다.");
       localStorage.clear();
       router.push("/");
     } catch (error) {
       alert("회원 탙퇴에 실패했습니다.");
-      console.error("Error:", error);
     }
   }
 
