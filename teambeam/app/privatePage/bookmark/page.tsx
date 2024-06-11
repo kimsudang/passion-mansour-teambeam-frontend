@@ -100,6 +100,8 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
+      if (!bookmarks) return;
+
       const isBookmarks = bookmarks?.map((item) =>
         item.post.postId === data.post.postId
           ? { ...item, bookmark: !item.post.bookmark }
