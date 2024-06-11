@@ -22,7 +22,7 @@ export interface Todo {
   startDate: string;
   endDate: string;
   memo: string | null;
-  assignees: Assignee;
+  assignees: Assignee | Assignee[];
 }
 
 interface Assignee {
@@ -36,10 +36,21 @@ export const getTodos = async (userId: string, date: string): Promise<{ projectN
       headers: getTokenHeaders(),
     });
     const data: Project[] = response.data;
-      return data.map(project => ({
+
+    // 모든 최하위 투두를 수집
+    const projectsWithBottomTodos = data.map(project => {
+      const bottomTodos = project.todos
+      .filter(todo => todo.bottomTodoId !== null)
+      .filter(todo => todo.startDate <= date && todo.endDate >= date);      return {
         projectName: project.projectName,
-        todos: project.todos,
-    }));
+        todos: bottomTodos.map(todo => ({
+          ...todo,
+          assignees: Array.isArray(todo.assignees) ? todo.assignees : [todo.assignees],
+        })),
+      };
+    });
+
+    return projectsWithBottomTodos;
   } catch (error) {
       if (error instanceof AxiosError) {
         console.error('Error fetching todos:', error.response?.data);

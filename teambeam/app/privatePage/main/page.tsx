@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import "./layout.scss";
 import { getTodos, Todo, fetchCalendarEvents } from "@/app/_api/todayTodo";
 import dynamic from "next/dynamic";
+import TodoMemoModal from "../_components/TodoMemoModal";
 
 interface ProjectTodos {
   projectName: string;
@@ -39,6 +40,10 @@ const PrivatePage: React.FC = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
 
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
+
   const fetchEvents = useCallback(
     async (userId:string, year: number, month: number) => {
       try {
@@ -61,6 +66,16 @@ const PrivatePage: React.FC = () => {
     const todo = updatedTodos[projectIndex].todos[todoIndex];
     todo.status = !todo.status;
     setProjectTodos(updatedTodos);
+  };
+
+  const handleTodoClick = (todo: Todo) => {
+    setSelectedTodo(todo);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTodo(null);
   };
 
   useEffect(() => {
@@ -92,10 +107,13 @@ const PrivatePage: React.FC = () => {
   }, [userId, todayDate, year, month, fetchEvents]);
 
   const getUserName = () => {
+    if (!userId) return "사용자";
     for (const project of projectTodos) {
       for (const todo of project.todos) {
-        if (todo.assignees.memberId.toString() === userId) {
-          return todo.assignees.memberName;
+        const assignees = Array.isArray(todo.assignees) ? todo.assignees : [todo.assignees];
+        const assignee = assignees.find(assignee => assignee.memberId.toString() === userId);
+        if (assignee) {
+          return assignee.memberName;
         }
       }
     }
@@ -111,12 +129,18 @@ const PrivatePage: React.FC = () => {
       {error && <div className="error">{error}</div>}
       <div className="todoContainerWrapper">
         <div className="myTodoContainer">
-          {projectTodos.map((project, projectIndex) => (
+          {projectTodos
+          .filter(project => project.todos.length > 0)
+          .map((project, projectIndex) => (
             <div key={projectIndex} className="projectContainer">
               <h2 className="todoTitle">{project.projectName}</h2>
               <div className="todoList">
                 {project.todos.map((todo, todoIndex) => (
-                  <button key={todo.topTodoId} className={`todoItem ${todo.status ? 'completed' : ''}`}>
+                  <button 
+                    key={todo.topTodoId} 
+                    className={`todoItem ${todo.status ? 'completed' : ''}`}
+                    onClick={() => handleTodoClick(todo)}
+                  >
                      <div className="checkTodoTitle">
                       <input 
                         type="checkbox" 
@@ -143,6 +167,24 @@ const PrivatePage: React.FC = () => {
       <div className="calendar">
         <FullCalendarComponent events={events} eventClick={handleEventClick} />
       </div>
+      <TodoMemoModal isOpen={isModalOpen} onClose={handleCloseModal}>
+        {selectedTodo && (
+          <>
+            <h2>TODO 이름</h2>
+            <p>기간: {selectedTodo.startDate} ~ {selectedTodo.endDate}</p>
+            <p>내용: {selectedTodo.title}</p>
+            <p>태그: </p>
+            <div className="tags">
+              <span className="tag">고정</span>
+              <span className="tag">중요</span>
+              <span className="tag">회의</span>
+            </div>
+            <p>메모</p>
+            <textarea className="memoArea" placeholder="메모 작성" />
+            <button className="saveButton">저장</button>
+          </>
+        )}
+      </TodoMemoModal>
     </div>
   );
 };
