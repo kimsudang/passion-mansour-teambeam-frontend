@@ -1,11 +1,11 @@
 "use client";
 
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import api from "@/app/_api/api";
 import "./layout.scss";
 import useForm from "../../_hooks/useForm";
+import { LoginUser } from "./_components/LoginForm";
 import ForgotPasswordModal from "../_components/ForgotPasswordModal";
 
 interface ILoginForm {
@@ -15,41 +15,22 @@ interface ILoginForm {
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
-  const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
+  // 카카오 로그인 환경변수
+  // const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
+  // const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
 
   // 이메일 로그인
   const { values, errors, isLoading, handleChange, handleSubmit } =
     useForm<ILoginForm>({
       initialValues: { mail: "", password: "" },
       onSubmit: async (data) => {
-        try {
-          const response = await api.post("/login", data);
-
-          // 헤더에서 토큰 추출
-          const authorizationToken = response?.headers['authorization'];
-          const refreshToken = response?.headers['refreshtoken'];
-
-          // 본문에서 데이터 추출
-          const { message, memberId } = response.data;
-
-          // 토큰 및 사용자 정보 저장
-          if (authorizationToken && refreshToken) {
-            localStorage.setItem("Authorization", authorizationToken);
-            localStorage.setItem("RefreshToken", refreshToken);
-            localStorage.setItem("MemberId", memberId);
-
-            console.log(message);  // "로그인 성공" 메시지 출력
-            alert("로그인 성공");
-            // 로그인 성공 시 대시보드 페이지로 이동
-            router.push('/main');
-          } else {
-            console.error("로그인에 필요한 토큰이 누락되었습니다.");
-          }
-        } catch (error) {
-          console.error("로그인 요청 실패:", error);
-          alert("이메일 혹은 비밀번호가 일치하지 않습니다.");
-        }
+        const result = await LoginUser(data);
+      if (result.success) {
+        alert("로그인에 성공했습니다.");
+        router.push('/main');
+      } else {
+        alert(result.message);
+      }
       },
       validate: (values) => {
         const errors: Partial<Record<keyof ILoginForm, string>> = {};
