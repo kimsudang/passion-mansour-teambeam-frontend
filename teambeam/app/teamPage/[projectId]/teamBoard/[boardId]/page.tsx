@@ -138,6 +138,8 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
+      if (!boards) return;
+
       const isBoards = boards?.map((item) =>
         item.postId === data.postId
           ? { ...item, bookmark: !item.bookmark }
