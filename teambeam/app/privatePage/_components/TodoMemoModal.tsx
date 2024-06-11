@@ -1,50 +1,116 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import "./TodoMemoModal.scss";
-import { Project, Todo, TodoDetails } from "../main/types"; 
+import React, { useEffect, useState } from "react";
+import "../_components/TodoMemoModal.scss";
+import api from "@/app/_api/api";
 
-interface TodoMemoModalProps {
-  todo: Todo | null;
-  details: TodoDetails | null;
-  onClose: () => void;
-  onSaveMemo: (memo: string) => void;
+interface Assignee {
+  memberId: number;
+  memberName: string;
 }
 
-const TodoMemoModal: React.FC<TodoMemoModalProps> = ({ todo, details, onClose, onSaveMemo }) => {
-  const [memo, setMemo] = useState<string>(details?.memo || "");
+interface Todo {
+  topTodoId: number;
+  middleTodoId: number;
+  bottomTodoId: number;
+  title: string;
+  status: boolean;
+  startDate: string;
+  endDate: string;
+  memo: string | null;
+  assignees: Assignee | Assignee[];
+}
 
-  const handleSave = () => {
-    onSaveMemo(memo);
+interface TodoMemoModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  bottomTodoId: number;
+}
+
+const TodoMemoModal: React.FC<TodoMemoModalProps> = ({ isOpen, onClose, bottomTodoId }) => {
+  const [todo, setTodo] = useState<Todo | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [memo, setMemo] = useState<string>("");
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchTodo = async () => {
+        try {
+          const response = await api.get(`/my/main/${bottomTodoId}`, {
+            headers: {
+              Authorization: localStorage.getItem('Authorization'),
+              RefreshToken: localStorage.getItem('RefreshToken'),
+            },
+          });
+          setTodo(response.data.data);
+          setMemo(response.data.data.memo || "");
+        } catch (err) {
+          setError('할 일을 가져오는 중 오류가 발생했습니다.');
+        }
+      };
+
+      fetchTodo();
+    }
+  }, [isOpen, bottomTodoId]);
+
+  const handleSaveMemo = async () => {
+    if (!todo) return;
+
+    try {
+      const response = await api.patch(`/my/main/${bottomTodoId}`, { memo }, {
+        headers: {
+          Authorization: localStorage.getItem('Authorization'),
+          RefreshToken: localStorage.getItem('RefreshToken'),
+        },
+      });
+      setTodo(response.data.date);
+      alert('메모가 저장되었습니다.');
+      onClose();
+    } catch (err) {
+      setError('메모를 저장하는 중 오류가 발생했습니다.');
+    }
   };
-
-  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLDivElement).classList.contains('todoModal')) {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  if (!todo || !details) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div className="todoModal" onClick={handleOutsideClick}>
-      <div className="modalContent">
-        <span className="close" onClick={onClose}>&times;</span>
-        <h2>{details.title}</h2>
-        <p>상태: {details.status ? '완료' : '미완료'}</p>
-        <p>시작 날짜: {details.startDate}</p>
-        <p>종료 날짜: {details.endDate}</p>
-        <p>담당자: {details.assignees.memberName}</p>
-        <div className="tagContainer">
-          {todo.tags.map((tag: string, index: number) => (
-            <div className="tag" key={index}>
-              {tag}
-            </div>
-          ))}
+    <div className="todoMemoModalContainer" onClick={handleOverlayClick}>
+      <div className="todoMemoModal">
+        <button className="todoMemoModalClose" onClick={onClose}>
+          &times;
+        </button>
+        <div className="todoMemoModalContent">
+          {error && <p className="error">{error}</p>}
+          {todo ? (
+            <>
+              <h2>{todo.title}</h2>
+              <p>기간: {todo.startDate} ~ {todo.endDate}</p>
+              {todo.status && <p className="completedModal">완료된 작업</p>}
+              <p>태그: </p>
+              <div className="todoMemoTags">
+                {(Array.isArray(todo.assignees) ? todo.assignees : [todo.assignees]).map(assignee => (
+                  <span className="tag" key={assignee.memberId}>{assignee.memberName}</span>
+                ))}
+              </div>
+              <p>메모</p>
+              <textarea 
+                className="memoArea" 
+                placeholder="메모 작성" 
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)} />
+              <button className="saveMemoButton" onClick={handleSaveMemo}>저장</button>
+            </>
+          ) : (
+            <>Loading...</>
+          )}
         </div>
-        <textarea value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="메모를 입력하세요"></textarea>
-        <button onClick={handleSave}>저장</button>
-        {details.memo && <p>메모: {details.memo}</p>}
       </div>
     </div>
   );

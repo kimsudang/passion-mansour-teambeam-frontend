@@ -42,8 +42,7 @@ const PrivatePage: React.FC = () => {
 
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
-
+  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
   const fetchEvents = useCallback(
     async (userId:string, year: number, month: number) => {
       try {
@@ -68,14 +67,14 @@ const PrivatePage: React.FC = () => {
     setProjectTodos(updatedTodos);
   };
 
-  const handleTodoClick = (todo: Todo) => {
-    setSelectedTodo(todo);
+  const handleTodoClick = (todoId: number) => {
+    setSelectedTodoId(todoId);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedTodo(null);
+    setSelectedTodoId(null);
   };
 
   useEffect(() => {
@@ -139,7 +138,7 @@ const PrivatePage: React.FC = () => {
                   <button 
                     key={todo.topTodoId} 
                     className={`todoItem ${todo.status ? 'completed' : ''}`}
-                    onClick={() => handleTodoClick(todo)}
+                    onClick={() => handleTodoClick(todo.bottomTodoId)}
                   >
                      <div className="checkTodoTitle">
                       <input 
@@ -167,24 +166,9 @@ const PrivatePage: React.FC = () => {
       <div className="calendar">
         <FullCalendarComponent events={events} eventClick={handleEventClick} />
       </div>
-      <TodoMemoModal isOpen={isModalOpen} onClose={handleCloseModal}>
-        {selectedTodo && (
-          <>
-            <h2>TODO 이름</h2>
-            <p>기간: {selectedTodo.startDate} ~ {selectedTodo.endDate}</p>
-            <p>내용: {selectedTodo.title}</p>
-            <p>태그: </p>
-            <div className="tags">
-              <span className="tag">고정</span>
-              <span className="tag">중요</span>
-              <span className="tag">회의</span>
-            </div>
-            <p>메모</p>
-            <textarea className="memoArea" placeholder="메모 작성" />
-            <button className="saveButton">저장</button>
-          </>
-        )}
-      </TodoMemoModal>
+      {selectedTodoId && (
+        <TodoMemoModal isOpen={isModalOpen} onClose={handleCloseModal} bottomTodoId={selectedTodoId} />
+      )}
     </div>
   );
 };
