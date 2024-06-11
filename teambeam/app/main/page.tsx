@@ -28,8 +28,6 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    console.log("Access Token: ", process.env.NEXT_PUBLIC_ACCESS_TOKEN);
-
     const fetchData = async () => {
       if (!token) return;
 
@@ -85,9 +83,7 @@ export default function Page() {
         <div className='main_top'>
           <h2>팀 채널</h2>
           <select onChange={handleChange}>
-            <option value='all' selected>
-              전체
-            </option>
+            <option value='all'>전체</option>
             <option value='progress'>진행중</option>
             <option value='end'>완료</option>
           </select>
