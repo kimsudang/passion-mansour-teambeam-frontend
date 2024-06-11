@@ -13,7 +13,11 @@ import {
   SettingIcon,
   TodoIcon,
 } from "@/app/_components/Icons";
-import { useParams, useSelectedLayoutSegment } from "next/navigation";
+import {
+  useParams,
+  useRouter,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { deleteBoard, getBoardList } from "@/app/_api/board";
 import BoardAddModal from "./BoardAddModal";
@@ -43,6 +47,7 @@ export default function SideBar() {
     projectId: string;
     boardId: string;
   }>();
+  const router = useRouter();
 
   useEffect(() => {
     localStorage.setItem("isSidebar", JSON.stringify(isSideToggle));
@@ -84,30 +89,38 @@ export default function SideBar() {
 
   // 게시판 삭제
   const handleDeleteBoard = useCallback(
-    async (e: React.MouseEvent<HTMLButtonElement>) => {
+    async (e: React.MouseEvent<HTMLButtonElement>, boardId: number) => {
       e.preventDefault();
       e.stopPropagation();
 
-      try {
-        const res = await deleteBoard(
-          `/team/${params.projectId}/${params.boardId}`
-        );
+      if (confirm("정말 삭제하시겠습니까?")) {
+        try {
+          const res = await deleteBoard(`/team/${params.projectId}/${boardId}`);
 
-        if (res.status === 200) {
-          // 삭제 성공시 게시판 리스트 재조회
-          try {
-            const res = await getBoardList(`/team/${params.projectId}/board`);
-            setBoardLists(res.data.boardResponses);
-          } catch (err) {
-            console.log(err);
+          if (res.status === 200) {
+            // 삭제 성공시 게시판 리스트 재조회
+            try {
+              const res = await getBoardList(`/team/${params.projectId}/board`);
+
+              alert("게시판이 삭제되었습니다");
+              setBoardLists(res.data.boardResponses);
+
+              router.push(
+                `/teamPage/${params.projectId}/teamBoard/${res.data.boardResponses[0].boardId}`
+              );
+            } catch (err) {
+              console.log(err);
+            }
           }
+        } catch (err) {
+          console.log(err);
+          window.alert("게시판 삭제에 오류가 생겼습니다.");
         }
-      } catch (err) {
-        console.log(err);
-        window.alert("게시판 삭제에 오류가 생겼습니다.");
+      } else {
+        return;
       }
     },
-    [params]
+    [params, router]
   );
 
   const onCloseModal = useCallback(() => {
@@ -188,7 +201,10 @@ export default function SideBar() {
                     <Link
                       href={`/teamPage/${params.projectId}/teamBoard/${board.boardId}`}
                       className={
-                        params.boardId === String(board.boardId) ? "active" : ""
+                        "menuLink " +
+                        (params.boardId === String(board.boardId)
+                          ? "active"
+                          : "")
                       }
                     >
                       <div className='menuGroup'>
@@ -213,7 +229,10 @@ export default function SideBar() {
                     <Link
                       href={`/teamPage/${params.projectId}/teamBoard/${board.boardId}`}
                       className={
-                        params.boardId === String(board.boardId) ? "active" : ""
+                        "menuLink " +
+                        (params.boardId === String(board.boardId)
+                          ? "active"
+                          : "")
                       }
                     >
                       <div className='menuGroup'>
@@ -225,9 +244,9 @@ export default function SideBar() {
                       <button
                         type='button'
                         className='boardUtilBtn'
-                        onClick={(e) => handleDeleteBoard(e)}
+                        onClick={(e) => handleDeleteBoard(e, board.boardId)}
                       >
-                        <DeleteBtnIcon size={12} />
+                        <DeleteBtnIcon size={10} />
                       </button>
                     </Link>
                   </li>

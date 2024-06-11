@@ -20,8 +20,10 @@ nav {
         display: none;
       }
 
-      .boardUtilBtn {
-        display: none;
+      .menuLink {
+        .boardUtilBtn {
+          display: none;
+        }
       }
     }
   }
@@ -74,19 +76,37 @@ nav {
         svg {
           fill: var(--primary);
         }
+
+        &.menuLink {
+          .boardUtilBtn {
+            color: #fff;
+          }
+        }
       }
 
-      .menuGroup {
+      &.menuLink {
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
+
+        .menuGroup {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+        }
 
         .boardUtilBtn {
           display: flex;
           justify-content: center;
           align-items: center;
           border: none;
+          background: transparent;
+          color: #242424;
+          font-size: 20px;
+          font-weight: 400;
+          cursor: pointer;
         }
       }
 

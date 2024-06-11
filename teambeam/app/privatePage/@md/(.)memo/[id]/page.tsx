@@ -66,7 +66,7 @@ const MemoViewModal = () => {
     } else {
       return;
     }
-  }, [params]);
+  }, [params, onCancelBtn]);
 
   const handleTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

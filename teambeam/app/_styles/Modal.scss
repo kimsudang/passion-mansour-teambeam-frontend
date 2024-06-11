@@ -11,6 +11,15 @@
   height: 100dvh;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: 10;
+
+  &.boardAdd {
+    .modal-wrap {
+      height: 340px;
+    }
+    .modal-content {
+      height: auto;
+    }
+  }
 }
 
 .modal-wrap {

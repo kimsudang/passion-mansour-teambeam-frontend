@@ -31,7 +31,7 @@ export default function BoardAddModal({
     console.log("title : ", name);
     try {
       const res = await postBoard(`/team/${projectId}/board`, name);
-      setBoardLists((prev) => [prev, res.data]);
+      setBoardLists((prev) => (prev ? [...prev, res.data] : res.data));
       onCloseModal();
     } catch (err) {
       console.log(err);
@@ -40,7 +40,7 @@ export default function BoardAddModal({
   }, [name, projectId, setBoardLists, onCloseModal]);
 
   return (
-    <div className='modal-bg'>
+    <div className='modal-bg boardAdd'>
       <div className='modal-wrap'>
         <form action={onSubmit}>
           <div className='modal-header'>

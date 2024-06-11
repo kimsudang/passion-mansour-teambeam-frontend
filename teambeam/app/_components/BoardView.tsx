@@ -12,7 +12,12 @@ import { useParams, useRouter } from "next/navigation";
 import "@/app/_styles/Board.scss";
 import Comment from "./Comment";
 import { BoardType, CommentType } from "../privatePage/bookmark/[id]/page";
-import { deletePost, postComment } from "../_api/board";
+import {
+  deleteComment,
+  deletePost,
+  getComment,
+  postComment,
+} from "../_api/board";
 import { getBookmarkList } from "../_api/bookmark";
 
 export default function BoardView({
@@ -33,6 +38,7 @@ export default function BoardView({
   isBookmark: boolean;
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
+  const [isEditComment, setIsEditComment] = useState<boolean>(false);
 
   const router = useRouter();
   const params = useParams<{
@@ -128,7 +134,75 @@ export default function BoardView({
         console.log(err);
       }
     }
-  }, [commentContent, setComments, params]);
+  }, [commentContent, type, setComments, params]);
+
+  // 코멘트 수정
+  const handleCommentIsToggle = useCallback(() => {
+    setIsEditComment(!isEditComment);
+  }, [isEditComment]);
+
+  // 코멘트 삭제
+  const handleCommentDelete = useCallback(
+    async (commentId: number) => {
+      if (confirm("해당 댓글을 삭제하시겠습니까?")) {
+        if (type === "bookmark") {
+          try {
+            const res = await getBookmarkList(`/my/bookmark/${params.id}`);
+            console.log("deleteComment2", res);
+
+            try {
+              const _res = await deleteComment(
+                `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/${commentId}`
+              );
+
+              if (_res.status === 200) {
+                try {
+                  const response = await getComment(
+                    `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`
+                  );
+
+                  alert("댓글이 삭제되었습니다.");
+                  setComments(response.data.postCommentResponseList);
+                } catch (err) {
+                  console.log(err);
+                }
+              }
+            } catch (err) {
+              console.log(err);
+              alert("댓글 삭제에 문제가 발생했습니다");
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        } else {
+          try {
+            const res = await deleteComment(
+              `/team/${params.projectId}/${params.boardId}/${params.id}/${commentId}`
+            );
+
+            if (res.status === 200) {
+              try {
+                const _res = await getComment(
+                  `/team/${params.projectId}/${params.boardId}/${params.id}/`
+                );
+
+                alert("댓글이 삭제되었습니다.");
+                setComments(_res.data.postCommentResponseList);
+              } catch (err) {
+                console.log(err);
+              }
+            }
+          } catch (err) {
+            console.log(err);
+            alert("댓글 삭제에 문제가 발생했습니다");
+          }
+        }
+      } else {
+        return;
+      }
+    },
+    [params, type, setComments]
+  );
 
   return (
     <>
@@ -233,7 +307,15 @@ export default function BoardView({
           </form>
         </div>
         {comments?.map((comment) => {
-          return <Comment key={comment.postCommentId} comment={comment} />;
+          return (
+            <Comment
+              key={comment.postCommentId}
+              isEditComment={isEditComment}
+              comment={comment}
+              handleCommentIsToggle={handleCommentIsToggle}
+              handleCommentDelete={handleCommentDelete}
+            />
+          );
         })}
       </div>
     </>

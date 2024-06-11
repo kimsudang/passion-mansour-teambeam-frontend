@@ -35,12 +35,16 @@ export const getBoardList = async (url: string) => {
 // 게시판 생성
 export const postBoard = async (url: string, name: string) => {
   try {
-    const res = await api.post(url, name, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.post(
+      url,
+      { name },
+      {
+        headers: {
+          Authorization: token,
+        },
+        withCredentials: true,
+      }
+    );
 
     return res;
   } catch (error) {
@@ -315,6 +319,58 @@ export const postComment = async (url: string, data: { content: string }) => {
         withCredentials: true,
       }
     );
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
+// 댓글 수정
+export const editComment = async (url: string, content: string) => {
+  try {
+    const res = await api.patch(
+      url,
+      { content },
+      {
+        headers: {
+          Authorization: token,
+        },
+        withCredentials: true,
+      }
+    );
+
+    return res;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error fetching calendar events:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error fetching calendar events:", error);
+    }
+    throw error;
+  }
+};
+
+// 댓글 삭제
+export const deleteComment = async (url: string) => {
+  try {
+    const res = await api.delete(url, {
+      headers: {
+        Authorization: token,
+      },
+      withCredentials: true,
+    });
 
     return res;
   } catch (error) {
