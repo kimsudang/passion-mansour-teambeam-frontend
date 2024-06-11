@@ -161,7 +161,7 @@
   // align-items: center;
 }
 
-.modal div:not(.modalButtons) {
+.modal div:not(.modalButtons, .todoAssignee) {
   display: flex;
   justify-content: space-between;
   align-content: center;
@@ -172,6 +172,14 @@
   font-size: 24px;
   margin-bottom: 20px;
 }
+
+// .modal input {
+//   width: 252px;
+// }
+
+// .modal label {
+//   width: 100px;
+// }
 
 .modalContent input,
 .modalContent textarea,

@@ -10,6 +10,7 @@ export interface TodoItem {
   bottomTodos?: TodoItem[];
   member?: string;
   memo?: string;
+  tags?: number[];
 }
 
 export type TodoList = {

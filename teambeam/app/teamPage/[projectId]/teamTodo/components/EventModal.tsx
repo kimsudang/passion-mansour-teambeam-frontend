@@ -14,19 +14,20 @@ type EventModalProps = {
       endDate: string;
       assignees?: number[];
       memo?: string;
-      tags?: number[]; // 추가된 부분
+      tags?: number[];
     }
   ) => void;
   title: string;
   showAssignee?: boolean;
+  showTags?: boolean; // 추가된 부분
   participants: Participant[];
   upperStartDate?: string;
   upperEndDate?: string;
   middleStartDate?: string;
   middleEndDate?: string;
-  projectId: string; // 추가된 부분
-  token: string; // 추가된 부분
-  refreshToken: string; // 추가된 부분
+  projectId: string;
+  token: string;
+  refreshToken: string;
 };
 
 const EventModal: React.FC<EventModalProps> = ({
@@ -35,6 +36,7 @@ const EventModal: React.FC<EventModalProps> = ({
   onSave,
   title,
   showAssignee,
+  showTags, // 추가된 부분
   participants,
   upperStartDate,
   upperEndDate,
@@ -62,7 +64,8 @@ const EventModal: React.FC<EventModalProps> = ({
       setAssignees([]);
       setMemo("");
       setTags([]);
-    } else {
+    } else if (showTags) {
+      // showTags가 true일 때만 태그를 불러옴
       const loadTags = async () => {
         const fetchedTags = await fetchTags(projectId, token, refreshToken);
         const tagOptions = fetchedTags.map((tag: any) => ({
@@ -73,7 +76,7 @@ const EventModal: React.FC<EventModalProps> = ({
       };
       loadTags();
     }
-  }, [isOpen, projectId, token, refreshToken]);
+  }, [isOpen, projectId, token, refreshToken, showTags]);
 
   const handleAssigneeChange = (selectedOption: any) => {
     setAssignees([selectedOption.value]);
@@ -95,7 +98,6 @@ const EventModal: React.FC<EventModalProps> = ({
       return;
     }
 
-    // 날짜 검증 로직 추가
     const start = new Date(startDate);
     const end = new Date(endDate);
     if (start > end) {
@@ -127,10 +129,9 @@ const EventModal: React.FC<EventModalProps> = ({
       endDate,
       assignees: showAssignee ? assignees : [],
       memo,
-      tags, // 추가된 부분
+      tags: showTags ? tags : [], // showTags가 true일 때만 tags를 추가
     };
 
-    console.log("Event being submitted to onSave:", event);
     onSave(title, event);
     onClose();
   };
@@ -178,20 +179,22 @@ const EventModal: React.FC<EventModalProps> = ({
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
-          <div className="todoAssignee">
-            <label>태그</label>
-            <Select
-              isMulti
-              value={tags.map((tag) => ({
-                value: tag,
-                label: tagOptions.find((t) => t.value === tag)?.label || "",
-              }))}
-              className="selectBox"
-              onChange={handleTagChange}
-              options={tagOptions}
-              placeholder="태그를 선택하세요."
-            />
-          </div>
+          {showTags && ( // showTags가 true일 때만 태그를 보여줌
+            <div className="todoAssignee">
+              <label>태그</label>
+              <Select
+                isMulti
+                value={tags.map((tag) => ({
+                  value: tag,
+                  label: tagOptions.find((t) => t.value === tag)?.label || "",
+                }))}
+                className="selectBox"
+                onChange={handleTagChange}
+                options={tagOptions}
+                placeholder="태그를 선택하세요."
+              />
+            </div>
+          )}
           {showAssignee && (
             <div className="todoAssignee">
               <label>담당자</label>

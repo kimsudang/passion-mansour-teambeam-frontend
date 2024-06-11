@@ -14,6 +14,7 @@ import {
   addMiddleTodo,
   addLowerTodo,
   deleteUpperTodo,
+  fetchTags,
 } from "@/app/_api/todo";
 import { fetchParticipants } from "@/app/_api/calendar";
 
@@ -28,14 +29,16 @@ const TeamTodo: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [showAssignee, setShowAssignee] = useState(false);
+  const [showTags, setShowTags] = useState(false); // showTags 선언
   const [currentUpperTodo, setCurrentUpperTodo] = useState<TodoList | null>(
     null
   );
   const [currentMiddleTodo, setCurrentMiddleTodo] = useState<TodoItem | null>(
     null
   );
-  const [token, setToken] = useState(""); // 실제 토큰 값 설정
-  const [refreshToken, setRefreshToken] = useState(""); // 실제 리프레시 토큰 값 설정
+  const [token, setToken] = useState("");
+  const [refreshToken, setRefreshToken] = useState("");
+  const [tags, setTags] = useState<any[]>([]);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -62,8 +65,23 @@ const TeamTodo: React.FC = () => {
       }
     };
 
+    const loadTags = async () => {
+      try {
+        const token = localStorage.getItem("Authorization") || "";
+        const refreshToken = localStorage.getItem("RefreshToken") || "";
+        if (projectId) {
+          const tags = await fetchTags(projectId, token, refreshToken);
+          console.log("Loaded Tags:", tags);
+          setTags(tags);
+        }
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+
     loadTodos();
     loadParticipants();
+    loadTags();
   }, [token, refreshToken, projectId]);
 
   const handleAddButtonClick = (
@@ -87,17 +105,22 @@ const TeamTodo: React.FC = () => {
       );
       setCurrentUpperTodo(upperTodo || null);
       setCurrentMiddleTodo(middleTodo || null);
+      setShowAssignee(true);
+      setShowTags(true); // 하위 투두 추가 모달에서 태그를 추가하도록 설정
     } else if (type === "중위 투두 추가 모달") {
       const upperTodo = todoLists.find(
         (todo) => todo.topTodoId === upperTodoId
       );
       setCurrentUpperTodo(upperTodo || null);
       setCurrentMiddleTodo(null);
+      setShowAssignee(false);
+      setShowTags(false); // 중위 투두 추가 모달에서는 태그를 추가하지 않음
     } else {
       setCurrentUpperTodo(null);
       setCurrentMiddleTodo(null);
+      setShowAssignee(false);
+      setShowTags(false); // 상위 투두 추가 모달에서는 태그를 추가하지 않음
     }
-    setShowAssignee(type === "하위 투두 추가 모달");
     setIsModalOpen(true);
   };
 
@@ -113,6 +136,7 @@ const TeamTodo: React.FC = () => {
       endDate: string;
       assignees?: number[];
       memo?: string;
+      tags?: number[];
     }
   ) => {
     try {
@@ -189,6 +213,7 @@ const TeamTodo: React.FC = () => {
           middleTodoId: currentMiddleTodo.middleTodoId,
           topTodoId: currentUpperTodo.topTodoId,
           memo: event.memo ?? "",
+          tags: event.tags || [], // 추가된 부분
         };
 
         console.log("Lower Todo Before Sending:", lowerTodo);
@@ -243,17 +268,14 @@ const TeamTodo: React.FC = () => {
         const response = await deleteUpperTodo(projectId, id);
         if (response.status === "200") {
           setTodoLists(todoLists.filter((list) => list.topTodoId !== id));
-          // 성공 메시지 표시
           toast.success("목표가 성공적으로 삭제되었습니다.", {
             autoClose: 10000,
           });
-          // 일정 시간이 지나고 새로고침
           setTimeout(() => {
             window.location.reload();
-          }, 10000); // 10초 후에 새로고침
+          }, 10000);
         } else {
           console.error("Failed to delete upper todo");
-          // 실패 메시지 표시
           toast.error("목표 삭제 중 오류가 발생했습니다.", {
             autoClose: 10000,
           });
@@ -261,7 +283,6 @@ const TeamTodo: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Error deleting upper todo:", error);
-      // 실패 메시지 표시
       toast.error("목표 삭제 중 오류가 발생했습니다.", {
         autoClose: 10000,
       });
@@ -304,7 +325,6 @@ const TeamTodo: React.FC = () => {
       });
     }
 
-    // 하위 상태 변경 시 상위 상태 변경 로직 추가
     if (type === "bottom") {
       updatedTodoLists.forEach((list) => {
         list.middleTodos.forEach((task) => {
@@ -367,14 +387,15 @@ const TeamTodo: React.FC = () => {
         onSave={handleEventSave}
         title={modalTitle}
         showAssignee={showAssignee}
+        showTags={showTags} // 추가된 부분
         participants={participants}
         upperStartDate={currentUpperTodo?.startDate || ""}
         upperEndDate={currentUpperTodo?.endDate || ""}
         middleStartDate={currentMiddleTodo?.startDate || ""}
         middleEndDate={currentMiddleTodo?.endDate || ""}
-        projectId={projectId} // 추가된 부분
-        token={token} // 추가된 부분
-        refreshToken={refreshToken} // 추가된 부분
+        projectId={projectId}
+        token={token}
+        refreshToken={refreshToken}
       />
     </div>
   );
