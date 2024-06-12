@@ -167,7 +167,7 @@ const TeamSetting: React.FC = () => {
             {isHost ? (
               <input className="projectTitle" type="text" value={projectInfo.projectName} onChange={(e) => setProjectInfo({ ...projectInfo, projectName: e.target.value })} />
             ) : (
-              <span className="projectTitle">{projectInfo.projectName}</span>
+              <div className="projectTitle">{projectInfo.projectName}</div>
             )}
           </div>
           <div className="projectDescription">
@@ -175,26 +175,36 @@ const TeamSetting: React.FC = () => {
             {isHost ? (
               <input className="projectDis" type="textarea" value={projectInfo.description} onChange={(e) => setProjectInfo({ ...projectInfo, description: e.target.value })} />
             ) : (
-              <span className="projectDis">{projectInfo.description}</span>
+              <div className="projectDis">{projectInfo.description}</div>
             )}
           </div>
           <div className="projectStatus">
             <h4>프로젝트 상태</h4>
-            {isHost ? (
-              <>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROGRESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROGRESS' })} />
-                <label>진행중인 프로젝트</label>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'END' })} />
-                <label>완료된 프로젝트</label>
-              </>
-            ) : (
-              <>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROGRESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROGRESS' })} disabled  />
-                <label>진행중인 프로젝트</label>
-                <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'END' })} disabled />
-                <label>완료된 프로젝트</label>
-              </>
-            )}
+              <div className="projectStateRadio">
+                {isHost ? (
+                  <>
+                    <div className="progressRadio">
+                      <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROGRESS'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'PROGRESS' })} />
+                      <label>진행중인 프로젝트</label>
+                    </div>
+                    <div className="endRadio">
+                      <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} onChange={() => setProjectInfo({ ...projectInfo, projectStatus: 'END' })} />
+                      <label>완료된 프로젝트</label>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="progressRadio">
+                        <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'PROGRESS'} disabled />
+                        <label>진행중인 프로젝트</label>
+                      </div>
+                      <div className="endRadio">
+                        <input type="radio" name="projectState" checked={projectInfo.projectStatus === 'END'} disabled />
+                        <label>완료된 프로젝트</label>
+                      </div>
+                  </>
+                )}
+              </div>
           </div>
           {isHost && <button className="settingButton" type="button" onClick={handleProjectSaveSettings}>변경한 설정 저장하기</button>}
         </form>
@@ -214,11 +224,11 @@ const TeamSetting: React.FC = () => {
               {members.map(member => (
                 <li key={member.memberId} className="memberItem">
                 <p className="memberName">{member.memberName}</p>
-                <select value={member.host ? "leader" : "follower"} onChange={(e) => handleAuthorityChange(member.memberId, e.target.value)}>
+                <select value={member.host ? "leader" : "follower"} onChange={(e) => handleAuthorityChange(member.memberId, e.target.value)} disabled={!isHost}>
                   <option value="leader">팀장</option>
                   <option value="follower">팀원</option>
                 </select>
-                <select value={member.memberRole || ""} onChange={(e) => handleRoleChange(member.memberId, e.target.value)}>
+                <select value={member.memberRole || ""} onChange={(e) => handleRoleChange(member.memberId, e.target.value)} disabled={!isHost}>
                   <option value="">직무</option>
                   <option value="PM">PM</option>
                   <option value="기획">기획</option>

@@ -25,7 +25,14 @@
   }
 }
 
+.projectStateRadio {
+  display: flex;
 
+  & .progressRadio, .endRadio {
+    margin: 10px;
+  }
+
+}
 
 .projectName,
 .projectDescription,
@@ -41,7 +48,7 @@ select {
   margin-top: 5px;
   margin-bottom: 10px;
   border: 1px solid #D5D5D5;
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 input[type="radio"] {
