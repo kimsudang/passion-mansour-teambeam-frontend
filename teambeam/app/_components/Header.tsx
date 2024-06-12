@@ -56,9 +56,11 @@ export default function Header() {
 
   const handleLogout = useCallback(() => {
     setIsMenu(false);
+    setUser(null, null, null);
+    setImgSrc("");
     localStorage.clear();
     router.push("/user/login");
-  }, [router]);
+  }, [router, setUser, setImgSrc]);
 
   return (
     <header>
