@@ -38,7 +38,7 @@ export default function BoardView({
   isBookmark: boolean;
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
-  const [isEditComment, setIsEditComment] = useState<boolean>(false);
+  const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -125,6 +125,7 @@ export default function BoardView({
             token,
             data
           );
+          setCommentContent("");
           setComments((prev) => [...prev, _res.data]);
         } catch (err) {
           console.log(err);
@@ -149,9 +150,9 @@ export default function BoardView({
   }, [token, commentContent, type, setComments, params]);
 
   // 코멘트 수정
-  const handleCommentIsToggle = useCallback(() => {
-    setIsEditComment(!isEditComment);
-  }, [isEditComment]);
+  const handleCommentIsToggle = useCallback((commentId: number | null) => {
+    setEditCommentId(commentId);
+  }, []);
 
   // 코멘트 삭제
   const handleCommentDelete = useCallback(
@@ -330,9 +331,19 @@ export default function BoardView({
           return (
             <Comment
               key={comment.postCommentId}
-              isEditComment={isEditComment}
+              isEditComment={editCommentId === comment.postCommentId}
               comment={comment}
-              handleCommentIsToggle={handleCommentIsToggle}
+              setComments={setComments}
+              type={type}
+              params={params}
+              token={token}
+              handleCommentIsToggle={() =>
+                handleCommentIsToggle(
+                  editCommentId === comment.postCommentId
+                    ? null
+                    : comment.postCommentId
+                )
+              }
               handleCommentDelete={handleCommentDelete}
             />
           );

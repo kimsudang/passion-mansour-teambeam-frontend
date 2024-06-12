@@ -33,4 +33,45 @@
       color: #242424;
     }
   }
+
+  .uillBtns {
+    display: none;
+
+    &.edit {
+      display: flex;
+      align-items: center;
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      color: #242424;
+      margin-right: 12px;
+      cursor: pointer;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &:hover {
+    .uillBtns {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .editComment {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    min-height: 120px;
+    resize: none;
+  }
 }

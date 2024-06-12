@@ -4,15 +4,25 @@ import Image from "next/image";
 import { CommentType } from "../privatePage/bookmark/[id]/page";
 import "@/app/_styles/Comment.scss";
 import { useCallback, useEffect, useState } from "react";
+import { editComment, getComment } from "../_api/board";
+import { getBookmarkList } from "../_api/bookmark";
 
 export default function Comment({
   isEditComment,
   comment,
+  setComments,
+  type,
+  params,
+  token,
   handleCommentIsToggle,
   handleCommentDelete,
 }: {
   isEditComment: boolean;
   comment: CommentType;
+  setComments: React.Dispatch<React.SetStateAction<CommentType[]>>;
+  type: string;
+  params: { projectId: string; boardId: string; id: string };
+  token: string | null;
   handleCommentIsToggle: () => void;
   handleCommentDelete: (commentId: number) => void;
 }) {
@@ -35,9 +45,73 @@ export default function Comment({
     []
   );
 
-  const onSubmit = useCallback(() => {
-    console.log(content);
-  }, [content]);
+  // 댓글 수정
+  const onSubmit = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+
+      if (!token) return;
+
+      if (type === "bookmark") {
+        try {
+          const res = await getBookmarkList(`/my/bookmark/${params.id}`, token);
+
+          try {
+            const _res = await editComment(
+              `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/${comment.postCommentId}`,
+              token,
+              content
+            );
+
+            if (res.status === 200) {
+              try {
+                const response = await getComment(
+                  `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`,
+                  token
+                );
+                alert("댓글이 수정되었습니다.");
+                setComments(response.data.postCommentResponseList);
+
+                handleCommentIsToggle();
+              } catch (err) {
+                console.log(err);
+              }
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        try {
+          const res = await editComment(
+            `/team/${params.projectId}/${params.boardId}/${params.id}/${comment.postCommentId}`,
+            token,
+            content
+          );
+
+          if (res.status === 200) {
+            try {
+              const _res = await getComment(
+                `/team/${params.projectId}/${params.boardId}/${params.id}/`,
+                token
+              );
+              alert("댓글이 수정되었습니다.");
+              setComments(_res.data.postCommentResponseList);
+
+              handleCommentIsToggle();
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    },
+    [content, comment, setComments, type, params, token, handleCommentIsToggle]
+  );
 
   if (isEditComment) {
     return (
@@ -66,21 +140,20 @@ export default function Comment({
                 <span>{comment.createDate}</span>
               </div>
 
-              <div
-                style={{
-                  display:
-                    Number(memberId) === comment?.member?.memberId
-                      ? "block"
-                      : "none",
-                }}
-              >
-                <button type='submit'>수정</button>
-                <button type='button' onClick={handleCommentIsToggle}>
-                  취소
-                </button>
-              </div>
+              {Number(memberId) === comment?.member?.memberId ? (
+                <div className='uillBtns edit'>
+                  <button type='submit'>수정</button>
+                  <button type='button' onClick={handleCommentIsToggle}>
+                    취소
+                  </button>
+                </div>
+              ) : null}
             </div>
-            <textarea value={content} onChange={handleContent} />
+            <textarea
+              className='editComment'
+              value={content}
+              onChange={handleContent}
+            />
           </div>
         </div>
       </form>
@@ -111,24 +184,19 @@ export default function Comment({
               <span>{comment.createDate}</span>
             </div>
 
-            <div
-              style={{
-                display:
-                  Number(memberId) === comment?.member?.memberId
-                    ? "block"
-                    : "none",
-              }}
-            >
-              <button type='button' onClick={handleCommentIsToggle}>
-                수정
-              </button>
-              <button
-                type='button'
-                onClick={() => handleCommentDelete(comment.postCommentId)}
-              >
-                삭제
-              </button>
-            </div>
+            {Number(memberId) === comment?.member?.memberId ? (
+              <div className='uillBtns'>
+                <button type='button' onClick={handleCommentIsToggle}>
+                  수정
+                </button>
+                <button
+                  type='button'
+                  onClick={() => handleCommentDelete(comment.postCommentId)}
+                >
+                  삭제
+                </button>
+              </div>
+            ) : null}
           </div>
           <p>{comment.content}</p>
         </div>
