@@ -7,22 +7,43 @@ import Link from "next/link";
 import Image from "next/image";
 import profileDefault from "../../public/img/profile_default.png";
 import { useCallback, useEffect, useState } from "react";
+import api from "../_api/api";
+import useUserStore from "@/app/_store/useUserStore";
 
 export default function Header() {
   const [isMenu, setIsMenu] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const { token, refreshToken, memberId, imgSrc, setUser, setImgSrc } =
+    useUserStore();
 
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      const storedRefeshToken = localStorage.getItem("RefreshToken");
-      setToken(storedToken);
-      setRefreshToken(storedRefeshToken);
+    const storedToken = localStorage.getItem("Authorization");
+    const storedRefreshToken = localStorage.getItem("RefreshToken");
+    const storedMemberId = localStorage.getItem("MemberId");
+
+    if (storedToken && storedMemberId) {
+      setUser(storedToken, storedRefreshToken, storedMemberId);
     }
-  }, []);
+
+    const fetchData = async () => {
+      if (!token) return;
+
+      try {
+        const res = await api.get(`/member/profileImage/${memberId}`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+        const dataURI = `data:image/jpeg;base64,${res.data.profileImage}`;
+        setImgSrc(dataURI);
+      } catch (err) {
+        console.log("err  : ", err);
+      }
+    };
+
+    fetchData();
+  }, [token, memberId, setUser, setImgSrc]);
 
   const handleModalMenu = useCallback(() => {
     setIsMenu(!isMenu);
@@ -70,7 +91,7 @@ export default function Header() {
             <>
               <button onClick={handleModalMenu}>
                 <Image
-                  src={profileDefault}
+                  src={imgSrc ? imgSrc : profileDefault}
                   alt='마이 프로필'
                   className='img-profile'
                   width={48}

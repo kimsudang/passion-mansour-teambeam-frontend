@@ -19,6 +19,8 @@ export default function Comment({
   const [content, setContent] = useState<string>(comment.content);
   const [memberId, setMemberId] = useState<string | null>(null);
 
+  const dataURI = `data:image/jpeg;base64,${comment.member.profileImage}`;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedMemberId = localStorage.getItem("MemberId");
@@ -27,7 +29,7 @@ export default function Comment({
   }, []);
 
   const handleContent = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setContent(e.target.value);
     },
     []
@@ -45,14 +47,15 @@ export default function Comment({
             <Image
               src={
                 comment.member.profileImage !== null
-                  ? // ? comment.member.profileImage
-                    "/img/profile_default.png"
+                  ? dataURI
                   : "/img/profile_default.png"
               }
               alt='프로필'
               className='comment-profile'
               width={48}
               height={48}
+              placeholder='blur'
+              blurDataURL={dataURI}
             />
           </div>
           <div className='comment-right'>
@@ -77,7 +80,7 @@ export default function Comment({
                 </button>
               </div>
             </div>
-            <input type='text' value={content} onChange={handleContent} />
+            <textarea value={content} onChange={handleContent} />
           </div>
         </div>
       </form>
@@ -89,14 +92,15 @@ export default function Comment({
           <Image
             src={
               comment.member.profileImage !== null
-                ? // ? comment.member.profileImage
-                  "/img/profile_default.png"
+                ? dataURI
                 : "/img/profile_default.png"
             }
             alt='프로필'
             className='comment-profile'
             width={48}
             height={48}
+            placeholder='blur'
+            blurDataURL={dataURI}
           />
         </div>
         <div className='comment-right'>
