@@ -9,34 +9,14 @@ import {
   updateMemberRole, 
   inviteMember, 
   fetchProjectTags, 
-  updateProjectInfo 
+  updateProjectInfo,
+  ProjectInfo, 
+  MemberInfo, 
+  TagInfo 
 } from '../../../_api/teamSetting';
 import "./layout.scss";
 import InviteMemberModal from "./_components/InviteMemberModal";
-
-// 프로젝트 정보 인터페이스 정의
-interface ProjectInfo {
-  projectName: string;
-  description: string;
-  projectStatus: string;
-}
-
-// 멤버 정보 인터페이스 정의
-interface MemberInfo {
-  memberId: number;
-  memberName: string;
-  mail: string;
-  memberRole: string;
-  host: boolean;
-}
-
-// 태그 정보 인터페이스 정의
-interface TagInfo {
-  tagId: number;
-  tagName: string;
-  tagCategory: string;
-  projectId: number;
-}
+import AddTagModal from "./_components/AddTagModal";
 
 const TeamSetting: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -50,6 +30,7 @@ const TeamSetting: React.FC = () => {
   const [tags, setTags] = useState<TagInfo[]>([]);
   const [isHost, setIsHost] = useState(false); 
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showAddTagModal, setShowAddTagModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -86,6 +67,17 @@ const TeamSetting: React.FC = () => {
     getProjectData();
     getTagsData();
   }, [projectId, userId]);
+  
+  // 프로젝트 정보 저장
+  const handleProjectSaveSettings = async () => {
+    try {
+      await updateProjectInfo(projectId, projectInfo);
+      setProjectInfo({ ...projectInfo });
+      alert("프로젝트 정보가 저장되었습니다.");
+    } catch (error) {
+      console.error("Error updating project info:", error);
+    }
+  };
 
   // 멤버 초대
   const handleInviteMember = async (mail: string) => {
@@ -140,25 +132,19 @@ const TeamSetting: React.FC = () => {
      try {
       if (currentLeader) {
         await updateMemberRole(projectId, currentLeader.memberId);
+        await updateMemberRoles(projectId, memberRoles);
       }
-      await updateMemberRoles(projectId, memberRoles);
+      alert("변경한 설정이 저장되었습니다.");
       window.location.reload();
     } catch (error) {
       console.error("Error saving settings:", error);
     }
   };
 
-    // 프로젝트 정보 저장
-    const handleProjectSaveSettings = async () => {
-      // 프로젝트 정보 업데이트
-      try {
-        await updateProjectInfo(projectId, projectInfo);
-        setProjectInfo({ ...projectInfo });
-        alert("프로젝트 정보가 저장되었습니다.");
-      } catch (error) {
-        console.error("Error updating project info:", error);
-      }
-    };
+  const handleTagAdded = async () => {
+    const tagsData = await fetchProjectTags(projectId);
+    setTags(tagsData);
+  };
 
   return (
     <div className="projectSettingContainer">
@@ -244,7 +230,7 @@ const TeamSetting: React.FC = () => {
       <div className="tagManagement">
         <div className="title">
           <h3>프로젝트 태그 관리</h3>
-          <button  className="settingButton">태그 추가</button> 
+          <button className="settingButton" type="button" onClick={() => setShowAddTagModal(true)}>태그 추가</button> 
         </div>
         <div className="tagList">
           {tags.map(tag => (
@@ -253,6 +239,7 @@ const TeamSetting: React.FC = () => {
         </div>
       </div>
       {showInviteModal && <InviteMemberModal projectId={projectId} onClose={() => setShowInviteModal(false)} onInvite={handleInviteMember} />}
+      {showAddTagModal && <AddTagModal projectId={projectId} onClose={() => setShowAddTagModal(false)} onTagAdded={handleTagAdded} existingTags={tags} />}
     </div>
   );
 

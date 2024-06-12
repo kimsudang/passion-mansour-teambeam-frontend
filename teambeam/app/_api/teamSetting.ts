@@ -1,6 +1,30 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
+// 프로젝트 정보 인터페이스 정의
+export interface ProjectInfo {
+  projectName: string;
+  description: string;
+  projectStatus: string;
+}
+
+// 멤버 정보 인터페이스 정의
+export interface MemberInfo {
+  memberId: number;
+  memberName: string;
+  mail: string;
+  memberRole: string;
+  host: boolean;
+}
+
+// 태그 정보 인터페이스 정의
+export interface TagInfo {
+  tagId: number;
+  tagName: string;
+  tagCategory: string;
+  projectId: number;
+}
+
 const getTokenHeaders = () => ({
   Authorization: localStorage.getItem('Authorization'),
   RefreshToken: localStorage.getItem('RefreshToken'),
@@ -68,7 +92,7 @@ export const updateMemberRoles = async (projectId: string, memberRoles: { member
         headers: getTokenHeaders(),
       }
     );
-    alert("작무를 업데이트 했습니다.");
+    alert("직무를 업데이트 했습니다.");
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error("Error updating member roles:", error.response?.data || error.message);
@@ -129,5 +153,25 @@ export const fetchProjectTags = async (projectId: string) => {
   } catch (error) {
     console.error("Failed to fetch project tags:", error);
     return [];
+  }
+};
+
+// 태그 추가 API 호출 함수
+export const createTag = async (projectId: string, tagName: string, tagCategory: string | null) => {
+  try {
+    const response = await api.post(`/team/${projectId}/tag`, 
+      { tagName, tagCategory }, 
+      {
+        headers: getTokenHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error creating tag:", error.response?.data || error.message);
+    } else {
+      console.error("Unexpected error creating tag:", error);
+    }
+    alert("태그를 추가할 수 없습니다.");
   }
 };
