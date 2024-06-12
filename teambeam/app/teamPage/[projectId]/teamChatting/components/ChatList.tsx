@@ -371,15 +371,16 @@ const ChatList: React.FC = () => {
     setActiveMessage(msg);
   };
 
+  const handleBackButtonClick = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="chatContainer">
       <div className="chatArea" ref={chatAreaRef}>
         {activeMessage ? (
           <div className="commentsView">
-            <button
-              className="backButton"
-              onClick={() => setActiveMessage(null)}
-            >
+            <button className="backButton" onClick={handleBackButtonClick}>
               ← Back
             </button>
             <MessageThread
