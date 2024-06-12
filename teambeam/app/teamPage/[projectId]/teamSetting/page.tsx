@@ -17,6 +17,7 @@ import {
 import "./layout.scss";
 import InviteMemberModal from "./_components/InviteMemberModal";
 import AddTagModal from "./_components/AddTagModal";
+import ShowTagModal from "./_components/ShowTagModal";
 
 const TeamSetting: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -28,6 +29,7 @@ const TeamSetting: React.FC = () => {
 
   const [members, setMembers] = useState<MemberInfo[]>([]);
   const [tags, setTags] = useState<TagInfo[]>([]);
+  const [selectedTag, setSelectedTag] = useState<TagInfo | null>(null);
   const [isHost, setIsHost] = useState(false); 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showAddTagModal, setShowAddTagModal] = useState(false);
@@ -146,6 +148,15 @@ const TeamSetting: React.FC = () => {
     setTags(tagsData);
   };
 
+  const handleTagClick = (tag: TagInfo) => {
+    setSelectedTag(tag);
+  };
+
+  const handleTagModalClose = () => {
+    setSelectedTag(null);
+  };
+
+
   return (
     <div className="projectSettingContainer">
       <h1>프로젝트 관리</h1>
@@ -234,12 +245,21 @@ const TeamSetting: React.FC = () => {
         </div>
         <div className="tagList">
           {tags.map(tag => (
-            <div key={tag.tagId} className="tagItem">{tag.tagName}</div>
+            <div key={tag.tagId} className="tagItem" onClick={() => handleTagClick(tag)}>{tag.tagName}</div>
           ))}
         </div>
       </div>
       {showInviteModal && <InviteMemberModal projectId={projectId} onClose={() => setShowInviteModal(false)} onInvite={handleInviteMember} />}
       {showAddTagModal && <AddTagModal projectId={projectId} onClose={() => setShowAddTagModal(false)} onTagAdded={handleTagAdded} existingTags={tags} />}
+      {selectedTag && (
+        <ShowTagModal 
+          projectId={projectId} 
+          tag={selectedTag} 
+          onClose={handleTagModalClose} 
+          onTagDeleted={handleTagAdded} 
+          isHost={isHost} 
+        />
+      )}
     </div>
   );
 

@@ -175,3 +175,19 @@ export const createTag = async (projectId: string, tagName: string, tagCategory:
     alert("태그를 추가할 수 없습니다.");
   }
 };
+
+// 태그 삭제 API 호출 함수
+export const deleteTag = async (projectId: string, tagId: number) => {
+  try {
+    await api.delete(`/team/${projectId}/tag/${tagId}`, {
+      headers: getTokenHeaders(),
+    });
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error deleting tag:", error.response?.data || error.message);
+    } else {
+      console.error("Unexpected error deleting tag:", error);
+    }
+    alert("태그를 삭제할 수 없습니다.");
+  }
+};
