@@ -122,3 +122,16 @@ export const getUserInfo = async (projectId: string, memberId: string) => {
     (participant: Participant) => participant.id === memberId
   );
 };
+
+// 답글 조회 함수
+export const fetchComments = async (projectId: string, messageId: string) => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}/team/chat/${projectId}/${messageId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+};
