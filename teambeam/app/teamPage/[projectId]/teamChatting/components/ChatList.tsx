@@ -2,36 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import io, { Socket } from "socket.io-client";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import {
-  fetchParticipants,
-  fetchProfileImage,
-  fetchMessages,
-  getUserInfo,
-  Participant,
-} from "@/app/_api/chat";
-dayjs.extend(relativeTime);
-
-const getToken = () => {
-  const token = localStorage.getItem("Authorization");
-  if (!token) {
-    throw new Error("Authorization token is missing");
-  }
-  return token;
-};
-
-const getMemberId = () => {
-  const memberId = localStorage.getItem("MemberId");
-  if (!memberId) {
-    throw new Error("Member ID is missing");
-  }
-  return memberId;
-};
+import { fetchProfileImage, fetchMessages, getUserInfo } from "@/app/_api/chat";
+import { formatTimestamp } from "./utils";
 
 type Comment = {
   id: string;
@@ -50,16 +26,20 @@ type Message = {
   comments?: Comment[];
 };
 
-const formatTimestamp = (timestamp: string) => {
-  const date = dayjs(timestamp);
-  const now = dayjs();
-  const differenceInDays = now.diff(date, "day");
-
-  if (differenceInDays < 1) {
-    return date.fromNow();
-  } else {
-    return date.format("YYYY-MM-DD HH:mm");
+const getToken = () => {
+  const token = localStorage.getItem("Authorization");
+  if (!token) {
+    throw new Error("Authorization token is missing");
   }
+  return token;
+};
+
+const getMemberId = () => {
+  const memberId = localStorage.getItem("MemberId");
+  if (!memberId) {
+    throw new Error("Member ID is missing");
+  }
+  return memberId;
 };
 
 const ChatList: React.FC = () => {
@@ -73,15 +53,11 @@ const ChatList: React.FC = () => {
   const chatAreaRef = useRef<HTMLDivElement>(null);
   const profileImageCache = useRef<Record<string, string>>({});
 
-  const tempCommentStorage: { [key: string]: string } = useRef({}).current;
-
   useEffect(() => {
     if (!projectId) return;
 
     const loadMessages = async () => {
-      console.log("Fetching messages...");
       const data = await fetchMessages(projectId);
-      console.log("Fetched messages:", data);
       const fetchedMessages = await Promise.all(
         data.map(async (message: any) => {
           const profileImage =
@@ -128,7 +104,6 @@ const ChatList: React.FC = () => {
     loadMessages();
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL as string;
-    console.log("Socket URL:", socketUrl);
     const newSocket = io(socketUrl, {
       transports: ["websocket"],
       upgrade: false,
@@ -137,18 +112,12 @@ const ChatList: React.FC = () => {
     socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
-      console.log("Connected to socket server");
-      console.log("Socket ID:", newSocket.id);
-
       try {
         const token = getToken();
         const projectIdNumber = Number(projectId);
-
-        console.log("Sending joinRoom event with:", projectIdNumber);
         newSocket.emit("joinRoom", projectIdNumber, (response: any) => {
           console.log("Join room response:", response);
         });
-        console.log("Joined room with projectId:", projectIdNumber);
       } catch (error) {
         console.error("Error getting token:", error);
       }
@@ -156,13 +125,6 @@ const ChatList: React.FC = () => {
 
     newSocket.on("disconnect", (reason) => {
       console.log("Disconnected from socket server", reason);
-      if (reason === "io server disconnect") {
-        console.log("The disconnection was initiated by the server");
-      } else {
-        console.log(
-          "The disconnection was initiated by the client or network issues"
-        );
-      }
     });
 
     newSocket.on("connect_error", (error: any) => {
@@ -170,14 +132,13 @@ const ChatList: React.FC = () => {
     });
 
     newSocket.on("message", async (message: any) => {
-      console.log("Received message:", message);
       const profileImage =
         profileImageCache.current[message.member.memberId] ||
         (await fetchProfileImage(message.member.memberId));
 
       profileImageCache.current[message.member.memberId] = profileImage;
 
-      const newMessage = {
+      const newMessage: Message = {
         id: message.messageId.toString(),
         text: message.messageContent,
         profileImage: profileImage,
@@ -204,22 +165,24 @@ const ChatList: React.FC = () => {
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
-        if (chatAreaRef.current) {
-          chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
-        }
+        console.log("Messages after adding new message:", updatedMessages); // Debug log
+        setTimeout(() => {
+          if (chatAreaRef.current) {
+            chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+          }
+        }, 0);
         return updatedMessages;
       });
     });
 
     newSocket.on("messageSent", async (message: any) => {
-      console.log("Server acknowledged message sent:", message);
       const profileImage =
         profileImageCache.current[message.member.memberId] ||
         (await fetchProfileImage(message.member.memberId));
 
       profileImageCache.current[message.member.memberId] = profileImage;
 
-      const newMessage = {
+      const newMessage: Message = {
         id: message.messageId.toString(),
         text: message.messageContent,
         profileImage: profileImage,
@@ -246,31 +209,27 @@ const ChatList: React.FC = () => {
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
-        if (chatAreaRef.current) {
-          chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
-        }
+        console.log("Messages after messageSent event:", updatedMessages); // Debug log
+        setTimeout(() => {
+          if (chatAreaRef.current) {
+            chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+          }
+        }, 0);
         return updatedMessages;
       });
     });
 
     newSocket.on("comment", async (comment: any) => {
-      console.log("Received comment:", comment); // 댓글 수신 로그
+      console.log("Received comment:", comment);
 
       if (
         !comment ||
         !comment.member ||
         !comment.member.memberId ||
-        !comment.messageCommentId
+        !comment.messageCommentId ||
+        !comment.messageId
       ) {
         console.error("Invalid comment structure", comment);
-        return;
-      }
-
-      // 임시 저장된 messageId 가져오기
-      const messageId = tempCommentStorage[comment.messageCommentContent];
-
-      if (!messageId) {
-        console.error("Message ID not found for comment:", comment);
         return;
       }
 
@@ -282,8 +241,7 @@ const ChatList: React.FC = () => {
 
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages.map((msg) => {
-          if (msg.id === messageId.toString()) {
-            // messageId를 사용
+          if (msg.id === comment.messageId.toString()) {
             const updatedComments = [
               ...(msg.comments || []),
               {
@@ -298,22 +256,31 @@ const ChatList: React.FC = () => {
           }
           return msg;
         });
-        if (
-          activeMessage &&
-          activeMessage.id === messageId.toString() // messageId를 사용
-        ) {
-          const updatedActiveMessage = updatedMessages.find(
-            (msg) => msg.id === activeMessage.id
-          );
-          if (updatedActiveMessage) {
-            setActiveMessage(updatedActiveMessage);
+        console.log("Messages after comment event:", updatedMessages); // Debug log
+
+        // Ensure activeMessage is updated if it's the current message being viewed
+        setActiveMessage((prevActiveMessage) => {
+          if (
+            prevActiveMessage &&
+            prevActiveMessage.id === comment.messageId.toString()
+          ) {
+            const updatedActiveMessage = updatedMessages.find(
+              (msg) => msg.id === prevActiveMessage.id
+            );
+            console.log("Updated activeMessage:", updatedActiveMessage); // Debug log
+            return updatedActiveMessage || prevActiveMessage;
           }
-        }
+          return prevActiveMessage;
+        });
+
+        setTimeout(() => {
+          if (chatAreaRef.current) {
+            chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+          }
+        }, 0);
+
         return updatedMessages;
       });
-
-      // 사용된 messageId 삭제
-      delete tempCommentStorage[comment.messageCommentContent];
     });
 
     newSocket.onAny((event, ...args) => {
@@ -325,59 +292,17 @@ const ChatList: React.FC = () => {
     };
   }, [projectId]);
 
-  useEffect(() => {
-    const storedActiveMessage = localStorage.getItem("activeMessage");
-    if (storedActiveMessage) {
-      setActiveMessage(JSON.parse(storedActiveMessage));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (activeMessage) {
-      localStorage.setItem("activeMessage", JSON.stringify(activeMessage));
-    } else {
-      localStorage.removeItem("activeMessage");
-    }
-  }, [activeMessage]);
-
-  const handleBackClick = () => {
-    if (socketRef.current && activeMessage) {
-      const messageRoom = `message_${activeMessage.id}`;
-      console.log("Leaving message room:", messageRoom);
-      socketRef.current.emit(
-        "leaveMessageRoom",
-        messageRoom,
-        (response: any) => {
-          console.log("Leave message room response:", response);
-        }
-      );
-    }
-    if (socketRef.current && projectId) {
-      console.log("Rejoining project room:", projectId);
-      socketRef.current.emit("joinRoom", projectId, (response: any) => {
-        console.log("Rejoin project room response:", response);
-      });
-    }
-    setActiveMessage(null);
-  };
-
   const handleCommentSubmit = async (content: string) => {
     if (activeMessage && socketRef.current && projectId) {
       try {
         const token = getToken();
         const memberId = getMemberId();
-        const userInfo = await getUserInfo(projectId, memberId);
-        if (!userInfo) throw new Error("User not found");
-
         const newComment = {
           token,
           projectId: Number(projectId),
           messageComment: content,
           messageId: Number(activeMessage.id),
         };
-
-        // 임시 저장
-        tempCommentStorage[content] = newComment.messageId.toString();
 
         console.log("Sending comment:", newComment);
         socketRef.current.emit("comment", newComment, (response: any) => {
@@ -451,7 +376,10 @@ const ChatList: React.FC = () => {
       <div className="chatArea" ref={chatAreaRef}>
         {activeMessage ? (
           <div className="commentsView">
-            <button className="backButton" onClick={handleBackClick}>
+            <button
+              className="backButton"
+              onClick={() => setActiveMessage(null)}
+            >
               ← Back
             </button>
             <MessageThread
@@ -462,7 +390,7 @@ const ChatList: React.FC = () => {
           </div>
         ) : (
           <div className="messageList">
-            {messages.map((msg) => (
+            {messages.map((msg: Message) => (
               <div key={msg.id} className="message">
                 <Image
                   src={msg.profileImage || "/img/memberImage.jpeg"}

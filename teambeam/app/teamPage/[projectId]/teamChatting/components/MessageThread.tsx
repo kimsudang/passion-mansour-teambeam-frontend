@@ -1,12 +1,8 @@
-"use client";
-
-import React from "react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useEffect } from "react";
 import Image from "next/image";
+import { formatTimestamp } from "./utils";
 
-dayjs.extend(relativeTime);
-
+// 타입 정의
 type Comment = {
   id: string;
   text: string;
@@ -29,19 +25,11 @@ type Props = {
   messages: Message[];
 };
 
-const formatTimestamp = (timestamp: string) => {
-  const date = dayjs(timestamp);
-  const now = dayjs();
-  const differenceInDays = now.diff(date, "day");
-
-  if (differenceInDays < 1) {
-    return date.fromNow();
-  } else {
-    return date.format("YYYY-MM-DD HH:mm");
-  }
-};
-
 const MessageThread: React.FC<Props> = ({ messageId, messages }) => {
+  useEffect(() => {
+    console.log("MessageThread mounted with props:", { messageId, messages });
+  }, [messageId, messages]);
+
   return (
     <div className="messageThread">
       {messages.map((msg) => (
