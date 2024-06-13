@@ -140,7 +140,8 @@ export const addLowerTodo = async (
   },
   token: string,
   refreshToken: string
-) => {
+): Promise<any> => {
+  // 리턴 타입 명시
   try {
     console.log("Sending Lower Todo:", lowerTodo); // 디버그 로그
     // Ensure taglist is not null or undefined

@@ -15,8 +15,8 @@ import {
   addLowerTodo,
   deleteUpperTodo,
   fetchTags,
-} from "@/app/_api/todo";
-import { fetchParticipants } from "@/app/_api/calendar";
+  fetchParticipants
+} from "@/app/_api/todo"; // Ensure you import all needed functions
 
 const TeamTodo: React.FC = () => {
   const params = useParams();
@@ -234,7 +234,7 @@ const TeamTodo: React.FC = () => {
         );
         console.log("Lower Todo added:", response);
 
-        const tagNames = (response.taglist || []).map((tagId) => {
+        const tagNames = (response.taglist || []).map((tagId: number) => {
           const tag = tags.find((t) => t.id === tagId);
           return tag ? tag.name : tagId;
         });
