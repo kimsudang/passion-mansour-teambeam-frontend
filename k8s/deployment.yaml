@@ -6,10 +6,6 @@ spec:
   selector:
     matchLabels:
       app: passion-mansour-teambeam-frontend
-spec:
-  selector:
-    matchLabels:
-      app: passion-mansour-teambeam-frontend
   template:
     metadata:
       labels:
