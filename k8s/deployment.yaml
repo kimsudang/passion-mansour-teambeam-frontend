@@ -12,11 +12,11 @@ spec:
         app: passion-mansour-teambeam-frontend
     spec:
       containers:
-      - envFrom:
-        - secretRef:
-            name: envsecret
-        image: krmp-d2hub-idock.9rum.cc/dev-test/repo_d8e1a2a6d74b
+        - name: passion-mansour-teambeam-frontend
+        image: krmp-d2hub-idock.9rum.cc/dev-test/repo_abd69facc154
         imagePullPolicy: Always
-        name: passion-mansour-teambeam-frontend
         ports:
         - containerPort: 3000
+        envFrom:
+          - secretRef:
+            name: envsecret
