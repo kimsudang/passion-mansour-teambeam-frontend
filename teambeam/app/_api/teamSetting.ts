@@ -15,6 +15,7 @@ export interface MemberInfo {
   mail: string;
   memberRole: string;
   host: boolean;
+  profileImage: string;
 }
 
 // 태그 정보 인터페이스 정의
@@ -30,6 +31,16 @@ const getTokenHeaders = () => ({
   RefreshToken: localStorage.getItem('RefreshToken'),
 });
 
+// 에러 처리 핸들러
+const handleApiError = (error: unknown, errorMessage: string) => {
+  if (error instanceof AxiosError) {
+    console.error(`${errorMessage}:`, error.response?.data || error.message);
+  } else {
+    console.error(`Unexpected error: ${errorMessage}`, error);
+  }
+  alert(errorMessage);
+};
+
 // 프로젝트 정보 API 호출 함수
 export const fetchProjectInfo = async (projectId:string) => {
   try {
@@ -38,12 +49,7 @@ export const fetchProjectInfo = async (projectId:string) => {
     });
     return response.data.project;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error fetching project info:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error fetching project info:", error);
-    }
-    alert("프로젝트 정보를 확인할 수 없습니다.");
+    handleApiError(error, "프로젝트 정보를 확인할 수 없습니다.");
     return null;
   }
 };
@@ -55,12 +61,7 @@ export const updateProjectInfo = async (projectId: string, projectInfo: ProjectI
       headers: getTokenHeaders(),
     });
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error updating project info:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error updating project info:", error);
-    }
-    alert("프로젝트 정보를 업데이트할 수 없습니다.");
+    handleApiError(error, "프로젝트 정보를 업데이트할 수 없습니다.");
   }
 };
 
@@ -70,14 +71,10 @@ export const fetchMembersInfo = async (projectId:string) => {
     const response = await api.get(`/team/${projectId}/joinMember`, {
       headers: getTokenHeaders(),
     });
+    console.log( response.data.joinMemberList);
     return response.data.joinMemberList;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error fetching members info:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error fetching members info:", error);
-    }
-    alert("멤버 정보를 확인할 수 없습니다.");
+    handleApiError(error, "멤버 정보를 확인할 수 없습니다.");
     return [];
   }
 };
@@ -92,14 +89,9 @@ export const updateMemberRoles = async (projectId: string, memberRoles: { member
         headers: getTokenHeaders(),
       }
     );
-    alert("직무를 업데이트 했습니다.");
+    console.log("직무 업데이트 성공.");
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error updating member roles:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error updating member roles:", error);
-    }
-    alert("멤버 역할을 업데이트할 수 없습니다.");
+    handleApiError(error, "멤버 역할을 업데이트할 수 없습니다.");
   }
 };
 
@@ -114,12 +106,7 @@ export const updateMemberRole = async (projectId:string, memberId:number) => {
     );
     return response.data.joinMemberList; // 성공 시 업데이트된 멤버 리스트 반환
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error updating member role:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error updating member role:", error);
-    }
-    alert("멤버 권한을 업데이트할 수 없습니다.");
+    handleApiError(error, "멤버 권한을 업데이트할 수 없습니다.");
     return [];
   }
 };
@@ -132,11 +119,7 @@ export const inviteMember = async (projectId:string, mail:string) => {
     });
     return { success: true, message: '메일 전송이 성공했습니다.' };
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error inviting member:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error inviting member:", error);
-    }
+    handleApiError(error, '메일 전송에 실패했습니다.');
     return { success: false, message: '메일 전송에 실패했습니다.' };
   }
 };
@@ -151,7 +134,7 @@ export const fetchProjectTags = async (projectId: string) => {
     console.log("tag list: ", response.data.tagResponses);
     return response.data.tagResponses;
   } catch (error) {
-    console.error("Failed to fetch project tags:", error);
+    handleApiError(error, "태그 정보를 불러올 수 없습니다.");
     return [];
   }
 };
@@ -167,12 +150,7 @@ export const createTag = async (projectId: string, tagName: string, tagCategory:
     );
     return response.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error creating tag:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error creating tag:", error);
-    }
-    alert("태그를 추가할 수 없습니다.");
+    handleApiError(error, "태그를 추가할 수 없습니다.");
   }
 };
 
@@ -183,11 +161,20 @@ export const deleteTag = async (projectId: string, tagId: number) => {
       headers: getTokenHeaders(),
     });
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Error deleting tag:", error.response?.data || error.message);
-    } else {
-      console.error("Unexpected error deleting tag:", error);
-    }
-    alert("태그를 삭제할 수 없습니다.");
+    handleApiError(error, "태그를 삭제할 수 없습니다.");
+  }
+};
+
+// 멤버 삭제 API 호출 함수
+export const deleteMember = async (projectId: string, memberId: number) => {
+  try {
+    const response = await api.delete(`/team/${projectId}/setting/member`, {
+      headers: getTokenHeaders(),
+      data: { memberId },
+    });
+    return response.data.joinMemberList;
+  } catch (error) {
+    handleApiError(error, "멤버를 삭제할 수 없습니다.");
+    return [];
   }
 };

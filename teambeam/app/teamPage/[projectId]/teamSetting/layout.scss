@@ -1,3 +1,5 @@
+
+
 .projectSettingContainer {
   width: 100%;
   height: 100%;
@@ -25,14 +27,19 @@
   }
 }
 
-.projectStateRadio {
-  display: flex;
-
-  & .progressRadio, .endRadio {
-    margin: 10px;
+.projectInfoSetting {
+  & .projectStateRadio {
+    display: flex;
+    justify-content: space-around;
+  
+    & .progressRadio, .endRadio {
+      margin: 10px;
+    }
+  
   }
-
 }
+
+
 
 .projectName,
 .projectDescription,
@@ -55,6 +62,25 @@ input[type="radio"] {
   margin-right: 5px;
 }
 
+.memberButtons {
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+
+  .memberButton {
+    background-color: #FFC300;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  
+    &:hover {
+      background-color: #E6B411;
+    }
+  }
+}
+
 .settingButton {
   background-color: #FFC300;
   border: none;
@@ -62,64 +88,89 @@ input[type="radio"] {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-}
 
-.settingButton:hover {
-  background-color: #FFC300;
+  &:hover {
+    background-color: #E6B411;
+  }
+
+  &:last-child {
+    margin-top: 30px;
+  }
 }
 
 .memberList {
   list-style: none;
   padding: 0;
-}
 
-.memberItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 10px 0;
-  border-bottom: 1px solid #D5D5D5;
+  & .memberItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-bottom: 1px solid #D5D5D5;
+  
+    & .memberName {
+      width: 50px;
+    }
+  
+    & img {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+  
+    & select,
+    & p {
+      margin-right: 10px;
+    }
+  
+    & select {
+      width: 100px;
+    }
 
-  .memberName {
-    width: 50px;
-  }
-
-  img {
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-
-  select,
-  p {
-    margin-right: 10px;
-  }
-
-  select {
-    width: 100px;
-  }
-
-}
-
-.changeSetting {
-  margin-top: 30px;
-}
-
-.tagList {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.tagItem {
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 5px;
-  border: 2px solid #D5D5D5;
-  background-color: #E0E0E0;
-
-  &:hover {
-    background-color: #DADADA;
+    & .memberProfileImage {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
   }
 }
+
+
+
+.tagManagement {
+
+  & .tagList {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  & .tagAddButton {
+    background-color: #FFC300;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #E6B411;
+    }
+  }
+  
+  & .tagItem {
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 2px solid #D5D5D5;
+    background-color: #E0E0E0;
+  
+    &:hover {
+      background-color: #DADADA;
+    }
+  }
+}
+
 
 .projectDescription input {
   height: 150px;
