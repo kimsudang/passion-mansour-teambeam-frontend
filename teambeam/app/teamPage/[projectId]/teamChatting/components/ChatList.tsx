@@ -6,7 +6,7 @@ import MessageThread from "./MessageThread";
 import MessageInput from "./MessageInput";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { fetchProfileImage, fetchMessages, getUserInfo } from "@/app/_api/chat";
+import { fetchMessages, getUserInfo } from "@/app/_api/chat";
 import { formatTimestamp } from "./utils";
 
 type Comment = {
@@ -51,48 +51,26 @@ const ChatList: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<Socket | null>(null);
   const chatAreaRef = useRef<HTMLDivElement>(null);
-  const profileImageCache = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!projectId) return;
 
     const loadMessages = async () => {
       const data = await fetchMessages(projectId);
-      const fetchedMessages = await Promise.all(
-        data.map(async (message: any) => {
-          const profileImage =
-            profileImageCache.current[message.member.memberId] ||
-            (await fetchProfileImage(message.member.memberId));
-
-          profileImageCache.current[message.member.memberId] = profileImage;
-
-          return {
-            id: message.messageId.toString(),
-            text: message.messageContent,
-            profileImage: profileImage,
-            username: message.member.memberName,
-            timestamp: message.createDate,
-            comments: await Promise.all(
-              message.messageComments.map(async (comment: any) => {
-                const commentProfileImage =
-                  profileImageCache.current[comment.member.memberId] ||
-                  (await fetchProfileImage(comment.member.memberId));
-
-                profileImageCache.current[comment.member.memberId] =
-                  commentProfileImage;
-
-                return {
-                  id: comment.messageCommentId.toString(),
-                  text: comment.messageCommentContent,
-                  profileImage: commentProfileImage,
-                  username: comment.member.memberName,
-                  timestamp: comment.createDate,
-                };
-              })
-            ),
-          };
-        })
-      );
+      const fetchedMessages = data.map((message: any) => ({
+        id: message.messageId.toString(),
+        text: message.messageContent,
+        profileImage: `data:image/jpeg;base64,${message.member.profileImg}`,
+        username: message.member.memberName,
+        timestamp: message.createDate,
+        comments: message.messageComments.map((comment: any) => ({
+          id: comment.messageCommentId.toString(),
+          text: comment.messageCommentContent,
+          profileImage: `data:image/jpeg;base64,${comment.member.profileImg}`,
+          username: comment.member.memberName,
+          timestamp: comment.createDate,
+        })),
+      }));
       setMessages(fetchedMessages);
       setTimeout(() => {
         if (chatAreaRef.current) {
@@ -131,37 +109,20 @@ const ChatList: React.FC = () => {
       console.error("Socket connection error:", error);
     });
 
-    newSocket.on("message", async (message: any) => {
-      const profileImage =
-        profileImageCache.current[message.member.memberId] ||
-        (await fetchProfileImage(message.member.memberId));
-
-      profileImageCache.current[message.member.memberId] = profileImage;
-
+    newSocket.on("message", (message: any) => {
       const newMessage: Message = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: profileImage,
+        profileImage: `data:image/jpeg;base64,${message.member.profileImg}`,
         username: message.member.memberName,
         timestamp: message.createDate,
-        comments: await Promise.all(
-          message.messageComments.map(async (comment: any) => {
-            const commentProfileImage =
-              profileImageCache.current[comment.member.memberId] ||
-              (await fetchProfileImage(comment.member.memberId));
-
-            profileImageCache.current[comment.member.memberId] =
-              commentProfileImage;
-
-            return {
-              id: comment.messageCommentId.toString(),
-              text: comment.messageCommentContent,
-              profileImage: commentProfileImage,
-              username: comment.member.memberName,
-              timestamp: comment.createDate,
-            };
-          })
-        ),
+        comments: message.messageComments.map((comment: any) => ({
+          id: comment.messageCommentId.toString(),
+          text: comment.messageCommentContent,
+          profileImage: `data:image/jpeg;base64,${comment.member.profileImg}`,
+          username: comment.member.memberName,
+          timestamp: comment.createDate,
+        })),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
@@ -175,37 +136,20 @@ const ChatList: React.FC = () => {
       });
     });
 
-    newSocket.on("messageSent", async (message: any) => {
-      const profileImage =
-        profileImageCache.current[message.member.memberId] ||
-        (await fetchProfileImage(message.member.memberId));
-
-      profileImageCache.current[message.member.memberId] = profileImage;
-
+    newSocket.on("messageSent", (message: any) => {
       const newMessage: Message = {
         id: message.messageId.toString(),
         text: message.messageContent,
-        profileImage: profileImage,
+        profileImage: `data:image/jpeg;base64,${message.member.profileImg}`,
         username: message.member.memberName,
         timestamp: message.createDate,
-        comments: await Promise.all(
-          message.messageComments.map(async (comment: any) => {
-            const commentProfileImage =
-              profileImageCache.current[comment.member.memberId] ||
-              (await fetchProfileImage(comment.member.memberId));
-
-            profileImageCache.current[comment.member.memberId] =
-              commentProfileImage;
-
-            return {
-              id: comment.messageCommentId.toString(),
-              text: comment.messageCommentContent,
-              profileImage: commentProfileImage,
-              username: comment.member.memberName,
-              timestamp: comment.createDate,
-            };
-          })
-        ),
+        comments: message.messageComments.map((comment: any) => ({
+          id: comment.messageCommentId.toString(),
+          text: comment.messageCommentContent,
+          profileImage: `data:image/jpeg;base64,${comment.member.profileImg}`,
+          username: comment.member.memberName,
+          timestamp: comment.createDate,
+        })),
       };
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, newMessage];
@@ -219,7 +163,7 @@ const ChatList: React.FC = () => {
       });
     });
 
-    newSocket.on("comment", async (comment: any) => {
+    newSocket.on("comment", (comment: any) => {
       console.log("Received comment:", comment);
 
       if (
@@ -233,12 +177,6 @@ const ChatList: React.FC = () => {
         return;
       }
 
-      const commentProfileImage =
-        profileImageCache.current[comment.member.memberId] ||
-        (await fetchProfileImage(comment.member.memberId));
-
-      profileImageCache.current[comment.member.memberId] = commentProfileImage;
-
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages.map((msg) => {
           if (msg.id === comment.messageId.toString()) {
@@ -247,7 +185,7 @@ const ChatList: React.FC = () => {
               {
                 id: comment.messageCommentId.toString(),
                 text: comment.messageCommentContent,
-                profileImage: commentProfileImage,
+                profileImage: `data:image/jpeg;base64,${comment.member.profileImg}`,
                 username: comment.member.memberName,
                 timestamp: comment.createDate,
               },
@@ -338,7 +276,9 @@ const ChatList: React.FC = () => {
           projectId: Number(projectId),
           messageContent: content,
           username,
-          profileImage: profileImage || "/img/memberImage.jpeg",
+          profileImage: profileImage.startsWith("data:image")
+            ? profileImage
+            : `data:image/jpeg;base64,${profileImage}`,
         };
         console.log("Sending message:", newMessage);
         socketRef.current.emit("message", newMessage, (response: any) => {
@@ -351,14 +291,13 @@ const ChatList: React.FC = () => {
   };
 
   const handleReplyButtonClick = (msg: Message) => {
-    if (socketRef.current && projectId) {
+    if (socketRef.current) {
       console.log("Leaving project room:", projectId);
       socketRef.current.emit("leaveRoom", projectId, (response: any) => {
         console.log("Leave project room response:", response);
       });
-    }
-    const messageRoom = `message_${msg.id}`;
-    if (socketRef.current) {
+
+      const messageRoom = `message_${msg.id}`;
       console.log("Joining message room:", messageRoom);
       socketRef.current.emit(
         "joinMessageRoom",
@@ -367,12 +306,32 @@ const ChatList: React.FC = () => {
           console.log("Join message room response:", response);
         }
       );
+      setActiveMessage(msg);
     }
-    setActiveMessage(msg);
   };
 
   const handleBackButtonClick = () => {
-    window.location.reload();
+    if (socketRef.current && projectId) {
+      const projectIdNumber = Number(projectId);
+      const messageRoom = `message_${activeMessage?.id}`;
+      console.log("Leaving message room:", messageRoom);
+      socketRef.current.emit(
+        "leaveMessageRoom",
+        messageRoom,
+        (response: any) => {
+          console.log("Leave message room response:", response);
+          console.log("Rejoining project room:", projectIdNumber);
+          socketRef.current!.emit(
+            "joinRoom",
+            projectIdNumber,
+            (response: any) => {
+              console.log("Rejoin project room response:", response);
+            }
+          );
+        }
+      );
+    }
+    setActiveMessage(null);
   };
 
   return (
