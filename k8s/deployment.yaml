@@ -15,8 +15,7 @@ spec:
         - name: passion-mansour-teambeam-frontend
           image: krmp-d2hub-idock.9rum.cc/dev-test/repo_d8e1a2a6d74b
           imagePullPolicy: Always
-      	  command: [ "/bin/sh", "-c", "env" ]
+          command: [ "/bin/sh", "-c", "env" ]
           envFrom:
-      		- secretRef:
-          		name: envsecret
-		  
+            - secretRef:
+                name: envsecret
