@@ -28,7 +28,7 @@ export const fetchCalendarEvents = async (
 ) => {
   try {
     const response = await axios.get(
-      `http://34.22.108.250:8080/api/team/${projectId}/calendar/month`,
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}/team/${projectId}/calendar/month`,
       {
         params: { year, month },
         headers: {
