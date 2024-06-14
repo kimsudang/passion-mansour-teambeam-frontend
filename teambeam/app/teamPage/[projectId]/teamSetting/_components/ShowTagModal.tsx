@@ -36,7 +36,7 @@ const ShowTagModal: React.FC<ShowTagModalProps> = ({ projectId, tag, onClose, on
         <h2>태그 상세 정보</h2>
         <p>태그 이름: {tag.tagName}</p>
         <p>태그 카테고리: {tag.tagCategory}</p>
-        {isHost && <button onClick={handleDeleteTag}>삭제</button>}
+        <button onClick={handleDeleteTag}>삭제</button>
       </div>
     </div>
   );
