@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
-import { searchPlace } from "@/app/_api/calendar";
 
 type EventModalProps = {
   isOpen: boolean;
@@ -28,6 +27,14 @@ type EventModalProps = {
   };
 };
 
+interface DaumPostcodeData {
+  address: string;
+  addressType: string;
+  bname: string;
+  buildingName: string;
+  zonecode: string;
+}
+
 const EventModal: React.FC<EventModalProps> = ({
   isOpen,
   onClose,
@@ -45,8 +52,6 @@ const EventModal: React.FC<EventModalProps> = ({
   const [assignees, setAssignees] = useState<{ id: number; name: string }[]>(
     initialEvent?.assignees || []
   );
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -56,8 +61,6 @@ const EventModal: React.FC<EventModalProps> = ({
       setContent(initialEvent?.content || "");
       setLink(initialEvent?.link || "");
       setAssignees(initialEvent?.assignees || []);
-      setSearchKeyword("");
-      setSearchResults([]);
     }
   }, [isOpen, initialEvent]);
 
@@ -69,31 +72,36 @@ const EventModal: React.FC<EventModalProps> = ({
     setAssignees(assignees);
   };
 
-  const handleSearchPlace = async () => {
-    const results = await searchPlace(searchKeyword);
-    setSearchResults(results);
-  };
+  const openDaumPostcode = () => {
+    new window.daum.Postcode({
+      oncomplete: function (data: DaumPostcodeData) {
+        let addr = data.address; // 최종 주소 변수
+        let extraAddr = ""; // 참고항목 변수
 
-  const handleSelectPlace = (place: any) => {
-    setLocation(place.place_name);
-    setLink(`https://map.kakao.com/link/map/${place.id}`);
+        if (data.addressType === "R") {
+          // 도로명 주소인 경우
+          if (data.bname !== "") {
+            extraAddr += data.bname;
+          }
+          if (data.buildingName !== "") {
+            extraAddr +=
+              extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
+          }
+          addr += extraAddr !== "" ? ` (${extraAddr})` : "";
+        }
+
+        setLocation(addr);
+        setLink(`https://map.kakao.com/link/map/${data.zonecode}`);
+      },
+    }).open();
   };
 
   const handleSubmit = () => {
-    // 필수 필드 검증
     if (!title || !time) {
       alert("일정명과 일시는 필수 입력 항목입니다.");
       return;
     }
 
-    console.log("Submitting event:", {
-      title,
-      time,
-      location,
-      content,
-      link,
-      assignees,
-    });
     onSave({ title, time, location, content, link, assignees });
     onClose();
   };
@@ -170,24 +178,16 @@ const EventModal: React.FC<EventModalProps> = ({
             <input
               type="text"
               placeholder="장소를 입력하세요."
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              readOnly={readonly}
+              value={location}
+              readOnly
             />
             <button
               type="button"
-              onClick={handleSearchPlace}
+              onClick={openDaumPostcode}
               disabled={readonly}
             >
               검색
             </button>
-            <ul>
-              {searchResults.map((place) => (
-                <li key={place.id} onClick={() => handleSelectPlace(place)}>
-                  {place.place_name}
-                </li>
-              ))}
-            </ul>
           </div>
           <div className="inputGroup">
             <label>링크</label>
