@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import api from "@/app/_api/api";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import "./layout.scss";
 
 interface Member {
@@ -36,19 +37,24 @@ const PrivateSetting = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null); 
   const [refreshToken, setRefreshToken] = useState<string | null>(null); 
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const accessToken = localStorage.getItem("Authorization");
-      const refreshToken = localStorage.getItem("RefreshToken");
+  const [startPage, setStartPage] = useState(memberInfo.startPage);
+  const [theme, setTheme] = useState("light");
+  const [memberName, setMemberName] = useState(memberInfo.memberName);
 
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
-    };
+  useEffect(() => {
+    const accessToken = localStorage.getItem("Authorization");
+    const refreshToken = localStorage.getItem("RefreshToken");
+
+    setAccessToken(accessToken);
+    setRefreshToken(refreshToken);
 
     const headers = {
       'Authorization': `${accessToken}`,
       'RefreshToken': `${refreshToken}`
     };
+
+    
+    console.log(headers);
 
     // 회원 정보를 가져오는 함수
     const fetchMemberInfo = async () => {
@@ -65,6 +71,40 @@ const PrivateSetting = () => {
     fetchMemberInfo();
   }, [accessToken, refreshToken]);
 
+  // 회원 정보 수정하기
+  const handleUpdateMemberInfo = async () => {
+    if (codeConfirmed) {
+      try {
+        const headers = {
+          'Authorization': `${accessToken}`,
+          'RefreshToken': `${refreshToken}`
+        };
+
+        // 회원 정보를 수정하는 API 호출
+        const response = await api.patch("/member", {
+          memberName,
+          mail,
+          profileImage: memberInfo.profileImage,// 현재 값을 유지
+          startPage: startPage || "MY_PAGE"  // 선택한 startPage 값을 전송
+        }, { headers });
+
+        const newAuthorizationToken = response?.headers['authorization'];
+        const newRefreshToken = response?.headers['refreshtoken'];
+
+        if (response.status === 200 && newAuthorizationToken && newRefreshToken) {
+          localStorage.setItem("Authorization", newAuthorizationToken);
+          localStorage.setItem("RefreshToken", newRefreshToken);
+          setMemberInfo(response.data.updatedMember);
+          alert("회원 정보가 성공적으로 수정되었습니다.");
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("회원 정보 수정 중 오류 발생:", error);
+        alert("회원 정보 수정 중 오류가 발생했습니다.");
+      }
+    }
+  };
+  
   // 메일 주소 변경 메일 전송
   const handleMailChange = async () => {
     try {
@@ -104,40 +144,6 @@ const PrivateSetting = () => {
     }
   };
 
-  // 회원 정보 수정하기
-  const handleUpdateMemberInfo = async () => {
-    if (codeConfirmed) {
-      try {
-        const headers = {
-          'Authorization': `${accessToken}`,
-          'RefreshToken': `${refreshToken}`
-        };
-
-        // 회원 정보를 수정하는 API 호출
-        const response = await api.patch("/member", {
-          memberName: memberInfo.memberName, // 현재 값을 유지
-          mail, 
-          profileImage: memberInfo.profileImage,// 현재 값을 유지
-          startPage: memberInfo.startPage || "MY_PAGE"  // 현재 값을 유지
-        }, { headers });
-
-        const newAuthorizationToken = response?.headers['authorization'];
-        const newRefreshToken = response?.headers['refreshtoken'];
-
-        if (response.status === 200 && newAuthorizationToken && newRefreshToken) {
-          localStorage.setItem("Authorization", newAuthorizationToken);
-            localStorage.setItem("RefreshToken", newRefreshToken);
-          setMemberInfo(response.data.updatedMember);
-          alert("회원 정보가 성공적으로 수정되었습니다.");
-          window.location.reload();
-        }
-      } catch (error) {
-        console.error("회원 정보 수정 중 오류 발생:", error);
-        alert("회원 정보 수정 중 오류가 발생했습니다.");
-      }
-    }
-  };
-  
   // 비밀번호 수정 기능
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -200,16 +206,76 @@ const PrivateSetting = () => {
         </div>
         <div className="otherInfo">
           <div className="profileImgArea">
-            <p>이미지</p>
+            <Image 
+              src={`data:image/png;base64,${memberInfo.profileImage}`} 
+              alt={`${memberInfo.memberName} profile`} 
+              className="memberProfileImage" 
+              width={200} 
+              height={200}
+            /> 
+            <button className="changeImage">프로필 이미지 변경하기</button>
           </div>
           <div className="subInfo">
-            <span className="name">이름 : </span>
-            <span>{memberInfo.memberName}</span>
-            <hr />
-            <form className="mailArea">
-            <p className="pageTitle">메일 주소 수정</p>
+            <div className="settingName">
+              <p className="pageTitle">이름 : </p>
+              <input 
+                type="text" 
+                value={memberInfo.memberName}
+                onChange={(e) => setMemberName(e.target.value)}
+                placeholder="이름을 입력하세요"
+              />
+            </div>
+            <div className="pageSettings">
+              <p className="pageTitle">페이지 설정</p>
               <div>
-                <span>메일 주소: </span>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="startPage" 
+                    value="PROJECT_SELECTION_PAGE" 
+                    checked={startPage === "PROJECT_SELECTION_PAGE"} 
+                    onChange={(e) => setStartPage(e.target.value)} 
+                    defaultChecked
+                  />
+                  팀 대시보드
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="startPage" 
+                    value="MY_PAGE" 
+                    checked={startPage === "MY_PAGE"} 
+                    onChange={(e) => setStartPage(e.target.value)} 
+                  />
+                  개인 대시보드
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input 
+                      type="radio" 
+                      name="screenMode" 
+                      value="light" 
+                      defaultChecked
+                  />
+                  라이트 모드
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="screenMode" 
+                    value="dark" />
+                  다크 모드
+                </label>
+              </div>
+            </div>
+            <form className="mailArea">
+              <div>
+                <span>현재 메일 주소: </span>
                 <span>{memberInfo.mail}</span>
                 <div>
                 <label htmlFor="mail"></label>
@@ -232,12 +298,11 @@ const PrivateSetting = () => {
                   <button type="button" className="changeMail" onClick={handleConfirmMailCode}>코드 확인</button>
                 </div>
               </div>
-              <button type="button" className="changePart" onClick={handleUpdateMemberInfo}>수정하기</button>
+              <button type="button" className="changePart" onClick={handleUpdateMemberInfo}>변경한 정보 수정하기</button>
             </form>
           </div>
         </div>
         <div className="changePassword">
-        <hr />
           <form onSubmit={handleSubmit}>
             <div className="passwordArea">
               <div className="setting_box">

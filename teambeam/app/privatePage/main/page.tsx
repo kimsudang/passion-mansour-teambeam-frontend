@@ -128,7 +128,10 @@ const PrivatePage: React.FC = () => {
       {error && <div className="error">{error}</div>}
       <div className="todoContainerWrapper">
         <div className="myTodoContainer">
-          {projectTodos
+        {projectTodos.length === 0 || projectTodos.every(project => project.todos.length === 0) ? (
+            <p className="noTodos">Todo가 존재하지 않습니다.</p>
+          ) : (
+          projectTodos
           .filter(project => project.todos.length > 0)
           .map((project, projectIndex) => (
             <div key={projectIndex} className="projectContainer">
@@ -160,7 +163,8 @@ const PrivatePage: React.FC = () => {
                 ))}
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
       <div className="calendar">
