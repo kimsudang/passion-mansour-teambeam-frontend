@@ -15,7 +15,7 @@ import {
   addLowerTodo,
   deleteUpperTodo,
   fetchTags,
-  fetchParticipants
+  fetchParticipants,
 } from "@/app/_api/todo"; // Ensure you import all needed functions
 
 const TeamTodo: React.FC = () => {
@@ -164,7 +164,7 @@ const TeamTodo: React.FC = () => {
           title: event.title,
           startDate: event.startDate,
           endDate: event.endDate,
-          status: true,
+          status: false, // 상태를 명시적으로 false로 설정
           middleTodos: [],
         };
         setTodoLists([...todoLists, newUpperTodo]);
@@ -192,7 +192,7 @@ const TeamTodo: React.FC = () => {
                     {
                       middleTodoId: response.middleTodoId,
                       ...middleTodo,
-                      status: true,
+                      status: false, // 상태를 명시적으로 false로 설정
                       bottomTodos: [],
                     },
                   ],

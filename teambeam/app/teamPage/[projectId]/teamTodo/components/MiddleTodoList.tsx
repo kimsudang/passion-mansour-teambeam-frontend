@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import LowerTodoList from "./LowerTodoList";
 import { TodoItem, Participant } from "../types";
@@ -25,10 +23,13 @@ const MiddleTodoList: React.FC<Props> = ({
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (task.middleTodoId) {
-      onStatusChange("middle", task.middleTodoId, !e.target.checked);
-    }
+    onStatusChange("middle", task.middleTodoId, !e.target.checked);
   };
+
+  // 중위 투두리스트 상태 결정 로직
+  const isMiddleChecked =
+    task.bottomTodos.length > 0 &&
+    task.bottomTodos.every((bottomTodo) => bottomTodo.status === false);
 
   return (
     <div className="middleTodoList">
@@ -36,7 +37,7 @@ const MiddleTodoList: React.FC<Props> = ({
         <div>
           <input
             type="checkbox"
-            checked={!task.status}
+            checked={isMiddleChecked}
             onChange={handleStatusChange}
           />
           <h4>{task.title}</h4>
@@ -68,13 +69,7 @@ const MiddleTodoList: React.FC<Props> = ({
           ))}
           <button
             className="lowAddSubtask"
-            onClick={() => {
-              console.log(
-                "Adding lower todo with middleTodoId:",
-                task.middleTodoId
-              );
-              onAddGoal("하위 투두 추가 모달", task.middleTodoId);
-            }}
+            onClick={() => onAddGoal("하위 투두 추가 모달", task.middleTodoId)}
           >
             +
           </button>

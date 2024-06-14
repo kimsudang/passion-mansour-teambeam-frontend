@@ -40,13 +40,10 @@ const UpperTodoList: React.FC<Props> = ({
     if (listCount > 1) {
       try {
         await onDeleteGoal(list.topTodoId);
-        // 성공 메시지 표시
         toast.success("목표가 성공적으로 삭제되었습니다.");
-        // 페이지 새로고침
         window.location.reload();
       } catch (error) {
         console.error("Error deleting upper todo:", error);
-        // 실패 메시지 표시
         toast.error("목표 삭제 중 오류가 발생했습니다.");
       }
     } else {
@@ -61,13 +58,18 @@ const UpperTodoList: React.FC<Props> = ({
     onStatusChange("top", list.topTodoId, !e.target.checked);
   };
 
+  // 상위 투두리스트 상태 결정 로직
+  const isTopChecked =
+    list.middleTodos.length > 0 &&
+    list.middleTodos.every((middleTodo) => middleTodo.status === false);
+
   return (
     <div className="upperTodoList">
       <div className="upperTodoHeader">
         <div>
           <input
             type="checkbox"
-            checked={!list.status}
+            checked={isTopChecked}
             onChange={handleStatusChange}
           />
           <h3 className="upperTitle">{list.title}</h3>
@@ -81,13 +83,7 @@ const UpperTodoList: React.FC<Props> = ({
             <DropdownMenu
               isOpen={isDropdownOpen}
               onClose={() => setIsDropdownOpen(false)}
-              onAddGoal={() => {
-                console.log(
-                  "Adding upper todo with topTodoId:",
-                  list.topTodoId
-                );
-                onAddGoal("상위 투두 추가 모달", list.topTodoId);
-              }}
+              onAddGoal={() => onAddGoal("상위 투두 추가 모달", list.topTodoId)}
               onViewPastGoals={handleViewPastGoals}
               onDeleteGoal={handleDeleteGoal}
             />
@@ -98,23 +94,16 @@ const UpperTodoList: React.FC<Props> = ({
         <MiddleTodoList
           key={task.middleTodoId}
           task={task}
-          onAddGoal={(type: string, middleTodoId?: string) => {
-            console.log(
-              "Adding lower todo with middleTodoId:",
-              task.middleTodoId
-            );
-            onAddGoal(type, list.topTodoId, task.middleTodoId);
-          }}
+          onAddGoal={(type: string, middleTodoId?: string) =>
+            onAddGoal(type, list.topTodoId, middleTodoId)
+          }
           onStatusChange={onStatusChange}
           participants={participants}
         />
       ))}
       <button
         className="addSubtask"
-        onClick={() => {
-          console.log("Adding middle todo with topTodoId:", list.topTodoId);
-          onAddGoal("중위 투두 추가 모달", list.topTodoId);
-        }}
+        onClick={() => onAddGoal("중위 투두 추가 모달", list.topTodoId)}
       >
         +
       </button>

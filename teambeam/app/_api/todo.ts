@@ -1,5 +1,6 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
+import { flushAllTraces } from "next/dist/trace";
 
 // 투두리스트 조회 함수
 export const fetchTodos = async (
@@ -59,7 +60,7 @@ export const fetchTodos = async (
   }
 };
 
-//상위 투두리스트 추가 함수
+// 상위 투두리스트 추가 함수
 export const addUpperTodo = async (
   projectId: string,
   upperTodo: {
@@ -69,13 +70,18 @@ export const addUpperTodo = async (
   }
 ) => {
   try {
-    console.log("Sending Upper Todo:", upperTodo); // 디버그 로그
-    const response = await api.post(`/team/${projectId}/todo/top`, upperTodo, {
-      headers: {
-        accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+    const response = await api.post(
+      `/team/${projectId}/todo/top`,
+      {
+        ...upperTodo,
+        status: false,
       },
-    });
-    console.log("API Response:", response.data); // 디버그 로그
+      {
+        headers: {
+          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -101,17 +107,18 @@ export const addMiddleTodo = async (
   }
 ) => {
   try {
-    console.log("Sending Middle Todo:", middleTodo); // 디버그 로그
     const response = await api.post(
       `/team/${projectId}/todo/middle`,
-      middleTodo,
+      {
+        ...middleTodo,
+        status: false, // 상태를 명시적으로 false로 설정
+      },
       {
         headers: {
           accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
         },
       }
     );
-    console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -141,14 +148,12 @@ export const addLowerTodo = async (
   token: string,
   refreshToken: string
 ): Promise<any> => {
-  // 리턴 타입 명시
   try {
-    console.log("Sending Lower Todo:", lowerTodo); // 디버그 로그
-    // Ensure taglist is not null or undefined
     const response = await api.post(
       `/team/${projectId}/todo/bottom`,
       {
         ...lowerTodo,
+        status: false, // 상태를 명시적으로 false로 설정
         taglist: lowerTodo.tags || [],
       },
       {
@@ -158,7 +163,6 @@ export const addLowerTodo = async (
         },
       }
     );
-    console.log("API Response:", response.data); // 디버그 로그
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
