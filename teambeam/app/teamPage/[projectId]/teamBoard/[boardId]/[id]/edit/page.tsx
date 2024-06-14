@@ -117,7 +117,10 @@ const Page = () => {
       if (!token) return;
 
       try {
-        const res = await getPostTag(`/team/${params.projectId}/tag`, token);
+        const res = await getPostTag(
+          `/team/${params.projectId}/post/tag`,
+          token
+        );
         console.log("res : ", res);
 
         setTags(res.data.tagResponses);
