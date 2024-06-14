@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { 
   fetchProjectInfo, 
@@ -9,6 +9,7 @@ import {
   updateMemberRoles, 
   updateMemberRole, 
   inviteMember, 
+  deleteProject,
   fetchProjectTags, 
   updateProjectInfo,
   deleteMember,
@@ -23,6 +24,7 @@ import ShowTagModal from "./_components/ShowTagModal";
 
 const TeamSetting: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const router = useRouter();
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     projectName: '',
     description: '',
@@ -81,6 +83,14 @@ const TeamSetting: React.FC = () => {
       alert("프로젝트 정보가 저장되었습니다.");
     } catch (error) {
       console.error("Error updating project info:", error);
+    }
+  };
+
+   // 프로젝트 삭제
+   const handleDeleteProject = async () => {
+    if (confirm("프로젝트를 삭제하시겠습니까?")) {
+      await deleteProject(projectId);
+      router.push('/main'); // 프로젝트 삭제 후 이동할 경로
     }
   };
 
@@ -254,6 +264,7 @@ const TeamSetting: React.FC = () => {
               </div>
           </div>
           {isHost && <button className="settingButton" type="button" onClick={handleProjectSaveSettings}>변경한 설정 저장하기</button>}
+          {isHost && <button className="deleteButton" type="button" onClick={handleDeleteProject}>프로젝트 삭제</button>}
         </form>
       </div>
       <div className="memberManagement">

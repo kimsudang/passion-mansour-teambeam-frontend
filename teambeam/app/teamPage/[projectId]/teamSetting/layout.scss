@@ -25,6 +25,7 @@
   & h3, h4 {
     margin-bottom: 10px;
   }
+
 }
 
 .projectInfoSetting {
@@ -35,7 +36,21 @@
     & .progressRadio, .endRadio {
       margin: 10px;
     }
-  
+  }
+
+  & .deleteButton {
+    margin-left: 20px;
+    border: none;
+    color: #242424;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #E0E0E0;
+
+    &:hover {
+      background-color: #DADADA;
+    }
   }
 }
 

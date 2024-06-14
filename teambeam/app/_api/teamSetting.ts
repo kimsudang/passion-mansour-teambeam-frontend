@@ -1,5 +1,6 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
+import Router from "next/router";
 
 // 프로젝트 정보 인터페이스 정의
 export interface ProjectInfo {
@@ -30,6 +31,7 @@ const getTokenHeaders = () => ({
   Authorization: localStorage.getItem('Authorization'),
   RefreshToken: localStorage.getItem('RefreshToken'),
 });
+
 
 // 에러 처리 핸들러
 const handleApiError = (error: unknown, errorMessage: string) => {
@@ -176,5 +178,17 @@ export const deleteMember = async (projectId: string, memberId: number) => {
   } catch (error) {
     handleApiError(error, "멤버를 삭제할 수 없습니다.");
     return [];
+  }
+};
+
+// 프로젝트 삭제 API 호출 함수
+export const deleteProject = async (projectId: string) => {
+  try {
+    await api.delete(`/team/project/${projectId}`, {
+      headers: getTokenHeaders(),
+    });
+    alert("프로젝트가 삭제되었습니다.");
+  } catch (error) {
+    handleApiError(error, "프로젝트를 삭제할 수 없습니다.");
   }
 };
