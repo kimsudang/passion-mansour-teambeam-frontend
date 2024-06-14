@@ -23,13 +23,15 @@ const MiddleTodoList: React.FC<Props> = ({
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onStatusChange("middle", task.middleTodoId, !e.target.checked);
+    if (task.middleTodoId) {
+      onStatusChange("middle", task.middleTodoId, !e.target.checked);
+    }
   };
 
   // 중위 투두리스트 상태 결정 로직
   const isMiddleChecked =
-    task.bottomTodos.length > 0 &&
-    task.bottomTodos.every((bottomTodo) => bottomTodo.status === false);
+    (task.bottomTodos ?? []).length > 0 &&
+    (task.bottomTodos ?? []).every((bottomTodo) => bottomTodo.status === false);
 
   return (
     <div className="middleTodoList">
@@ -69,7 +71,10 @@ const MiddleTodoList: React.FC<Props> = ({
           ))}
           <button
             className="lowAddSubtask"
-            onClick={() => onAddGoal("하위 투두 추가 모달", task.middleTodoId)}
+            onClick={() =>
+              task.middleTodoId &&
+              onAddGoal("하위 투두 추가 모달", task.middleTodoId)
+            }
           >
             +
           </button>
