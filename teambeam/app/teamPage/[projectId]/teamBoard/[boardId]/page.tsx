@@ -38,27 +38,16 @@ const Page = () => {
   const [tagLists, setTagLists] = useState<TagType[]>([]);
   const [activeTags, setActiveTags] = useState<TagType[]>([]);
   const [isToggle, setIsToggle] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null);
 
   const params = useParams<{ projectId: string; boardId: string }>();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
 
   const fetchTagToggleData = useCallback(
     async (tag: number[]) => {
       const queryString = tag.map((tag) => `tags=${tag}`).join("&");
 
-      if (!token) return;
-
       try {
         const res = await getPostTagList(
-          `/team/${params.projectId}/${params.boardId}/tags?${queryString}`,
-          token
+          `/team/${params.projectId}/${params.boardId}/tags?${queryString}`
         );
 
         const sortNotice = sortNoticeData(res.data.postResponses);
@@ -67,44 +56,35 @@ const Page = () => {
         setBoards([...sortNotice, ...sortDate]);
       } catch (err) {
         console.log(err);
+        alert("태그 검색 조회에 실패했습니다.");
       }
     },
-    [params, token]
+    [params]
   );
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
-
       try {
         const res = await getPostList(
-          `/team/${params.projectId}/${params.boardId}/`,
-          token
+          `/team/${params.projectId}/${params.boardId}/`
         );
-        console.log("post list : ", res);
-
         const sortNotice = sortNoticeData(res.data.postResponses);
         const sortDate = sortDateData(res.data.postResponses);
 
         setBoards([...sortNotice, ...sortDate]);
       } catch (err) {
         console.log("err  : ", err);
+        alert("게시글 조회에 실패했습니다.");
       }
     };
 
     const fetchTagData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getPostTag(
-          `/team/${params.projectId}/post/tag`,
-          token
-        );
-        console.log("res : ", res);
-
+        const res = await getPostTag(`/team/${params.projectId}/post/tag`);
         setTagLists(res.data.tagResponses);
       } catch (err) {
         console.log("err  : ", err);
+        alert("태그 조회에 실패했습니다.");
       }
     };
 
@@ -119,7 +99,7 @@ const Page = () => {
     if (activeTags.length > 0 && activeTags[0].tagName !== "all") {
       fetchTagToggleData(activeTags.map((_tag) => _tag.tagId));
     }
-  }, [params, token, activeTags, fetchTagToggleData]);
+  }, [params, activeTags, fetchTagToggleData]);
 
   // 공지일 경우 가장 위로 보내기
   const sortNoticeData = (data: Board[]) => {
@@ -156,7 +136,6 @@ const Page = () => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (!token) return;
       if (!boards) return;
 
       const isBoards = boards?.map((item) =>
@@ -169,9 +148,7 @@ const Page = () => {
       if (!data.bookmark) {
         console.log("북마크 등록");
         try {
-          const res = await postBookmark(`/my/bookmark/${data.postId}`, token);
-
-          console.log("bookmark add : ", res);
+          const res = await postBookmark(`/my/bookmark/${data.postId}`);
         } catch (err) {
           console.log(err);
         }
@@ -179,18 +156,14 @@ const Page = () => {
         console.log("북마크 해제");
         try {
           const res = await deleteBookmark(
-            `/my/bookmark/post?postId=${data.postId}`,
-            token
+            `/my/bookmark/post?postId=${data.postId}`
           );
-          // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
-
-          console.log("bookmark remove :", res);
         } catch (err) {
           console.log(err);
         }
       }
     },
-    [token, boards]
+    [boards]
   );
 
   return (

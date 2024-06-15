@@ -37,14 +37,7 @@ const Page = () => {
   const [cols, setCols] = useState<number>(3);
   const [rows, setRows] = useState<number>(2);
   const [cells, setCells] = useState<CellType[][]>([]);
-  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
   const params = useParams<{ projectId: string; boardId: string }>();
 
   useEffect(() => {
@@ -59,23 +52,17 @@ const Page = () => {
     setCells(newCells);
 
     const fetchTagData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getPostTag(
-          `/team/${params.projectId}/post/tag`,
-          token
-        );
-        console.log("res : ", res);
-
+        const res = await getPostTag(`/team/${params.projectId}/post/tag`);
         setTags(res.data.tagResponses);
       } catch (err) {
         console.log("err  : ", err);
+        alert("태그 불러오기에 오류가 발생했습니다.");
       }
     };
 
     fetchTagData();
-  }, [params, token]);
+  }, [params]);
 
   const filterTag: TagType[] = tags.filter((tag: TagType) => {
     return (
@@ -167,32 +154,19 @@ const Page = () => {
       notice,
       postTagIds: tagSelect.map((tag) => tag.tagId),
     };
-    if (!token) return;
 
     try {
       const res = await postAddPost(
         `/team/${params.projectId}/${params.boardId}/`,
-        token,
         data
       );
-      console.log("res : ", res);
-
       alert("게시글 생성이 완료되었습니다.");
       router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
+      alert("게시글 생성에 오류가 발생했습니다.");
     }
-  }, [
-    notice,
-    title,
-    template,
-    inputContent,
-    tagSelect,
-    cells,
-    router,
-    params,
-    token,
-  ]);
+  }, [notice, title, template, inputContent, tagSelect, cells, router, params]);
 
   return (
     <div>

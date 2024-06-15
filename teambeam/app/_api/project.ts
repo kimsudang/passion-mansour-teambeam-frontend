@@ -2,14 +2,9 @@ import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
 // 프로젝트 리스트 조회
-export const getPorjectList = async (url: string, token: string) => {
+export const getPorjectList = async (url: string) => {
   try {
-    const res = await api.get(url, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.get(url);
 
     return res;
   } catch (error) {
@@ -28,23 +23,13 @@ export const getPorjectList = async (url: string, token: string) => {
 // 프로젝트 생성
 export const postPorject = async (
   url: string,
-  token: string,
   data: { title: string; content: string }
 ) => {
   try {
-    const res = await api.post(
-      url,
-      {
-        projectName: data.title,
-        description: data.content,
-      },
-      {
-        headers: {
-          Authorization: token,
-        },
-        withCredentials: true,
-      }
-    );
+    const res = await api.post(url, {
+      projectName: data.title,
+      description: data.content,
+    });
 
     return res;
   } catch (error) {

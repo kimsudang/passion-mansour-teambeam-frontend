@@ -18,25 +18,13 @@ const MemoViewModal = () => {
   });
   const [memo, setMemo] = useState<MemoType | undefined>();
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
   const router = useRouter();
   const params = useParams<{ id: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getMemoList(`/my/memo/${params.id}`, token);
-        console.log("res : ", res);
-
+        const res = await getMemoList(`/my/memo/${params.id}`);
         setMemo(res.data);
         setForm({
           memoTitle: res.data.memoTitle,
@@ -44,11 +32,12 @@ const MemoViewModal = () => {
         });
       } catch (err) {
         console.log("err  : ", err);
+        alert("메모 조회에 실패했습니다.");
       }
     };
 
     fetchData();
-  }, [params, token]);
+  }, [params]);
 
   const onCancelBtn = useCallback(() => {
     router.back();
@@ -61,23 +50,20 @@ const MemoViewModal = () => {
 
   // 메모 삭제
   const handleMemoDelete = useCallback(async () => {
-    if (!token) return;
-
     if (confirm("정말 삭제하시겠습니까?")) {
       try {
-        const res = await deleteMemo(`/my/memo/${params.id}`, token);
+        const res = await deleteMemo(`/my/memo/${params.id}`);
 
-        console.log("memo delete : ", res.data);
-
-        alert("삭제 되었습니다");
+        alert("메모가 삭제 되었습니다.");
         onCancelBtn();
       } catch (err) {
         console.log(err);
+        alert("메모 삭제에 실패했습니다.");
       }
     } else {
       return;
     }
-  }, [params, token, onCancelBtn]);
+  }, [params, onCancelBtn]);
 
   const handleTitle = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,20 +85,18 @@ const MemoViewModal = () => {
       memoTitle: form.memoTitle,
       memoContent: form.memoContent,
     };
-    if (!token) return;
 
     try {
-      const res = await editMemo(`/my/memo/${params.id}`, token, data);
+      const res = await editMemo(`/my/memo/${params.id}`, data);
 
-      console.log("memo edit : ", res);
-
-      alert("수정 되었습니다");
+      alert("메모가 수정 되었습니다.");
       setMemo(res.data);
       setIsEdit(false);
     } catch (err) {
       console.log(err);
+      alert("메모 수정에 실패했습니다.");
     }
-  }, [form, token, params]);
+  }, [form, params]);
 
   if (isEdit) {
     return (

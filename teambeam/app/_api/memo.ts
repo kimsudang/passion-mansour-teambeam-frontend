@@ -2,14 +2,9 @@ import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
 // 메모 리스트 조회
-export const getMemoList = async (url: string, token: string) => {
+export const getMemoList = async (url: string) => {
   try {
-    const res = await api.get(url, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.get(url);
 
     return res;
   } catch (error) {
@@ -26,14 +21,9 @@ export const getMemoList = async (url: string, token: string) => {
 };
 
 // 메모 리스트 상세 조회
-export const getMemoDetailList = async (url: string, token: string) => {
+export const getMemoDetailList = async (url: string) => {
   try {
-    const res = await api.get(url, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.get(url);
 
     return res;
   } catch (error) {
@@ -52,23 +42,13 @@ export const getMemoDetailList = async (url: string, token: string) => {
 // 메모 생성
 export const postMemo = async (
   url: string,
-  token: string,
   data: { title: string; content: string }
 ) => {
   try {
-    const res = await api.post(
-      url,
-      {
-        memoTitle: data.title,
-        memoContent: data.content,
-      },
-      {
-        headers: {
-          Authorization: token,
-        },
-        withCredentials: true,
-      }
-    );
+    const res = await api.post(url, {
+      memoTitle: data.title,
+      memoContent: data.content,
+    });
 
     return res;
   } catch (error) {
@@ -85,14 +65,9 @@ export const postMemo = async (
 };
 
 // 메모 삭제
-export const deleteMemo = async (url: string, token: string) => {
+export const deleteMemo = async (url: string) => {
   try {
-    const res = await api.delete(url, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.delete(url);
 
     return res;
   } catch (error) {
@@ -111,16 +86,10 @@ export const deleteMemo = async (url: string, token: string) => {
 // 메모 수정
 export const editMemo = async (
   url: string,
-  token: string,
   data: { memoTitle: string; memoContent: string }
 ) => {
   try {
-    const res = await api.patch(url, data, {
-      headers: {
-        Authorization: token,
-      },
-      withCredentials: true,
-    });
+    const res = await api.patch(url, data);
 
     return res;
   } catch (error) {

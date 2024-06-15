@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import "@/app/_styles/Modal.scss";
 import { postBoard } from "@/app/_api/board";
 
@@ -25,14 +19,6 @@ export default function BoardAddModal({
   onCloseModal: () => void;
 }) {
   const [name, setName] = useState<string>("");
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
 
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,18 +28,15 @@ export default function BoardAddModal({
   );
 
   const onSubmit = useCallback(async () => {
-    console.log("title : ", name);
-    if (!token) return;
-
     try {
-      const res = await postBoard(`/team/${projectId}/board`, token, name);
+      const res = await postBoard(`/team/${projectId}/board`, name);
       setBoardLists((prev) => (prev ? [...prev, res.data] : res.data));
       onCloseModal();
     } catch (err) {
       console.log(err);
-      window.alert("게시판 생성에 실패했습니다");
+      alert("게시판 생성에 실패했습니다.");
     }
-  }, [token, name, projectId, setBoardLists, onCloseModal]);
+  }, [name, projectId, setBoardLists, onCloseModal]);
 
   return (
     <div className='modal-bg boardAdd'>

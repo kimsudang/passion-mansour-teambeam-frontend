@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import useForm from "@/app/_hooks/useForm";
 import { useSearchParams, useRouter } from "next/navigation";
-import api from "@/app/_api/api";
+import axios from "axios";
 import "../layout.scss";
 
 interface IFormValues {
@@ -23,8 +23,8 @@ const Join: React.FC = () => {
 
   const handleSendCode = async () => {
     try {
-      const response = await api.post(
-        "/register-request",
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_BASE_API_URL + "/register-request",
         { mail: values.mail },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -60,8 +60,8 @@ const Join: React.FC = () => {
         if (codeConfirmed) {
           try {
             const { memberName, mail, password } = data;
-            await api.post(
-              "/register",
+            await axios.post(
+              process.env.NEXT_PUBLIC_BASE_API_URL + "/register",
               { memberName, mail, password, token },
               { headers: { "Content-Type": "application/json" } }
             );

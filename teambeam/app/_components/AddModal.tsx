@@ -19,14 +19,7 @@ export default function AddModal({
     title: "",
     content: "",
   });
-  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
   const router = useRouter();
 
   const titleChange = useCallback(
@@ -44,16 +37,8 @@ export default function AddModal({
   );
 
   const onSubmit = useCallback(async () => {
-    // "use server";
-
-    console.log("title : ", form.title);
-    console.log("content : ", form.content);
-
-    if (!token) return;
-
     try {
-      const res = await postPorject("/project", token, form);
-      console.log("project data : ", res);
+      const res = await postPorject("/project", form);
 
       alert("프로젝트 생성이 완료되었습니다.");
       router.push(`/teamPage/${res.data.project.projectId}/teamMain`);
@@ -61,7 +46,7 @@ export default function AddModal({
       console.log("err  : ", err);
       alert("프로젝트 생성에 문제가 발생했습니다");
     }
-  }, [token, form, router]);
+  }, [form, router]);
 
   return (
     <div className='modal-bg'>

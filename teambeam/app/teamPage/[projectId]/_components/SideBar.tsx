@@ -32,14 +32,11 @@ export default function SideBar() {
   const [isOpen, toggleIsOpen] = useReducer((state) => {
     return !state;
   }, false);
-  const [token, setToken] = useState<string | null>(null);
   const [isSidebar, setIsSidebar] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
       const storedIsSidebar = localStorage.getItem("isSidebar");
-      setToken(storedToken);
       setIsSidebar(storedIsSidebar);
     }
   }, []);
@@ -72,13 +69,8 @@ export default function SideBar() {
 
     // 게시판 조회
     const fetchData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getBoardList(
-          `/team/${params.projectId}/board`,
-          token
-        );
+        const res = await getBoardList(`/team/${params.projectId}/board`);
         setBoardLists(res.data.boardResponses);
       } catch (err) {
         console.log(err);
@@ -86,7 +78,7 @@ export default function SideBar() {
     };
 
     fetchData();
-  }, [params, token, isSideToggle]);
+  }, [params, isSideToggle]);
 
   const handleSideBarToggle = () => {
     toggleIsSideToggle();
@@ -109,24 +101,16 @@ export default function SideBar() {
       e.preventDefault();
       e.stopPropagation();
 
-      if (!token) return;
-
       if (confirm("정말 삭제하시겠습니까?")) {
         try {
-          const res = await deleteBoard(
-            `/team/${params.projectId}/${boardId}`,
-            token
-          );
+          const res = await deleteBoard(`/team/${params.projectId}/${boardId}`);
 
           if (res.status === 200) {
             // 삭제 성공시 게시판 리스트 재조회
             try {
-              const res = await getBoardList(
-                `/team/${params.projectId}/board`,
-                token
-              );
+              const res = await getBoardList(`/team/${params.projectId}/board`);
 
-              alert("게시판이 삭제되었습니다");
+              alert("게시판이 삭제되었습니다.");
               setBoardLists(res.data.boardResponses);
 
               router.push(
@@ -134,6 +118,7 @@ export default function SideBar() {
               );
             } catch (err) {
               console.log(err);
+              alert("게시판이 삭제에 실패했습니다.");
             }
           }
         } catch (err) {
@@ -144,7 +129,7 @@ export default function SideBar() {
         return;
       }
     },
-    [params, router, token]
+    [params, router]
   );
 
   const onCloseModal = useCallback(() => {

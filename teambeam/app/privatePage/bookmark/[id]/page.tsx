@@ -46,23 +46,14 @@ const Page = () => {
   const [boardData, setBoardData] = useState<BoardType | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [isBookmark, setIsBookmark] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
   const params = useParams<{ id: string }>();
 
   useEffect(() => {
     // 상세 조회
     const fetchData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getBookmarkList(`/my/bookmark/${params.id}`, token);
+        const res = await getBookmarkList(`/my/bookmark/${params.id}`);
         console.log("res : ", res);
 
         setBoardData(res.data);
@@ -70,10 +61,8 @@ const Page = () => {
 
         try {
           const _res = await getComment(
-            `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`,
-            token
+            `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`
           );
-          console.log("comment : ", _res);
 
           setComments(_res.data.postCommentResponseList);
         } catch (err) {
@@ -85,17 +74,14 @@ const Page = () => {
     };
 
     fetchData();
-  }, [params, token]);
+  }, [params]);
 
   // 북마크 토글
   const handleBookmark = useCallback(
     async (data: BoardType) => {
-      if (!token) return;
       if (!isBookmark) {
         try {
-          const res = await postBookmark(`/my/bookmark/${data.postId}`, token);
-
-          console.log("bookmark add : ", res);
+          const res = await postBookmark(`/my/bookmark/${data.postId}`);
           setIsBookmark(!isBookmark);
         } catch (err) {
           console.log(err);
@@ -103,19 +89,15 @@ const Page = () => {
       } else {
         try {
           const res = await deleteBookmark(
-            `/my/bookmark/post?postId=${data.postId}`,
-            token
+            `/my/bookmark/post?postId=${data.postId}`
           );
-          // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
-
-          console.log("bookmark remove :", res);
           setIsBookmark(!isBookmark);
         } catch (err) {
           console.log(err);
         }
       }
     },
-    [isBookmark, token]
+    [isBookmark]
   );
 
   return (

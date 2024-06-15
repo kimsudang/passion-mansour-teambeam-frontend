@@ -18,54 +18,40 @@ export type Project = {
 export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [lists, setLists] = useState<Project[]>([]);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
-
       try {
-        const res = await getPorjectList("/projectList", token);
-        console.log("res : ", res);
+        const res = await getPorjectList("/projectList");
 
         setLists(res.data.projectList);
       } catch (err) {
         console.log("err  : ", err);
+        alert("프로젝트 조회에 실패했습니다");
       }
     };
 
     fetchData();
-  }, [token]);
+  }, []);
 
-  const handleChange = useCallback(
-    async (e: any) => {
-      if (!token) return;
+  const handleChange = useCallback(async (e: any) => {
+    try {
+      const res = await getPorjectList("/projectList");
 
-      try {
-        const res = await getPorjectList("/projectList", token);
-
-        e.target.value === "all"
-          ? setLists(res.data.projectList)
-          : setLists(
-              res.data.projectList.filter(
-                (list: any) =>
-                  list.projectStatus?.toLocaleLowerCase() ===
-                  e.target.value.toLocaleLowerCase()
-              )
-            );
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    [token]
-  );
+      e.target.value === "all"
+        ? setLists(res.data.projectList)
+        : setLists(
+            res.data.projectList.filter(
+              (list: any) =>
+                list.projectStatus?.toLocaleLowerCase() ===
+                e.target.value.toLocaleLowerCase()
+            )
+          );
+    } catch (err) {
+      console.log(err);
+      alert("프로젝트 조회에 실패했습니다");
+    }
+  }, []);
 
   const handleAddBtn = useCallback(() => {
     setIsModalOpen(true);

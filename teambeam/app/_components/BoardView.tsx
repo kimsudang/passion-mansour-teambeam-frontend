@@ -39,14 +39,7 @@ export default function BoardView({
 }) {
   const [commentContent, setCommentContent] = useState<string>("");
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
   const router = useRouter();
   const params = useParams<{
     projectId: string;
@@ -83,16 +76,11 @@ export default function BoardView({
 
   // 게시글 삭제
   const handlePostDelete = useCallback(async () => {
-    if (!token) return;
     if (confirm("정말 삭제하시겠습니까?")) {
       try {
         const res = await deletePost(
-          `/team/${projectId}/${params.boardId}/${boardData.postId}`,
-          token
+          `/team/${projectId}/${params.boardId}/${boardData.postId}`
         );
-
-        console.log(res);
-
         alert("게시글이 삭제되었습니다.");
         if (type === "bookmark") {
           router.push(
@@ -107,7 +95,7 @@ export default function BoardView({
     } else {
       return;
     }
-  }, [router, params, token, projectId, boardData, type]);
+  }, [router, params, projectId, boardData, type]);
 
   // 코멘트 작성
   const onSubmit = useCallback(async () => {
@@ -115,14 +103,12 @@ export default function BoardView({
       content: commentContent,
     };
 
-    if (!token) return;
     if (type === "bookmark") {
       try {
-        const res = await getBookmarkList(`/my/bookmark/${params.id}`, token);
+        const res = await getBookmarkList(`/my/bookmark/${params.id}`);
         try {
           const _res = await postComment(
             `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`,
-            token,
             data
           );
           setCommentContent("");
@@ -137,17 +123,15 @@ export default function BoardView({
       try {
         const res = await postComment(
           `/team/${params.projectId}/${params.boardId}/${params.id}/`,
-          token,
           data
         );
-
-        console.log("comment : ", res);
+        setCommentContent("");
         setComments((prev) => [...prev, res.data]);
       } catch (err) {
         console.log(err);
       }
     }
-  }, [token, commentContent, type, setComments, params]);
+  }, [commentContent, type, setComments, params]);
 
   // 코멘트 수정
   const handleCommentIsToggle = useCallback((commentId: number | null) => {
@@ -157,27 +141,20 @@ export default function BoardView({
   // 코멘트 삭제
   const handleCommentDelete = useCallback(
     async (commentId: number) => {
-      if (!token) return;
       if (confirm("해당 댓글을 삭제하시겠습니까?")) {
         if (type === "bookmark") {
           try {
-            const res = await getBookmarkList(
-              `/my/bookmark/${params.id}`,
-              token
-            );
-            console.log("deleteComment2", res);
+            const res = await getBookmarkList(`/my/bookmark/${params.id}`);
 
             try {
               const _res = await deleteComment(
-                `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/${commentId}`,
-                token
+                `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/${commentId}`
               );
 
               if (_res.status === 200) {
                 try {
                   const response = await getComment(
-                    `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`,
-                    token
+                    `/team/${res.data.projectId}/${res.data.boardId}/${res.data.postId}/`
                   );
 
                   alert("댓글이 삭제되었습니다.");
@@ -196,15 +173,13 @@ export default function BoardView({
         } else {
           try {
             const res = await deleteComment(
-              `/team/${params.projectId}/${params.boardId}/${params.id}/${commentId}`,
-              token
+              `/team/${params.projectId}/${params.boardId}/${params.id}/${commentId}`
             );
 
             if (res.status === 200) {
               try {
                 const _res = await getComment(
-                  `/team/${params.projectId}/${params.boardId}/${params.id}/`,
-                  token
+                  `/team/${params.projectId}/${params.boardId}/${params.id}/`
                 );
 
                 alert("댓글이 삭제되었습니다.");
@@ -222,7 +197,7 @@ export default function BoardView({
         return;
       }
     },
-    [params, token, type, setComments]
+    [params, type, setComments]
   );
 
   return (
@@ -336,7 +311,6 @@ export default function BoardView({
               setComments={setComments}
               type={type}
               params={params}
-              token={token}
               handleCommentIsToggle={() =>
                 handleCommentIsToggle(
                   editCommentId === comment.postCommentId

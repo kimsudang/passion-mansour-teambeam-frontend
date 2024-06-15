@@ -1,8 +1,8 @@
 "use client";
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import "./layout.scss";
 import useForm from "../../_hooks/useForm";
 import { LoginUser } from "./_components/LoginForm";
@@ -14,12 +14,6 @@ interface ILoginForm {
 }
 
 const Login: React.FC = () => {
-	// 환경변수 테스트
-	console.log('normal test : ', '노멀 테스트');
-	console.log('TEST : ', `'${process.env.NEXT_PUBLIC_TEST}'`);
-	console.log('URL TEST : ', `'${process.env.NEXT_PUBLIC_BASE_URL}'`);
-	console.log('DECODING 테스트 : ', process.env.NEXT_PUBLIC_DECODING);
-	
   const router = useRouter();
   // 카카오 로그인 환경변수
   // const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
@@ -31,12 +25,12 @@ const Login: React.FC = () => {
       initialValues: { mail: "", password: "" },
       onSubmit: async (data) => {
         const result = await LoginUser(data);
-      if (result.success) {
-        alert("로그인에 성공했습니다.");
-        router.push('/main');
-      } else {
-        alert(result.message);
-      }
+        if (result.success) {
+          alert("로그인에 성공했습니다.");
+          router.push("/main");
+        } else {
+          alert(result.message);
+        }
       },
       validate: (values) => {
         const errors: Partial<Record<keyof ILoginForm, string>> = {};
@@ -51,13 +45,11 @@ const Login: React.FC = () => {
         }
         return errors;
       },
-    }
-  );
+    });
 
   // 카카오 로그인
-  
 
-  // 비밀번호 변경 모달 
+  // 비밀번호 변경 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = (e: React.MouseEvent) => {
@@ -110,7 +102,7 @@ const Login: React.FC = () => {
           <Link className='pageLink' href='/user/join'>
             회원가입
           </Link>
-          <Link className='pageLink' href="#" onClick={openModal}>
+          <Link className='pageLink' href='#' onClick={openModal}>
             비밀번호 찾기
           </Link>
         </div>

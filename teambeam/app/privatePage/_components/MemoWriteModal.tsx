@@ -21,14 +21,6 @@ export default function MemoWriteModal({
     title: "",
     content: "",
   });
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("Authorization");
-      setToken(storedToken);
-    }
-  }, []);
 
   const titleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,24 +37,16 @@ export default function MemoWriteModal({
   );
 
   const onSubmit = useCallback(async () => {
-    // "use server";
-
-    console.log("title : ", form.title);
-    console.log("content : ", form.content);
-
-    if (!token) return;
-
     try {
-      const res = await postMemo("/my/memo/", token, form);
-      console.log("res : ", res);
-
+      const res = await postMemo("/my/memo/", form);
       alert("메모 생성이 완료되었습니다.");
       onCloseModal();
       setMemoList((prev) => [res.data, ...prev]);
     } catch (err) {
       console.log("err  : ", err);
+      alert("메모 생성에 실패했습니다.");
     }
-  }, [form, token, onCloseModal, setMemoList]);
+  }, [form, onCloseModal, setMemoList]);
 
   return (
     <div className='modal-bg'>
