@@ -6,10 +6,9 @@ interface ShowTagModalProps {
   tag: TagInfo;
   onClose: () => void;
   onTagDeleted: () => void;
-  isHost: boolean;
 }
 
-const ShowTagModal: React.FC<ShowTagModalProps> = ({ projectId, tag, onClose, onTagDeleted, isHost }) => {
+const ShowTagModal: React.FC<ShowTagModalProps> = ({ projectId, tag, onClose, onTagDeleted }) => {
 
   const handleDeleteTag = async () => {
     try {

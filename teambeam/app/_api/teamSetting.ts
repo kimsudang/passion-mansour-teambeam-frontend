@@ -1,6 +1,5 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
-import Router from "next/router";
 
 // 프로젝트 정보 인터페이스 정의
 export interface ProjectInfo {
@@ -40,7 +39,6 @@ const handleApiError = (error: unknown, errorMessage: string) => {
   } else {
     console.error(`Unexpected error: ${errorMessage}`, error);
   }
-  alert(errorMessage);
 };
 
 // 프로젝트 정보 API 호출 함수
@@ -52,6 +50,7 @@ export const fetchProjectInfo = async (projectId:string) => {
     return response.data.project;
   } catch (error) {
     handleApiError(error, "프로젝트 정보를 확인할 수 없습니다.");
+    alert( "프로젝트 정보를 확인할 수 없습니다.");
     return null;
   }
 };
@@ -64,6 +63,7 @@ export const updateProjectInfo = async (projectId: string, projectInfo: ProjectI
     });
   } catch (error) {
     handleApiError(error, "프로젝트 정보를 업데이트할 수 없습니다.");
+    alert("프로젝트 정보를 업데이트할 수 없습니다.");
   }
 };
 
@@ -177,6 +177,7 @@ export const deleteMember = async (projectId: string, memberId: number) => {
     return response.data.joinMemberList;
   } catch (error) {
     handleApiError(error, "멤버를 삭제할 수 없습니다.");
+    alert("멤버를 삭제할 수 없습니다.");
     return [];
   }
 };
@@ -190,5 +191,6 @@ export const deleteProject = async (projectId: string) => {
     alert("프로젝트가 삭제되었습니다.");
   } catch (error) {
     handleApiError(error, "프로젝트를 삭제할 수 없습니다.");
+    alert("프로젝트를 삭제할 수 없습니다.");
   }
 };

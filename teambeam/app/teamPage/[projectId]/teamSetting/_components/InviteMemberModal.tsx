@@ -12,9 +12,9 @@ interface InviteMemberModalProps {
 
 const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClose, onInvite }) => {
   const [mail, setMail] = useState('');
-  const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,16 +26,17 @@ const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClos
 
     if (!validateEmail(mail)) {
       setIsValidEmail(false);
-      setMessage('유효한 이메일 주소를 입력하세요.');
       return;
     }
 
     setIsSubmitted(true);
     const result = await inviteMember(projectId, mail);
-    setMessage(result.message);
 
     if (result.success) {
+      setIsSuccess(true);
       onInvite(mail);
+    }else {
+      setIsSuccess(false);
     }
   };
 
@@ -60,7 +61,6 @@ const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClos
               onChange={(e) => {
                 setMail(e.target.value);
                 setIsValidEmail(true);
-                setMessage('');
               }} 
               placeholder='mailAddress@example.com'
               required
@@ -70,8 +70,11 @@ const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ projectId, onClos
           </form>
         ) : (
           <div className="inviteModalContent">
-            {isSubmitted && <p>메일이 성공적으로 전송되었습니다.</p>}
-            {!isSubmitted && <p>메일 전송이 실패헀습니다.</p>}
+            {isSuccess ? (
+              <p>메일이 성공적으로 전송되었습니다.</p>
+            ) : (
+              <p>메일 전송에 실패했습니다.</p>
+            )}
           </div>
         )}
       </div>
