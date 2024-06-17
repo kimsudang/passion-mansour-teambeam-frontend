@@ -1,14 +1,29 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
-import { flushAllTraces } from "next/dist/trace";
+
+// 로컬 스토리지에서 토큰을 가져오는 함수
+const getToken = (): string => {
+  const token = localStorage.getItem("Authorization");
+  if (!token) {
+    throw new Error("Authorization token is missing");
+  }
+  return token;
+};
+
+const getRefreshToken = (): string => {
+  const refreshToken = localStorage.getItem("RefreshToken");
+  if (!refreshToken) {
+    throw new Error("Refresh token is missing");
+  }
+  return refreshToken;
+};
 
 // 투두리스트 조회 함수
-export const fetchTodos = async (
-  projectId: string,
-  token: string,
-  refreshToken: string
-) => {
+export const fetchTodos = async (projectId: string) => {
   try {
+    const token = getToken();
+    const refreshToken = getRefreshToken();
+
     const response = await api.get(`/team/${projectId}/todo`, {
       headers: {
         Authorization: token,
@@ -70,6 +85,8 @@ export const addUpperTodo = async (
   }
 ) => {
   try {
+    const token = getToken();
+
     const response = await api.post(
       `/team/${projectId}/todo/top`,
       {
@@ -78,7 +95,7 @@ export const addUpperTodo = async (
       },
       {
         headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+          Authorization: token,
         },
       }
     );
@@ -107,15 +124,17 @@ export const addMiddleTodo = async (
   }
 ) => {
   try {
+    const token = getToken();
+
     const response = await api.post(
       `/team/${projectId}/todo/middle`,
       {
         ...middleTodo,
-        status: false, // 상태를 명시적으로 false로 설정
+        status: false,
       },
       {
         headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+          Authorization: token,
         },
       }
     );
@@ -144,16 +163,17 @@ export const addLowerTodo = async (
     memo?: string;
     member: string;
     tags: number[];
-  },
-  token: string,
-  refreshToken: string
+  }
 ): Promise<any> => {
   try {
+    const token = getToken();
+    const refreshToken = getRefreshToken();
+
     const response = await api.post(
       `/team/${projectId}/todo/bottom`,
       {
         ...lowerTodo,
-        status: false, // 상태를 명시적으로 false로 설정
+        status: false,
         taglist: lowerTodo.tags || [],
       },
       {
@@ -178,12 +198,11 @@ export const addLowerTodo = async (
 };
 
 // 참가자 조회 함수
-export const fetchParticipants = async (
-  projectId: string,
-  token: string,
-  refreshToken: string
-) => {
+export const fetchParticipants = async (projectId: string) => {
   try {
+    const token = getToken();
+    const refreshToken = getRefreshToken();
+
     const response = await api.get(`/team/${projectId}/joinMember`, {
       headers: {
         Authorization: token,
@@ -218,6 +237,8 @@ export const fetchParticipants = async (
 // 상위 투두리스트 삭제 함수
 export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
   try {
+    const token = getToken();
+
     console.log(
       `Deleting Upper Todo: Project ID - ${projectId}, Top Todo ID - ${topTodoId}`
     );
@@ -225,15 +246,14 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
       `/team/${projectId}/todo/top/${topTodoId}`,
       {
         headers: {
-          accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+          Authorization: token,
         },
       }
     );
-    console.log("Delete API Response:", response.data); // 디버그 로그
+    console.log("Delete API Response:", response.data);
 
-    // 응답 데이터가 없거나 status가 200일 경우 성공으로 처리
     if (!response.data || (response.data && response.data.status === 200)) {
-      return response.data; // 삭제된 일정 데이터 반환
+      return response.data;
     } else {
       throw new Error("Invalid response data format");
     }
@@ -251,12 +271,11 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
 };
 
 // 태그 리스트 조회 함수
-export const fetchTags = async (
-  projectId: string,
-  token: string,
-  refreshToken: string
-) => {
+export const fetchTags = async (projectId: string) => {
   try {
+    const token = getToken();
+    const refreshToken = getRefreshToken();
+
     const response = await api.get(`/team/${projectId}/todo/tag`, {
       headers: {
         Authorization: token,
