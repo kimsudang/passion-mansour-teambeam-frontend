@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./layout.scss";
+import api from "@/app/_api/api"
 import useForm from "../../_hooks/useForm";
 import { LoginUser } from "./_components/LoginForm";
 import ForgotPasswordModal from "../_components/ForgotPasswordModal";
+
+declare global {
+  interface Window {
+    Kakao: any;
+  }
+}
 
 interface ILoginForm {
   mail: string;
@@ -16,8 +23,8 @@ interface ILoginForm {
 const Login: React.FC = () => {
   const router = useRouter();
   // 카카오 로그인 환경변수
-  // const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
-  // const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
+  const CLIENT_ID = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
+  const REDIRECT_URI = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
 
   // 이메일 로그인
   const { values, errors, isLoading, handleChange, handleSubmit } =
@@ -47,8 +54,6 @@ const Login: React.FC = () => {
       },
     });
 
-  // 카카오 로그인
-
   // 비밀번호 변경 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -60,6 +65,57 @@ const Login: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  // 카카오 로그인 처리
+  const handleKakaoLogin = () => {
+    if (window.Kakao) {
+      window.Kakao.Auth.authorize({
+        redirectUri: REDIRECT_URI,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const script = document.createElement("script");
+      script.src = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
+      script.integrity = "sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4";
+      script.crossOrigin = "anonymous";
+      script.onload = () => {
+        if (window.Kakao) {
+          window.Kakao.init(CLIENT_ID);
+        }
+      };
+      document.head.appendChild(script);
+    }
+
+    const handleLogin = async () => {
+      const code = new URL(window.location.href).searchParams.get("code");
+      console.log("Kakao Authorization Code:", code);
+
+      if (code) {
+        try {
+          const response = await api.get(`/kakao/login?code=${code}`);
+          const headers = response.headers;
+          const data = response.data;
+
+          if (response.status === 200 || response.status === 201) {
+            alert("로그인에 성공했습니다.");
+            localStorage.setItem("Authorization", headers['authorization']);
+            localStorage.setItem("RefreshToken", headers['refreshtoken']);
+            localStorage.setItem("MemberId", data.memberId);
+            router.push("/main");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          router.push("/user/login");
+        }
+      }
+    };
+
+    handleLogin();
+  }, [router, CLIENT_ID]);
+
 
   return (
     <div className='loginContainer'>
@@ -108,7 +164,7 @@ const Login: React.FC = () => {
         </div>
         <div className='kakaoLogin'>
           <p className='orText'>또는</p>
-          <button className='loginWithKakao'>카카오로 로그인하기</button>
+          <button className='loginWithKakao' onClick={handleKakaoLogin}>카카오로 로그인하기</button>
         </div>
       </div>
       {isModalOpen && <ForgotPasswordModal onClose={closeModal} />}
