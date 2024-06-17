@@ -13,6 +13,8 @@ type Props = {
     middleTodoId?: string
   ) => void;
   onDeleteGoal: (topTodoId: string) => void;
+  onDeleteMiddleGoal: (middleTodoId: string) => void;
+  onDeleteLowerGoal: (bottomTodoId: string) => void;
   listCount: number;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
   participants: Participant[];
@@ -22,6 +24,8 @@ const UpperTodoList: React.FC<Props> = ({
   list,
   onAddGoal,
   onDeleteGoal,
+  onDeleteMiddleGoal,
+  onDeleteLowerGoal,
   listCount,
   onStatusChange,
   participants,
@@ -98,6 +102,8 @@ const UpperTodoList: React.FC<Props> = ({
             onAddGoal(type, list.topTodoId, middleTodoId)
           }
           onStatusChange={onStatusChange}
+          onDeleteGoal={onDeleteMiddleGoal}
+          onDeleteLowerGoal={onDeleteLowerGoal}
           participants={participants}
         />
       ))}

@@ -1,20 +1,30 @@
+// LowerTodoList.tsx
 import React from "react";
 import { TodoItem, Participant } from "../types";
+import { XmarkBtnIcon } from "@/app/_components/Icons";
 
 type Props = {
   subtask: TodoItem;
   onStatusChange: (id: string, newStatus: boolean) => void;
+  onDeleteGoal: (bottomTodoId: string) => void;
   participants: Participant[];
 };
 
 const LowerTodoList: React.FC<Props> = ({
   subtask,
   onStatusChange,
+  onDeleteGoal,
   participants,
 }) => {
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (subtask.bottomTodoId) {
       onStatusChange(subtask.bottomTodoId, !e.target.checked);
+    }
+  };
+
+  const handleDelete = () => {
+    if (subtask.bottomTodoId) {
+      onDeleteGoal(subtask.bottomTodoId);
     }
   };
 
@@ -32,6 +42,9 @@ const LowerTodoList: React.FC<Props> = ({
           onChange={handleStatusChange}
         />
         <h5 className="lowerTitle">{subtask.title}</h5>
+        <div onClick={handleDelete}>
+          <XmarkBtnIcon size={15} />
+        </div>{" "}
       </div>
       <span className="lowerDate">
         {subtask.startDate} - {subtask.endDate}

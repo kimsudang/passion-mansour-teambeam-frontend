@@ -270,6 +270,81 @@ export const deleteUpperTodo = async (projectId: string, topTodoId: string) => {
   }
 };
 
+// 중위 투두리스트 삭제 함수
+export const deleteMiddleTodo = async (
+  projectId: string,
+  middleTodoId: string
+) => {
+  try {
+    const token = getToken();
+
+    const response = await api.delete(
+      `/team/${projectId}/todo/middle/${middleTodoId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    // 상태 코드 200인 경우 올바르게 처리
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Invalid response data format");
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error deleting middle todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error deleting middle todo:", error);
+    }
+    throw error;
+  }
+};
+
+// 하위 투두리스트 삭제 함수
+export const deleteLowerTodo = async (
+  projectId: string,
+  bottomTodoId: string
+) => {
+  try {
+    const token = getToken();
+
+    console.log(
+      `Deleting Lower Todo: Project ID - ${projectId}, Bottom Todo ID - ${bottomTodoId}`
+    );
+    const response = await api.delete(
+      `/team/${projectId}/todo/bottom/${bottomTodoId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    console.log("Delete API Response:", response.data);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Invalid response data format");
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error deleting lower todo:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error deleting lower todo:", error);
+    }
+    throw error;
+  }
+};
+
 // 태그 리스트 조회 함수
 export const fetchTags = async (projectId: string) => {
   try {
@@ -300,6 +375,37 @@ export const fetchTags = async (projectId: string) => {
       );
     } else {
       console.error("Error fetching tags:", error);
+    }
+    throw error;
+  }
+};
+//하위 투두리스트 상태변화 업데이트 함수
+export const updateLowerTodoStatus = async (
+  projectId: string,
+  bottomTodoId: string,
+  status: boolean
+) => {
+  try {
+    const token = getToken();
+
+    const response = await api.patch(
+      `/team/${projectId}/todo/bottom/${bottomTodoId}`,
+      { status },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error(
+        "Error updating lower todo status:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("Error updating lower todo status:", error);
     }
     throw error;
   }

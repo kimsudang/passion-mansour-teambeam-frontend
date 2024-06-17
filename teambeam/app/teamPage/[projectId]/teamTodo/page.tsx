@@ -14,9 +14,11 @@ import {
   addMiddleTodo,
   addLowerTodo,
   deleteUpperTodo,
+  deleteMiddleTodo,
+  deleteLowerTodo,
   fetchTags,
   fetchParticipants,
-} from "@/app/_api/todo"; // Ensure you import all needed functions
+} from "@/app/_api/todo";
 
 const TeamTodo: React.FC = () => {
   const params = useParams();
@@ -61,9 +63,7 @@ const TeamTodo: React.FC = () => {
     const loadParticipants = async () => {
       try {
         if (projectId) {
-          const participants = await fetchParticipants(
-            projectId
-          );
+          const participants = await fetchParticipants(projectId);
           console.log("Loaded Participants:", participants);
           setParticipants(participants);
         }
@@ -190,7 +190,7 @@ const TeamTodo: React.FC = () => {
                     {
                       middleTodoId: response.middleTodoId,
                       ...middleTodo,
-                      status: false, // 상태를 명시적으로 false로 설정
+                      status: false,
                       bottomTodos: [],
                     },
                   ],
@@ -224,10 +224,7 @@ const TeamTodo: React.FC = () => {
 
         console.log("Lower Todo Before Sending:", lowerTodo);
 
-        const response = await addLowerTodo(
-          projectId,
-          lowerTodo
-        );
+        const response = await addLowerTodo(projectId, lowerTodo);
         console.log("Lower Todo added:", response);
 
         const tagNames = (response.taglist || []).map((tagId: number) => {
@@ -274,6 +271,7 @@ const TeamTodo: React.FC = () => {
     }
   };
 
+  //상위 투두리스트 삭제 함수
   const handleDeleteGoal = async (id: string) => {
     if (!window.confirm("정말 삭제하시겠습니까?")) {
       return;
@@ -300,6 +298,93 @@ const TeamTodo: React.FC = () => {
     } catch (error: any) {
       console.error("Error deleting upper todo:", error);
       toast.error("목표 삭제 중 오류가 발생했습니다.", {
+        autoClose: 10000,
+      });
+    }
+  };
+
+  // 중위 투두리스트 삭제 함수
+  const handleDeleteMiddleGoal = async (id: string) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      if (projectId) {
+        const response = await deleteMiddleTodo(projectId, id);
+
+        // 응답 데이터가 없는 경우에도 삭제 처리
+        if (response === undefined || response.status === 200) {
+          setTodoLists(
+            todoLists.map((list) => ({
+              ...list,
+              middleTodos: list.middleTodos.filter(
+                (middleTodo) => middleTodo.middleTodoId !== id
+              ),
+            }))
+          );
+          toast.success("중위 목표가 성공적으로 삭제되었습니다.", {
+            autoClose: 10000,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000); // 1초 후 새로고침
+        } else {
+          console.error("Failed to delete middle todo");
+          toast.error("중위 목표 삭제 중 오류가 발생했습니다.", {
+            autoClose: 10000,
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error("Error deleting middle todo:", error);
+      toast.error("중위 목표 삭제 중 오류가 발생했습니다.", {
+        autoClose: 10000,
+      });
+    }
+  };
+
+  // 하위 투두리스트 삭제 함수
+  const handleDeleteLowerGoal = async (id: string) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      if (projectId) {
+        const response = await deleteLowerTodo(projectId, id);
+
+        // 응답 데이터가 없는 경우에도 삭제 처리
+        if (response === undefined || response.status === 200) {
+          setTodoLists(
+            todoLists.map((list) => ({
+              ...list,
+              middleTodos: list.middleTodos.map((middleTodo) => ({
+                ...middleTodo,
+                bottomTodos:
+                  middleTodo.bottomTodos?.filter(
+                    (bottomTodo) => bottomTodo.bottomTodoId !== id
+                  ) ?? [],
+              })),
+            }))
+          );
+          toast.success("하위 목표가 성공적으로 삭제되었습니다.", {
+            autoClose: 10000,
+          });
+          // DELETE 요청 후 페이지를 새로고침
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000); // 1초 후 새로고침
+        } else {
+          console.error("Failed to delete lower todo");
+          toast.error("하위 목표 삭제 중 오류가 발생했습니다.", {
+            autoClose: 10000,
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error("Error deleting lower todo:", error);
+      toast.error("하위 목표 삭제 중 오류가 발생했습니다.", {
         autoClose: 10000,
       });
     }
@@ -391,6 +476,8 @@ const TeamTodo: React.FC = () => {
           list={list}
           onAddGoal={handleAddButtonClick}
           onDeleteGoal={handleDeleteGoal}
+          onDeleteMiddleGoal={handleDeleteMiddleGoal}
+          onDeleteLowerGoal={handleDeleteLowerGoal}
           listCount={todoLists.length}
           onStatusChange={handleStatusChange}
           participants={participants}

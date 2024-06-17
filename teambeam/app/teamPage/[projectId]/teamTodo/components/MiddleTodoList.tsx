@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import LowerTodoList from "./LowerTodoList";
 import { TodoItem, Participant } from "../types";
-import { ToggleDownBtnIcon, ToggleUpBtnIcon } from "@/app/_components/Icons";
-
+import {
+  ToggleDownBtnIcon,
+  ToggleUpBtnIcon,
+  XmarkBtnIcon,
+} from "@/app/_components/Icons";
 type Props = {
   task: TodoItem;
   onAddGoal: (type: string, middleTodoId?: string) => void;
   onStatusChange: (type: string, id: string, newStatus: boolean) => void;
+  onDeleteGoal: (middleTodoId: string) => void;
+  onDeleteLowerGoal: (bottomTodoId: string) => void;
   participants: Participant[];
 };
 
@@ -14,6 +19,8 @@ const MiddleTodoList: React.FC<Props> = ({
   task,
   onAddGoal,
   onStatusChange,
+  onDeleteGoal,
+  onDeleteLowerGoal,
   participants,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +32,12 @@ const MiddleTodoList: React.FC<Props> = ({
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (task.middleTodoId) {
       onStatusChange("middle", task.middleTodoId, !e.target.checked);
+    }
+  };
+
+  const handleDelete = () => {
+    if (task.middleTodoId) {
+      onDeleteGoal(task.middleTodoId);
     }
   };
 
@@ -48,6 +61,9 @@ const MiddleTodoList: React.FC<Props> = ({
           <span className="middleDate">
             {task.startDate} - {task.endDate}
           </span>
+          <div onClick={handleDelete}>
+            <XmarkBtnIcon size={15} />
+          </div>
           <div>
             {isOpen ? (
               <ToggleUpBtnIcon size={15} />
@@ -67,6 +83,7 @@ const MiddleTodoList: React.FC<Props> = ({
                 onStatusChange("bottom", id, newStatus)
               }
               participants={participants}
+              onDeleteGoal={onDeleteLowerGoal}
             />
           ))}
           <button
