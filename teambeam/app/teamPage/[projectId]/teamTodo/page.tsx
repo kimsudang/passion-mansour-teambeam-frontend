@@ -18,6 +18,7 @@ import {
   deleteLowerTodo,
   fetchTags,
   fetchParticipants,
+  updateLowerTodoStatus,
 } from "@/app/_api/todo";
 
 const TeamTodo: React.FC = () => {
@@ -390,80 +391,95 @@ const TeamTodo: React.FC = () => {
     }
   };
 
-  const handleStatusChange = (type: string, id: string, newStatus: boolean) => {
+  //투두리스트 상태변화 관리 함수
+  const handleStatusChange = async (
+    type: string,
+    id: string,
+    newStatus: boolean
+  ) => {
     let updatedTodoLists = [...todoLists];
 
-    if (type === "top") {
-      updatedTodoLists = updatedTodoLists.map((list) => {
-        if (list.topTodoId === id) {
-          return { ...list, status: newStatus };
-        }
-        return list;
-      });
-    } else if (type === "middle") {
-      updatedTodoLists = updatedTodoLists.map((list) => {
-        list.middleTodos = list.middleTodos.map((task) => {
-          if (task.middleTodoId === id) {
-            return { ...task, status: newStatus };
-          }
-          return task;
-        });
-        return list;
-      });
-    } else if (type === "bottom") {
-      updatedTodoLists = updatedTodoLists.map((list) => {
-        list.middleTodos = list.middleTodos.map((task) => {
-          task.bottomTodos =
-            task.bottomTodos?.map((subtask: TodoItem) => {
-              if (subtask.bottomTodoId === id) {
-                return { ...subtask, status: newStatus };
-              }
-              return subtask;
-            }) ?? [];
-          return task;
-        });
-        return list;
-      });
-    }
+    try {
+      const adjustedStatus = newStatus; // 반대가 아닌 그대로 상태 반영
 
-    if (type === "bottom") {
-      updatedTodoLists.forEach((list) => {
-        list.middleTodos.forEach((task) => {
-          const allSubtasksChecked = (task.bottomTodos ?? []).every(
-            (subtask: TodoItem) => subtask.status === false
+      if (type === "bottom") {
+        await updateLowerTodoStatus(projectId, id, adjustedStatus);
+      }
+
+      if (type === "top") {
+        updatedTodoLists = updatedTodoLists.map((list) => {
+          if (list.topTodoId === id) {
+            return { ...list, status: newStatus };
+          }
+          return list;
+        });
+      } else if (type === "middle") {
+        updatedTodoLists = updatedTodoLists.map((list) => {
+          list.middleTodos = list.middleTodos.map((task) => {
+            if (task.middleTodoId === id) {
+              return { ...task, status: newStatus };
+            }
+            return task;
+          });
+          return list;
+        });
+      } else if (type === "bottom") {
+        updatedTodoLists = updatedTodoLists.map((list) => {
+          list.middleTodos = list.middleTodos.map((task) => {
+            task.bottomTodos =
+              task.bottomTodos?.map((subtask: TodoItem) => {
+                if (subtask.bottomTodoId === id) {
+                  return { ...subtask, status: newStatus };
+                }
+                return subtask;
+              }) ?? [];
+            return task;
+          });
+          return list;
+        });
+      }
+
+      if (type === "bottom") {
+        updatedTodoLists.forEach((list) => {
+          list.middleTodos.forEach((task) => {
+            const allSubtasksChecked = (task.bottomTodos ?? []).every(
+              (subtask: TodoItem) => subtask.status === false
+            );
+            if (allSubtasksChecked) {
+              task.status = false;
+            } else {
+              task.status = true;
+            }
+          });
+
+          const allTasksChecked = list.middleTodos.every(
+            (task: TodoItem) => task.status === false
           );
-          if (allSubtasksChecked) {
-            task.status = false;
+          if (allTasksChecked) {
+            list.status = false;
           } else {
-            task.status = true;
+            list.status = true;
           }
         });
+      }
 
-        const allTasksChecked = list.middleTodos.every(
-          (task: TodoItem) => task.status === false
-        );
-        if (allTasksChecked) {
-          list.status = false;
-        } else {
-          list.status = true;
-        }
-      });
+      if (type === "middle") {
+        updatedTodoLists.forEach((list) => {
+          const allTasksChecked = list.middleTodos.every(
+            (task: TodoItem) => task.status === false
+          );
+          if (allTasksChecked) {
+            list.status = false;
+          } else {
+            list.status = true;
+          }
+        });
+      }
+
+      setTodoLists(updatedTodoLists);
+    } catch (error: any) {
+      console.error("Error updating status:", error.response?.data || error);
     }
-
-    if (type === "middle") {
-      updatedTodoLists.forEach((list) => {
-        const allTasksChecked = list.middleTodos.every(
-          (task: TodoItem) => task.status === false
-        );
-        if (allTasksChecked) {
-          list.status = false;
-        } else {
-          list.status = true;
-        }
-      });
-    }
-
-    setTodoLists(updatedTodoLists);
   };
 
   return (

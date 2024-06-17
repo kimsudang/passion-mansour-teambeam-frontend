@@ -31,6 +31,8 @@ export const fetchTodos = async (projectId: string) => {
       },
     });
 
+    console.log("Fetch Todos Response:", response.data); // 응답 데이터 로그 출력
+
     const todos = response.data.todos.map((todo: any) => ({
       topTodoId: String(todo.topTodoId),
       title: todo.title,
@@ -379,6 +381,7 @@ export const fetchTags = async (projectId: string) => {
     throw error;
   }
 };
+
 //하위 투두리스트 상태변화 업데이트 함수
 export const updateLowerTodoStatus = async (
   projectId: string,
