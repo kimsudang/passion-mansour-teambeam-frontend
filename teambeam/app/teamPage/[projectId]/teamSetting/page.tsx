@@ -8,7 +8,6 @@ import {
   fetchMembersInfo, 
   updateMemberRoles, 
   updateMemberRole, 
-  inviteMember, 
   deleteProject,
   fetchProjectTags, 
   updateProjectInfo,
@@ -66,6 +65,7 @@ const TeamSetting: React.FC = () => {
       }
     };
 
+    // 태그 가져오기
     const getTagsData = async () => {
       const tagsData = await fetchProjectTags(projectId);
       setTags(tagsData);
@@ -282,7 +282,9 @@ const TeamSetting: React.FC = () => {
             <ul className="memberList">
               {members.map(member => (
                 <li key={member.memberId} className="memberItem">
-                <input type="checkbox" checked={selectedMembers.has(member.memberId)} onChange={() => handleCheckboxChange(member.memberId)} />
+                  {isHost ? (
+                    <input type="checkbox" checked={selectedMembers.has(member.memberId)} onChange={() => handleCheckboxChange(member.memberId)} />
+                  ) : (<></>)}
                 <Image 
                     src={`data:image/png;base64,${member.profileImage}`} 
                     alt={`${member.memberName} profile`} 
@@ -334,7 +336,6 @@ const TeamSetting: React.FC = () => {
           tag={selectedTag} 
           onClose={handleTagModalClose} 
           onTagDeleted={handleTagAdded} 
-          isHost={isHost} 
         />
       )}
     </div>
