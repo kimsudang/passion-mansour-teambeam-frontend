@@ -49,7 +49,7 @@ const TeamTodo: React.FC = () => {
         setRefreshToken(refreshToken);
 
         if (projectId) {
-          const todos = await fetchTodos(projectId, token, refreshToken);
+          const todos = await fetchTodos(projectId);
           console.log("Loaded Todos:", todos);
           setTodoLists(todos);
         }
@@ -62,9 +62,7 @@ const TeamTodo: React.FC = () => {
       try {
         if (projectId) {
           const participants = await fetchParticipants(
-            projectId,
-            token,
-            refreshToken
+            projectId
           );
           console.log("Loaded Participants:", participants);
           setParticipants(participants);
@@ -77,7 +75,7 @@ const TeamTodo: React.FC = () => {
     const loadTags = async () => {
       try {
         if (projectId) {
-          const tags = await fetchTags(projectId, token, refreshToken);
+          const tags = await fetchTags(projectId);
           console.log("Loaded Tags:", tags);
           setTags(tags);
         }
@@ -228,9 +226,7 @@ const TeamTodo: React.FC = () => {
 
         const response = await addLowerTodo(
           projectId,
-          lowerTodo,
-          token,
-          refreshToken
+          lowerTodo
         );
         console.log("Lower Todo added:", response);
 

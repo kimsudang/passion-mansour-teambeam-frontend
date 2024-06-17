@@ -66,7 +66,7 @@ const EventModal: React.FC<EventModalProps> = ({
       setTags([]);
     } else if (showTags) {
       const loadTags = async () => {
-        const fetchedTags = await fetchTags(projectId, token, refreshToken);
+        const fetchedTags = await fetchTags(projectId);
         const tagOptions = fetchedTags.map((tag: any) => ({
           value: tag.id,
           label: tag.name,
