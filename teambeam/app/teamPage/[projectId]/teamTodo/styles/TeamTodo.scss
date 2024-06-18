@@ -308,3 +308,26 @@
 .cancelButton:hover {
   background-color: #999;
 }
+
+//캘린더에서 상위 투두 클릭시, 하이라이트 css
+.upperTodoList {
+  border: 1px solid #d5d5d5;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.upperTodoList.highlight {
+  background-color: #ffc300;
+  animation: highlight-animation 1s ease-in-out;
+}
+
+@keyframes highlight-animation {
+  from {
+    background-color: #ffc300;
+  }
+  to {
+    background-color: #fff;
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import EventModal from "./components/EventModal";
 import "./styles/TeamCalendar.scss";
@@ -38,6 +38,7 @@ const TeamCalendar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const params = useParams();
+  const router = useRouter();
   const projectId = Array.isArray(params.projectId)
     ? params.projectId[0]
     : params.projectId;
@@ -127,7 +128,7 @@ const TeamCalendar: React.FC = () => {
 
   const handleEventSave = async (event: any) => {
     try {
-      if (!projectId) return;
+      if (!projectId) return; // projectId가 없으면 return
       const savedEvent = await addCalendarEvent(projectId, {
         ...event,
         memberId: event.assignees.map(
@@ -136,6 +137,7 @@ const TeamCalendar: React.FC = () => {
       });
       console.log("Saved event:", savedEvent);
 
+      // 이벤트 목록 다시 가져오기
       await fetchEvents(projectId, year, month);
 
       setIsModalOpen(false);
@@ -174,15 +176,13 @@ const TeamCalendar: React.FC = () => {
   };
 
   const handleEventClick = (clickInfo: any) => {
-    if (!projectId) return; // projectId가 없으면 return
-    console.log("Clicked event info:", clickInfo);
-    console.log("Event details:", clickInfo.event);
-    console.log("Extended Props:", clickInfo.event.extendedProps);
-
+    if (!projectId) return;
     const eventId = clickInfo.event.id || clickInfo.event.extendedProps.id;
-    console.log("Event ID:", eventId);
 
-    if (eventId) {
+    if (clickInfo.event.extendedProps.todo) {
+      // 투두 이벤트 클릭 시 투두리스트 페이지로 이동
+      router.push(`/teamPage/${projectId}/teamTodo?todoId=${eventId}`);
+    } else if (eventId) {
       fetchEventDetail(projectId, eventId);
     } else {
       console.error("Event ID is undefined");

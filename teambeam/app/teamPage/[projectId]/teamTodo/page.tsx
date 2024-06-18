@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import UpperTodoList from "./components/UpperTodoList";
 import EventModal from "./components/EventModal";
 import { TodoList, Participant, TodoItem } from "./types";
@@ -23,9 +23,11 @@ import {
 
 const TeamTodo: React.FC = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
   const projectId = Array.isArray(params.projectId)
     ? params.projectId[0]
     : params.projectId;
+  const todoId = searchParams.get("todoId");
 
   const [todoLists, setTodoLists] = useState<TodoList[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -42,6 +44,7 @@ const TeamTodo: React.FC = () => {
   const [token, setToken] = useState("");
   const [refreshToken, setRefreshToken] = useState("");
   const [tags, setTags] = useState<any[]>([]);
+  const todoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -89,6 +92,20 @@ const TeamTodo: React.FC = () => {
     loadParticipants();
     loadTags();
   }, [token, refreshToken, projectId]);
+
+  useEffect(() => {
+    // 특정 투두 항목으로 스크롤 및 하이라이트 적용
+    if (todoId) {
+      const element = document.getElementById(`todo-${todoId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        element.classList.add("highlight");
+        setTimeout(() => {
+          element.classList.remove("highlight");
+        }, 2000); // 2초 후 하이라이트 제거
+      }
+    }
+  }, [todoId, todoLists]);
 
   const handleAddButtonClick = (
     type: string,
