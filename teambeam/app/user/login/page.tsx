@@ -33,9 +33,15 @@ const Login: React.FC = () => {
       onSubmit: async (data) => {
         const result = await LoginUser(data);
         if (result.success) {
-          router.push("/main");
+          const getMain = localStorage.getItem("SetMain");
+          if (getMain === "PROJECT_SELECTION_PAGE") {
+            router.push("/main");
+          } 
+          if (getMain === "MY_PAGE") {
+            router.push("/privatePage/main");
+          } 
         } else {
-          console.log(result.message);
+          alert(result.message);
         }
       },
       validate: (values) => {
@@ -101,7 +107,15 @@ const Login: React.FC = () => {
             localStorage.setItem("Authorization", headers['authorization']);
             localStorage.setItem("RefreshToken", headers['refreshtoken']);
             localStorage.setItem("MemberId", data.memberId);
-            router.push("/main");
+            localStorage.setItem("SetMain", data.startPage);
+
+            const getMain = localStorage.getItem("SetMain");
+            if (getMain === "PROJECT_SELECTION_PAGE") {
+              router.push("/main");
+            } 
+            if (getMain === "MY_PAGE") {
+              router.push("/privatePage/main");
+            } 
           }
         } catch (error) {
           console.error("Error:", error);
