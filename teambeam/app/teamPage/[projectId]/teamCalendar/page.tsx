@@ -127,7 +127,7 @@ const TeamCalendar: React.FC = () => {
 
   const handleEventSave = async (event: any) => {
     try {
-      if (!projectId) return; // projectId가 없으면 return
+      if (!projectId) return;
       const savedEvent = await addCalendarEvent(projectId, {
         ...event,
         memberId: event.assignees.map(
@@ -136,7 +136,6 @@ const TeamCalendar: React.FC = () => {
       });
       console.log("Saved event:", savedEvent);
 
-      // 이벤트 목록 다시 가져오기
       await fetchEvents(projectId, year, month);
 
       setIsModalOpen(false);

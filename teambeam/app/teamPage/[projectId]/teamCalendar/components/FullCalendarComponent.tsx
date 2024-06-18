@@ -39,6 +39,7 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
         title: event.title,
         start: event.start,
         end: event.end,
+        className: event.todo ? "todo-event" : "schedule-event",
         extendedProps: {
           id: event.id,
           location: event.location || "",
