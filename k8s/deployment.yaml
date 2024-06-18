@@ -15,7 +15,7 @@ spec:
       - envFrom:
         - secretRef:
             name: envsecret
-        image: krmp-d2hub-idock.9rum.cc/dev-test/repo_66123ef478a8
+        image: krmp-d2hub-idock.9rum.cc/dev-test/repo_be2a1fd4074e
         imagePullPolicy: Always
         name: passion-mansour-teambeam-frontend
         ports:
