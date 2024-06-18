@@ -12,8 +12,15 @@ import useUserStore from "@/app/_store/useUserStore";
 
 export default function Header() {
   const [isMenu, setIsMenu] = useState<boolean>(false);
-  const { token, refreshToken, memberId, imgSrc, setUser, setImgSrc } =
-    useUserStore();
+  const {
+    token,
+    refreshToken,
+    memberId,
+    imgSrc,
+    setUser,
+    setImgSrc,
+    clearUser,
+  } = useUserStore();
 
   const router = useRouter();
 
@@ -30,11 +37,7 @@ export default function Header() {
       if (!token) return;
 
       try {
-        const res = await api.get(`/member/profileImage/${memberId}`, {
-          headers: {
-            Authorization: token,
-          },
-        });
+        const res = await api.get(`/member/profileImage/${memberId}`);
         const dataURI = `data:image/jpeg;base64,${res.data.profileImage}`;
         setImgSrc(dataURI);
       } catch (err) {
@@ -57,10 +60,11 @@ export default function Header() {
   const handleLogout = useCallback(() => {
     setIsMenu(false);
     setUser(null, null, null);
+    clearUser();
     setImgSrc("");
     localStorage.clear();
     router.push("/user/login");
-  }, [router, setUser, setImgSrc]);
+  }, [router, setUser, setImgSrc, clearUser]);
 
   return (
     <header>

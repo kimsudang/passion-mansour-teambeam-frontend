@@ -11,6 +11,7 @@ interface IUserState {
     memberId: string | null
   ) => void;
   setImgSrc: (imgSrc: string) => void;
+  clearUser: () => void; // 로그아웃 처리를 위한 함수 추가
 }
 
 const useUserStore = create<IUserState>()((set) => ({
@@ -21,6 +22,8 @@ const useUserStore = create<IUserState>()((set) => ({
   setUser: (token, refreshToken, memberId) =>
     set({ token, refreshToken, memberId }),
   setImgSrc: (imgSrc) => set({ imgSrc }),
+  clearUser: () =>
+    set({ token: null, refreshToken: null, memberId: null, imgSrc: null }),
 }));
 
 export default useUserStore;
