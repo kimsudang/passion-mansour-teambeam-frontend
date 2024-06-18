@@ -33,10 +33,9 @@ const Login: React.FC = () => {
       onSubmit: async (data) => {
         const result = await LoginUser(data);
         if (result.success) {
-          alert("로그인에 성공했습니다.");
           router.push("/main");
         } else {
-          alert(result.message);
+          console.log(result.message);
         }
       },
       validate: (values) => {
@@ -91,7 +90,6 @@ const Login: React.FC = () => {
 
     const handleLogin = async () => {
       const code = new URL(window.location.href).searchParams.get("code");
-      console.log("Kakao Authorization Code:", code);
 
       if (code) {
         try {
@@ -100,7 +98,6 @@ const Login: React.FC = () => {
           const data = response.data;
 
           if (response.status === 200 || response.status === 201) {
-            alert("로그인에 성공했습니다.");
             localStorage.setItem("Authorization", headers['authorization']);
             localStorage.setItem("RefreshToken", headers['refreshtoken']);
             localStorage.setItem("MemberId", data.memberId);
