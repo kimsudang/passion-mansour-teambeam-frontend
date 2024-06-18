@@ -85,3 +85,32 @@ header {
     }
   }
 }
+
+.notification-menu {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 48px;
+
+  button.notificationBtn {
+    display: block;
+    padding-right: 28px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .notificationNewCounter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    background: red;
+    border-radius: 50%;
+    font-size: 12px;
+    color: #fff;
+    position: absolute;
+    right: 20px;
+    top: 6px;
+  }
+}

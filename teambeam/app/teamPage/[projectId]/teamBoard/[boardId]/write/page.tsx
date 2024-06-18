@@ -12,6 +12,9 @@ import "@/app/_styles/Board.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { getPostTag, postAddPost } from "@/app/_api/board";
+import useNotificationStore from "@/app/_store/useNotificationStore";
+import useSocketStore from "@/app/_store/useSocketStore";
+import { NotificationType } from "@/app/_components/Header";
 
 type TagType = {
   tagId: number;
@@ -37,6 +40,40 @@ const Page = () => {
   const [cols, setCols] = useState<number>(3);
   const [rows, setRows] = useState<number>(2);
   const [cells, setCells] = useState<CellType[][]>([]);
+  const {
+    notifications,
+    filterNotification,
+    setNotifications,
+    setFilterNotification,
+  } = useNotificationStore();
+  const { socket } = useSocketStore();
+
+  // 새로운 알림을 처리하는 함수
+  const handleNewNotification = useCallback(
+    ({ notification }: { notification: NotificationType }) => {
+      console.log("새로운 알림 수신:", notification);
+      console.log("이전 데이터 : ", notifications);
+      console.log("이전 필터 데이터 : ", filterNotification);
+
+      const newData = [notification, ...notifications];
+      const newFilterData = [notification, ...filterNotification];
+
+      setNotifications(newData);
+      setFilterNotification(newFilterData);
+    },
+    [notifications, filterNotification, setNotifications, setFilterNotification]
+  );
+
+  useEffect(() => {
+    if (socket) {
+      console.log("Setting up notification listener");
+      socket.on("notification", handleNewNotification);
+      return () => {
+        console.log("Removing notification listener");
+        socket.off("notification", handleNewNotification);
+      };
+    }
+  }, [socket, handleNewNotification]);
 
   const params = useParams<{ projectId: string; boardId: string }>();
 
@@ -160,13 +197,38 @@ const Page = () => {
         `/team/${params.projectId}/${params.boardId}/`,
         data
       );
+
+      const postData = {
+        title: data.title,
+        memberId: localStorage.getItem("MemberId"),
+        projectId: params.projectId,
+        boardId: params.boardId,
+        postId: res.data.postId,
+      };
+
+      // 게시글 생성이 완료된 후 소켓 이벤트 전송
+      socket?.emit("new_post", postData, (data: string) => {
+        console.log("new_post : ", data);
+      });
+
       alert("게시글 생성이 완료되었습니다.");
+
       router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
       alert("게시글 생성에 오류가 발생했습니다.");
     }
-  }, [notice, title, template, inputContent, tagSelect, cells, router, params]);
+  }, [
+    notice,
+    title,
+    template,
+    inputContent,
+    tagSelect,
+    cells,
+    router,
+    params,
+    socket,
+  ]);
 
   return (
     <div>
