@@ -7,6 +7,8 @@ import {
 } from "@/app/_api/bookmark";
 import BoardList from "@/app/_components/BoardList";
 import React, { useCallback, useEffect, useState } from "react";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export type Board = {
   postId: number;
@@ -118,6 +120,18 @@ const Page = () => {
         );
 
         setBookmarks(newBookmarks);
+
+        toast.success("북마크가 해제되었습니다!", {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       } catch (err) {
         console.log(err);
       }
@@ -157,6 +171,8 @@ const Page = () => {
       ) : (
         <p>loading...</p>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

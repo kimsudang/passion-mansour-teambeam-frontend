@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getPostList, getPostTag, getPostTagList } from "@/app/_api/board";
 import { deleteBookmark, postBookmark } from "@/app/_api/bookmark";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export type Board = {
   postId: number;
@@ -146,18 +148,44 @@ const Page = () => {
       setBoards(isBoards);
 
       if (!data.bookmark) {
-        console.log("북마크 등록");
         try {
           const res = await postBookmark(`/my/bookmark/${data.postId}`);
+
+          if (res.status === 200) {
+            toast.success("북마크가 등록되었습니다!", {
+              position: "bottom-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+          }
         } catch (err) {
           console.log(err);
         }
       } else {
-        console.log("북마크 해제");
         try {
           const res = await deleteBookmark(
             `/my/bookmark/post?postId=${data.postId}`
           );
+
+          if (res.status === 200) {
+            toast.success("북마크가 해제되었습니다!", {
+              position: "bottom-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+          }
         } catch (err) {
           console.log(err);
         }
@@ -247,6 +275,8 @@ const Page = () => {
       ) : (
         <p>Loading</p>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

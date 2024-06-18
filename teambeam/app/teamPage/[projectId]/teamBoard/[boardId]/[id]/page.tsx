@@ -6,6 +6,8 @@ import BoardView from "@/app/_components/BoardView";
 import Comment from "@/app/_components/Comment";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export type BoardType = {
   postId: number;
@@ -85,25 +87,48 @@ const Page = () => {
   const handleBookmark = useCallback(
     async (data: BoardType) => {
       if (!isBookmark) {
-        console.log("북마크 등록");
         try {
           const res = await postBookmark(`/my/bookmark/${data.postId}`);
 
-          console.log("bookmark add : ", res);
-          setIsBookmark(!isBookmark);
+          if (res.status === 200) {
+            setIsBookmark(!isBookmark);
+
+            toast.success("북마크가 등록되었습니다!", {
+              position: "bottom-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+          }
         } catch (err) {
           console.log(err);
         }
       } else {
-        console.log("북마크 해제");
         try {
           const res = await deleteBookmark(
             `/my/bookmark/post?postId=${data.postId}`
           );
-          // const res = await deleteBookmark(`/my/bookmark/${data.postId}`);
 
-          console.log("bookmark remove :", res);
-          setIsBookmark(!isBookmark);
+          if (res.status === 200) {
+            setIsBookmark(!isBookmark);
+
+            toast.success("북마크가 해제되었습니다!", {
+              position: "bottom-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+          }
         } catch (err) {
           console.log(err);
         }
@@ -128,6 +153,8 @@ const Page = () => {
           />
         </>
       ) : null}
+
+      <ToastContainer />
     </div>
   );
 };

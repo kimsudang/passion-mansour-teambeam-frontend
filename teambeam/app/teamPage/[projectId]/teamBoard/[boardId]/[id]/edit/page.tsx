@@ -19,6 +19,8 @@ import {
   postAddPost,
 } from "@/app/_api/board";
 import { BoardType } from "../page";
+import useSocketStore from "@/app/_store/useSocketStore";
+import useUserStore from "@/app/_store/useUserStore";
 
 type TagType = {
   tagId: number;
@@ -48,15 +50,9 @@ const Page = () => {
   const [cols, setCols] = useState<number>(0);
   const [rows, setRows] = useState<number>(0);
   const [cells, setCells] = useState<CellType[][]>([]);
+  const { socket } = useSocketStore();
 
-  const [memberId, setMemberId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedMemberId = localStorage.getItem("MemberId");
-      setMemberId(storedMemberId);
-    }
-  }, []);
+  const { memberId } = useUserStore();
 
   const router = useRouter();
   const params = useParams<{
@@ -218,13 +214,40 @@ const Page = () => {
         data
       );
 
+      if (notice) {
+        const postData = {
+          title: data.title,
+          memberId: localStorage.getItem("MemberId"),
+          projectId: params.projectId,
+          boardId: params.boardId,
+          postId: res.data.postId,
+        };
+
+        console.log("edit postData : ", postData);
+
+        // 게시글 수정이 완료된 후 소켓 이벤트 전송
+        socket?.emit("new_post", postData, (data: string) => {
+          console.log("new_post : ", data);
+        });
+      }
+
       alert("게시글 수정이 완료되었습니다.");
       router.push(`/teamPage/${params.projectId}/teamBoard/${params.boardId}`);
     } catch (err) {
       console.log("err  : ", err);
       alert("게시글 수정에 문제가 발생했습니다.");
     }
-  }, [notice, title, template, inputContent, tagSelect, cells, router, params]);
+  }, [
+    notice,
+    title,
+    template,
+    inputContent,
+    tagSelect,
+    cells,
+    router,
+    params,
+    socket,
+  ]);
 
   if (boardData === null) {
     return <></>;

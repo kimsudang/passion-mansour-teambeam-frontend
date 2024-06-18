@@ -131,13 +131,38 @@ export default function Header() {
         setInitialLoad(false);
       };
 
+      const handleNewNotification = ({
+        notification,
+      }: {
+        notification: NotificationType;
+      }) => {
+        console.log("새로운 알림 수신:", notification);
+
+        const newData = [notification, ...notifications];
+        const newFilterData = [notification, ...filterNotification];
+
+        setNotifications(newData);
+        setFilterNotification(newFilterData);
+
+        console.log("새로운 알림 수신 3 :", newFilterData);
+      };
+
       socket.on("initial_notifications", handleInitialNotifications);
+      socket.on("notification", handleNewNotification);
 
       return () => {
         socket.off("initial_notifications", handleInitialNotifications);
+        socket.off("notification", handleNewNotification);
       };
     }
-  }, [socket, setNotifications]);
+  }, [
+    socket,
+    setNotifications,
+    setFilterNotification,
+    initialLoad,
+    notifications,
+    filterNotification,
+  ]);
 
   // 알림 모달
   const handleNotification = useCallback(() => {
