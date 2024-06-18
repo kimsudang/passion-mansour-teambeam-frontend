@@ -10,15 +10,18 @@ const MessageInput: React.FC<{ onSubmit: (content: string) => void }> = ({
   onSubmit,
 }) => {
   const [editorContent, setEditorContent] = useState<string>("");
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
+    setIsSubmitDisabled(content.trim() === "");
   };
 
   const handleSubmit = () => {
     if (editorContent.trim()) {
       onSubmit(editorContent);
       setEditorContent("");
+      setIsSubmitDisabled(true);
     }
   };
 
@@ -30,7 +33,11 @@ const MessageInput: React.FC<{ onSubmit: (content: string) => void }> = ({
         className="quillEditor"
         placeholder="댓글을 입력하세요"
       />
-      <button onClick={handleSubmit} className="submitButton">
+      <button
+        onClick={handleSubmit}
+        className="submitButton"
+        disabled={isSubmitDisabled}
+      >
         등록
       </button>
     </div>
