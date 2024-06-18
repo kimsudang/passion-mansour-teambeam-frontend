@@ -291,13 +291,14 @@ const ChatList: React.FC = () => {
   };
 
   const handleReplyButtonClick = (msg: Message) => {
-    if (socketRef.current) {
+    if (socketRef.current && projectId) {
       console.log("Leaving project room:", projectId);
       socketRef.current.emit("leaveRoom", projectId, (response: any) => {
         console.log("Leave project room response:", response);
       });
-
-      const messageRoom = `message_${msg.id}`;
+    }
+    const messageRoom = `message_${msg.id}`;
+    if (socketRef.current) {
       console.log("Joining message room:", messageRoom);
       socketRef.current.emit(
         "joinMessageRoom",
@@ -306,32 +307,12 @@ const ChatList: React.FC = () => {
           console.log("Join message room response:", response);
         }
       );
-      setActiveMessage(msg);
     }
+    setActiveMessage(msg);
   };
 
   const handleBackButtonClick = () => {
-    if (socketRef.current && projectId) {
-      const projectIdNumber = Number(projectId);
-      const messageRoom = `message_${activeMessage?.id}`;
-      console.log("Leaving message room:", messageRoom);
-      socketRef.current.emit(
-        "leaveMessageRoom",
-        messageRoom,
-        (response: any) => {
-          console.log("Leave message room response:", response);
-          console.log("Rejoining project room:", projectIdNumber);
-          socketRef.current!.emit(
-            "joinRoom",
-            projectIdNumber,
-            (response: any) => {
-              console.log("Rejoin project room response:", response);
-            }
-          );
-        }
-      );
-    }
-    setActiveMessage(null);
+    window.location.reload();
   };
 
   return (

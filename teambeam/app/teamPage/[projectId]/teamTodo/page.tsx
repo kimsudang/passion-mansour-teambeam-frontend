@@ -68,7 +68,6 @@ const TeamTodo: React.FC = () => {
       try {
         if (projectId) {
           const participants = await fetchParticipants(projectId);
-          console.log("Loaded Participants:", participants);
           setParticipants(participants);
         }
       } catch (error) {
@@ -80,7 +79,6 @@ const TeamTodo: React.FC = () => {
       try {
         if (projectId) {
           const tags = await fetchTags(projectId);
-          console.log("Loaded Tags:", tags);
           setTags(tags);
         }
       } catch (error) {
