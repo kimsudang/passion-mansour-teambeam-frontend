@@ -25,12 +25,12 @@ const FullCalendarComponent = dynamic(
 );
 
 // 캘린더 이벤트를 클릭할 때 호출되는 함수
-const handleEventClick = (clickInfo: any) => {
+const handleEventClick = () => {
   console.log("Event clicked, but no action taken.");
 };
 
 const PrivatePage: React.FC = () => {
-  const [todayDate, setTodayDate] = useState<string>("");
+  const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [userId, setUserId] = useState<string>();
   const [projectTodos, setProjectTodos] = useState<ProjectTodos[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +43,7 @@ const PrivatePage: React.FC = () => {
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
+  
   const fetchEvents = useCallback(
     async (userId:string, year: number, month: number) => {
       try {
@@ -78,9 +79,6 @@ const PrivatePage: React.FC = () => {
   };
 
   useEffect(() => {
-    const date = new Date().toISOString().split("T")[0];
-    setTodayDate(date);
-    
     const storedUserId = localStorage.getItem("MemberId");
     if (storedUserId) {
       setUserId(storedUserId);
@@ -100,10 +98,10 @@ const PrivatePage: React.FC = () => {
         }
       };
 
-      fetchTodos(userId, todayDate);
+      fetchTodos(userId, date);
       fetchEvents(userId, year, month);
     }
-  }, [userId, todayDate, year, month, fetchEvents]);
+  }, [userId, date, year, month, fetchEvents]);
 
   const getUserName = () => {
     if (!userId) return "사용자";
@@ -119,17 +117,33 @@ const PrivatePage: React.FC = () => {
     return "사용자";
   };
 
+  const handlePreviousDay = () => {
+    const previousDay = new Date(date);
+    previousDay.setDate(previousDay.getDate() - 1);
+    setDate(previousDay.toISOString().split("T")[0]);
+  };
+
+  const handleNextDay = () => {
+    const nextDay = new Date(date);
+    nextDay.setDate(nextDay.getDate() + 1);
+    setDate(nextDay.toISOString().split("T")[0]);
+  };
+
   return (
     <div className="privateContainer">
       <div className="header">
         <p>{getUserName()}님</p>        
-        <p>오늘은 {todayDate} 입니다.</p>
+        <p>{date}</p>
+        <div className="dateNavigation">
+          <button onClick={handlePreviousDay}>전날</button>
+          <button onClick={() => setDate(new Date().toISOString().split("T")[0])}>오늘</button>
+          <button onClick={handleNextDay}>다음날</button>
+        </div>
       </div>
-      {error && <div className="error">{error}</div>}
       <div className="todoContainerWrapper">
         <div className="myTodoContainer">
         {projectTodos.length === 0 || projectTodos.every(project => project.todos.length === 0) ? (
-            <p className="noTodos">Todo가 존재하지 않습니다.</p>
+            <p className="noTodos"> {date} 할 일이 존재하지 않습니다.</p>
           ) : (
           projectTodos
           .filter(project => project.todos.length > 0)
@@ -141,7 +155,6 @@ const PrivatePage: React.FC = () => {
                   <button 
                     key={todo.topTodoId} 
                     className={`todoItem ${todo.status ? 'completed' : ''}`}
-                    onClick={() => handleTodoClick(todo.bottomTodoId)}
                   >
                      <div className="checkTodoTitle">
                       <input 
@@ -149,7 +162,7 @@ const PrivatePage: React.FC = () => {
                         checked={todo.status} 
                         onChange={() => handleTodoStatusChange(projectIndex, todoIndex)} 
                         />
-                      <p className="bottomTodoTitle">{todo.title}</p>
+                      <p className="bottomTodoTitle" onClick={() => handleTodoClick(todo.bottomTodoId)}>{todo.title}</p>
                     </div>
                     <p className="bottomTodoDate">{todo.startDate} ~ {todo.endDate}</p>
                     <div className="assignees">
