@@ -39,7 +39,7 @@ const PrivateSetting = () => {
   const [newProfileImage, setNewProfileImage] = useState("");
   const [profileImage, setProfileImage] = useState(memberInfo.profileImage);
   const [imageChagne, setImageChange] = useState(false);
-  const [screenMode, setScreenMode] = useState("light");
+  const [screenMode, setScreenMode] = useState(() => localStorage.getItem('screenMode') || "light");
 
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -68,6 +68,7 @@ const PrivateSetting = () => {
     };
 
     const loadScreenMode = () => {
+      localStorage.setItem('screenMode', screenMode);
       const savedScreenMode = localStorage.getItem('screenMode');
       if (savedScreenMode) {
         setScreenMode(savedScreenMode);
@@ -76,7 +77,7 @@ const PrivateSetting = () => {
   
     loadMemberInfo();
     loadScreenMode();
-  }, [startPage, memberInfo.memberName, memberInfo.profileImage]);
+  }, [startPage, memberInfo.memberName, memberInfo.profileImage, screenMode]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -85,9 +86,11 @@ const PrivateSetting = () => {
     setProfileImage(imageName);
     setMemberInfo((prevState) => ({
       ...prevState,
-      profileImage: imageName,
+      newProfileImage: imageName,
+      profileImage: image,
     }));
-    console.log(profileImage);
+    console.log("newProfileImage : ", newProfileImage);
+    console.log("profileImage :", profileImage);
     setImageChange(true);
   };
 
