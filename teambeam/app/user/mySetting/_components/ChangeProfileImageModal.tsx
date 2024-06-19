@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { fetchProfileImages, ProfileImage } from '@/app/_api/mySetting';
 
-interface ProfileImageModalProps {
+export interface ProfileImageModalProps {
   closeModal: () => void;
   updateProfileImage: (image: string, imageName: string) => void;
+  selectedImageName?: string;
 }
 
-const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updateProfileImage }) => {
+const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updateProfileImage, selectedImageName  }) => {
   const [profileImages, setProfileImages] = useState<ProfileImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<ProfileImage | null>(null);
 
@@ -24,6 +25,14 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
     getProfileImages();
   }, []);
 
+  useEffect(() => {
+    if (selectedImageName) {
+      const initialSelectedImage = profileImages.find(image => image.imageName === selectedImageName);
+      setSelectedImage(initialSelectedImage || null);
+    }
+  }, [selectedImageName, profileImages]);
+
+
   const handleImageSelect = (image: ProfileImage) => {
     setSelectedImage(image);
   };
@@ -31,7 +40,7 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
   // 이미지 변경 확인 핸들러
   const handleConfirm = () => {
     if (selectedImage) {
-      updateProfileImage(selectedImage.base64, selectedImage.imageName); // 부모 컴포넌트에 프로필 이미지 업데이트 요청
+      updateProfileImage(selectedImage.base64, selectedImage.imageName);
       console.log(selectedImage);
       closeModal();
     }

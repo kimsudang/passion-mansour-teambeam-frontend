@@ -17,8 +17,6 @@ export interface ProfileImage {
   base64: string;
 }
 
-
-// 접근 토큰만 반환하는 함수
 const getAccessTokenHeader = () => {
   const accessToken = localStorage.getItem('Authorization');
   return {
@@ -26,10 +24,18 @@ const getAccessTokenHeader = () => {
   };
 };
 
+const getRefreshTokenHeader = () => {
+  const refreshToken = localStorage.getItem('RefreshToken');
+  return {
+    'RefreshToken': `${refreshToken}`,
+  };
+};
+
 // 회원 정보를 가져오는 함수
 export const fetchMemberInfo = async (): Promise<Member> => {
   const headers = getAccessTokenHeader();
   const response = await api.get('/member', { headers });
+  console.log(response.data.member);
   return response.data.member;
 };
 
@@ -82,7 +88,7 @@ export const handleUpdateMemberInfo = async (
     if (updatedMail && updatedMail !== memberInfo.mail) {
       updatedInfo.mail = updatedMail;
     }
-    if (profileImage && profileImage !== memberInfo.profileImage) {
+    if (profileImage !== memberInfo.profileImage) {
       updatedInfo.profileImage = profileImage;
     }
     if (startPage && startPage !== memberInfo.startPage) {
@@ -96,10 +102,9 @@ export const handleUpdateMemberInfo = async (
       const response = await updateMemberInfo(updatedInfo);
 
       if (response.status === 200) {
-        localStorage.setItem('Authorization', response.headers.authorization);
-        localStorage.setItem('RefreshToken', response.headers.refreshtoken);
-        if (updatedInfo.startPage) {
-          localStorage.setItem('startPage', updatedInfo.startPage);
+        if (updatedMail && updatedMail !== memberInfo.mail) {
+          localStorage.setItem('Authorization', response.headers.authorization);
+          localStorage.setItem('RefreshToken', response.headers.refreshtoken);
         }
 
         const updatedMemberInfo = response.data.updatedMember;
@@ -109,10 +114,10 @@ export const handleUpdateMemberInfo = async (
         }));
 
         alert('회원 정보가 성공적으로 수정되었습니다.');
-        // window.location.reload();
+        window.location.reload();
       }
     } else {
-      alert('변경된 내용이 없습니다.');
+        alert('변경된 내용이 없습니다.');
     }
   } catch (error) {
     console.error('회원 정보 수정 중 오류 발생:', error);

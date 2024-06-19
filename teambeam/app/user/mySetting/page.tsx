@@ -9,7 +9,7 @@ import { fetchMemberInfo,
   handleConfirmMailCode, 
   handleMailChange,
   Member, deleteAccount } from '@/app/_api/mySetting';
-import ProfileImageModal from './_components/ChangeProfileImageModal';
+import ProfileImageModal, { ProfileImageModalProps} from './_components/ChangeProfileImageModal';
 import "./layout.scss";
 
 const PrivateSetting = () => {
@@ -38,6 +38,7 @@ const PrivateSetting = () => {
   const [memberName, setMemberName] = useState(memberInfo.memberName);
   const [newProfileImage, setNewProfileImage] = useState("");
   const [profileImage, setProfileImage] = useState(memberInfo.profileImage);
+  const [imageInfo, setImageInfo] = useState<ProfileImageModalProps>();
   const [imageChagne, setImageChange] = useState(false);
   const [screenMode, setScreenMode] = useState(() => localStorage.getItem('screenMode') || "light");
 
@@ -59,7 +60,7 @@ const PrivateSetting = () => {
         setStartPage(initialStartPage);
 
         setMemberName(memberData.memberName || memberInfo.memberName);
-        setProfileImage(memberData.profileImage || memberInfo.profileImage);
+        setProfileImage(profileImage || memberInfo.profileImage);
 
       } catch (error) {
         console.error('Error fetching member info:', error);
@@ -77,7 +78,7 @@ const PrivateSetting = () => {
   
     loadMemberInfo();
     loadScreenMode();
-  }, [startPage, memberInfo.memberName, memberInfo.profileImage, screenMode]);
+  }, [startPage, memberInfo.memberName, profileImage, memberInfo.profileImage, screenMode]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -86,11 +87,9 @@ const PrivateSetting = () => {
     setProfileImage(imageName);
     setMemberInfo((prevState) => ({
       ...prevState,
-      newProfileImage: imageName,
-      profileImage: image,
+      profileImage: imageName,
     }));
-    console.log("newProfileImage : ", newProfileImage);
-    console.log("profileImage :", profileImage);
+    console.log("imageName: ", imageName);
     setImageChange(true);
   };
 
