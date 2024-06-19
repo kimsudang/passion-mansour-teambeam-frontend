@@ -231,14 +231,15 @@ const ChatList: React.FC = () => {
   }, [projectId]);
 
   const handleCommentSubmit = async (content: string) => {
-    if (activeMessage && socketRef.current && projectId) {
+    const trimmedContent = content.trim();
+    if (activeMessage && socketRef.current && projectId && trimmedContent) {
       try {
         const token = getToken();
         const memberId = getMemberId();
         const newComment = {
           token,
           projectId: Number(projectId),
-          messageComment: content,
+          messageComment: trimmedContent,
           messageId: Number(activeMessage.id),
         };
 
@@ -263,7 +264,8 @@ const ChatList: React.FC = () => {
   };
 
   const handleMainMessageSubmit = async (content: string) => {
-    if (socketRef.current && projectId) {
+    const trimmedContent = content.trim();
+    if (socketRef.current && projectId && trimmedContent) {
       try {
         const token = getToken();
         const memberId = getMemberId();
@@ -274,7 +276,7 @@ const ChatList: React.FC = () => {
         const newMessage = {
           token,
           projectId: Number(projectId),
-          messageContent: content,
+          messageContent: trimmedContent,
           username,
           profileImage: profileImage.startsWith("data:image")
             ? profileImage
