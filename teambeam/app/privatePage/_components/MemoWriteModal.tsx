@@ -15,7 +15,7 @@ export default function MemoWriteModal({
   setMemoList,
 }: {
   onCloseModal: () => void;
-  setMemoList: React.Dispatch<React.SetStateAction<MemoType[]>>;
+  setMemoList: React.Dispatch<React.SetStateAction<MemoType[] | null>>;
 }) {
   const [form, setForm] = useState<FormType>({
     title: "",
@@ -41,7 +41,13 @@ export default function MemoWriteModal({
       const res = await postMemo("/my/memo/", form);
       alert("메모 생성이 완료되었습니다.");
       onCloseModal();
-      setMemoList((prev) => [res.data, ...prev]);
+      setMemoList((prev) => {
+        if (prev !== null) {
+          return [res.data, ...prev];
+        }
+
+        return null;
+      });
     } catch (err) {
       console.log("err  : ", err);
       alert("메모 생성에 실패했습니다.");

@@ -6,6 +6,7 @@ import {
   postBookmark,
 } from "@/app/_api/bookmark";
 import BoardList from "@/app/_components/BoardList";
+import SkeletonBoard from "@/app/_components/SkeletonBoard";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,17 +58,19 @@ const Page = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkType[] | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getBookmarkList(`/my/bookmark/`);
+    const fetchData = () => {
+      setTimeout(async () => {
+        try {
+          const res = await getBookmarkList(`/my/bookmark/`);
 
-        const sortNotice = sortNoticeData(res.data.bookmarkResponses);
-        const sortDate = sortDateData(res.data.bookmarkResponses);
+          const sortNotice = sortNoticeData(res.data.bookmarkResponses);
+          const sortDate = sortDateData(res.data.bookmarkResponses);
 
-        setBookmarks([...sortNotice, ...sortDate]);
-      } catch (err) {
-        console.log("err  : ", err);
-      }
+          setBookmarks([...sortNotice, ...sortDate]);
+        } catch (err) {
+          console.log("err  : ", err);
+        }
+      }, 500);
     };
 
     fetchData();
@@ -169,7 +172,7 @@ const Page = () => {
           )}
         </>
       ) : (
-        <p>loading...</p>
+        <SkeletonBoard />
       )}
 
       <ToastContainer />

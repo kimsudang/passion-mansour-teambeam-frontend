@@ -21,6 +21,13 @@ import {
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { deleteBoard, getBoardList } from "@/app/_api/board";
 import BoardAddModal from "./BoardAddModal";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import useUserStore from "@/app/_store/useUserStore";
+
+type ProjectType = {
+  projectName: string;
+};
 
 type BoardType = {
   boardId: number;
@@ -28,27 +35,16 @@ type BoardType = {
 };
 
 export default function SideBar() {
+  const [projectData, setProjectData] = useState<ProjectType | null>(null);
   const [boardList, setBoardLists] = useState<BoardType[] | null>(null);
   const [isOpen, toggleIsOpen] = useReducer((state) => {
     return !state;
   }, false);
-  const [isSidebar, setIsSidebar] = useState<string | null>(null);
+  const { isSideBar, setIsSideBar, initializeSideBar } = useUserStore();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedIsSidebar = localStorage.getItem("isSidebar");
-      setIsSidebar(storedIsSidebar);
-    }
-  }, []);
-
-  const init = () => {
-    return isSidebar !== null ? JSON.parse(isSidebar) : true;
-  };
-  const [isSideToggle, toggleIsSideToggle] = useReducer(
-    (state) => !state,
-    undefined,
-    init
-  );
+    initializeSideBar();
+  }, [initializeSideBar]);
 
   const segment = useSelectedLayoutSegment();
   const params = useParams<{
@@ -58,14 +54,20 @@ export default function SideBar() {
   const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("isSidebar", JSON.stringify(isSideToggle));
+    document.documentElement.style.setProperty(
+      "--sideSize",
+      isSideBar ? `240px` : `78px`
+    );
 
-    // 사이드바 토글
-    if (isSideToggle) {
-      document.documentElement.style.setProperty("--sideSize", `240px`);
-    } else {
-      document.documentElement.style.setProperty("--sideSize", `78px`);
-    }
+    // 프로젝트 조회
+    const fetchProjectData = async () => {
+      try {
+        const res = await getBoardList(`/team/${params.projectId}/setting`);
+        setProjectData(res.data.project);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
     // 게시판 조회
     const fetchData = async () => {
@@ -77,11 +79,12 @@ export default function SideBar() {
       }
     };
 
+    fetchProjectData();
     fetchData();
-  }, [params, isSideToggle]);
+  }, [params, isSideBar]);
 
   const handleSideBarToggle = () => {
-    toggleIsSideToggle();
+    setIsSideBar(!isSideBar);
   };
 
   // 게시판 추가
@@ -138,22 +141,27 @@ export default function SideBar() {
 
   if (boardList === null) {
     return (
-      <nav className={`${!isSideToggle ? "noActive" : ""}`}>
-        <div className='top-info'>
-          <h2>팀 프로젝트</h2>
-          <LeftBtnIcon size={24} />
-        </div>
-
-        <div className='side-menu'></div>
-      </nav>
+      <SkeletonTheme baseColor='#d5d5d5' highlightColor='#e1e1e1'>
+        <nav className={`${!isSideBar ? "noActive" : ""}`}>
+          <div className='side-menu'>
+            {Array.from({ length: 7 }, (_, i) => i).map((n, i) => {
+              return (
+                <li style={{ marginBottom: "20px" }} key={i}>
+                  <Skeleton height={50} borderRadius={10} />
+                </li>
+              );
+            })}
+          </div>
+        </nav>
+      </SkeletonTheme>
     );
   } else {
     return (
       <>
-        <nav className={`${!isSideToggle ? "noActive" : ""}`}>
+        <nav className={`${!isSideBar ? "noActive" : ""}`}>
           <div className='top-info'>
-            <h2>팀 프로젝트</h2>
-            {isSideToggle ? (
+            <h2>{projectData?.projectName}</h2>
+            {isSideBar ? (
               <button type='button' onClick={handleSideBarToggle}>
                 <LeftBtnIcon size={24} />
               </button>

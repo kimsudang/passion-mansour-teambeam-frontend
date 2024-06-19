@@ -1,7 +1,7 @@
 "use client";
 
 import "@/app/_styles/Modal.scss";
-import { useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 import { NotificationType } from "./Header";
 import { Socket } from "socket.io-client";
 import { BellIcon } from "./Icons";
@@ -13,6 +13,7 @@ interface INotificationModalProps {
   notifications: NotificationType[];
   setNotifications: (notifications: NotificationType[]) => void;
   initialLoad: boolean;
+  setIsNotification: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function NotificationModal({
@@ -21,6 +22,7 @@ export default function NotificationModal({
   notifications,
   setNotifications,
   initialLoad,
+  setIsNotification,
 }: INotificationModalProps) {
   const router = useRouter();
 
@@ -70,9 +72,10 @@ export default function NotificationModal({
         router.push(
           `/teamPage/${data.projectId}/teamBoard/${data.boardId}/${data.postId}`
         );
+        setIsNotification(false);
       }
     },
-    [memberId, socket, setNotifications, initialLoad, router]
+    [memberId, socket, setNotifications, initialLoad, router, setIsNotification]
   );
 
   return (

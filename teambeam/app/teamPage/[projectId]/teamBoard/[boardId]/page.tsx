@@ -10,6 +10,7 @@ import { getPostList, getPostTag, getPostTagList } from "@/app/_api/board";
 import { deleteBookmark, postBookmark } from "@/app/_api/bookmark";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SkeletonBoard from "@/app/_components/SkeletonBoard";
 
 export type Board = {
   postId: number;
@@ -65,19 +66,21 @@ const Page = () => {
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getPostList(
-          `/team/${params.projectId}/${params.boardId}/`
-        );
-        const sortNotice = sortNoticeData(res.data.postResponses);
-        const sortDate = sortDateData(res.data.postResponses);
+    const fetchData = () => {
+      setTimeout(async () => {
+        try {
+          const res = await getPostList(
+            `/team/${params.projectId}/${params.boardId}/`
+          );
+          const sortNotice = sortNoticeData(res.data.postResponses);
+          const sortDate = sortDateData(res.data.postResponses);
 
-        setBoards([...sortNotice, ...sortDate]);
-      } catch (err) {
-        console.log("err  : ", err);
-        alert("게시글 조회에 실패했습니다.");
-      }
+          setBoards([...sortNotice, ...sortDate]);
+        } catch (err) {
+          console.log("err  : ", err);
+          alert("게시글 조회에 실패했습니다.");
+        }
+      }, 500);
     };
 
     const fetchTagData = async () => {
@@ -273,7 +276,7 @@ const Page = () => {
           )}
         </>
       ) : (
-        <p>Loading</p>
+        <SkeletonBoard />
       )}
 
       <ToastContainer />

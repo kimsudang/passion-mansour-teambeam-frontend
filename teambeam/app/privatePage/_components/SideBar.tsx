@@ -11,47 +11,34 @@ import {
 } from "@/app/_components/Icons";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
+import useUserStore from "@/app/_store/useUserStore";
 
 export default function SideBar() {
   const [isSidebar, setIsSidebar] = useState<string | null>(null);
+  const { isSideBar, setIsSideBar, initializeSideBar } = useUserStore();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedIsSidebar = localStorage.getItem("isSidebar");
-      setIsSidebar(storedIsSidebar);
-    }
-  }, []);
+    initializeSideBar();
+  }, [initializeSideBar]);
+
   const segment = useSelectedLayoutSegment();
 
-  const init = () => {
-    return isSidebar !== null ? JSON.parse(isSidebar) : true;
-  };
-  const [isSideToggle, toggleIsSideToggle] = useReducer(
-    (state) => !state,
-    undefined,
-    init
-  );
-
   useEffect(() => {
-    localStorage.setItem("isSidebar", JSON.stringify(isSideToggle));
-
-    // 사이드바 토글
-    if (isSideToggle) {
-      document.documentElement.style.setProperty("--sideSize", `240px`);
-    } else {
-      document.documentElement.style.setProperty("--sideSize", `78px`);
-    }
-  }, [isSideToggle]);
+    document.documentElement.style.setProperty(
+      "--sideSize",
+      isSideBar ? `240px` : `78px`
+    );
+  }, [isSideBar]);
 
   const handleSideBarToggle = () => {
-    toggleIsSideToggle();
+    setIsSideBar(!isSideBar);
   };
 
   return (
-    <nav className={`${!isSideToggle ? "noActive" : ""}`}>
+    <nav className={`${!isSideBar ? "noActive" : ""}`}>
       <div className='top-info'>
         <h2>개인채널</h2>
-        {isSideToggle ? (
+        {isSideBar ? (
           <button type='button' onClick={handleSideBarToggle}>
             <LeftBtnIcon size={24} />
           </button>

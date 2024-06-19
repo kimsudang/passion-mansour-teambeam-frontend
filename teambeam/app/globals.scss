@@ -13,14 +13,17 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
 html,
 body {
   width: 100dvw;
   height: 100dvh;
   font-family: "pretendard", "sans-serif";
   background: var(--bg);
-  overflow-y: scroll;
-  overflow-x: hidden;
   background: #f1f1f1;
 }
 

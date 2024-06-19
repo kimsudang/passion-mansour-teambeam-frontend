@@ -233,6 +233,7 @@ export default function Header() {
                   notifications={notifications}
                   setNotifications={setNotifications}
                   initialLoad={initialLoad}
+                  setIsNotification={setIsNotification}
                 />
               ) : null}
             </div>
