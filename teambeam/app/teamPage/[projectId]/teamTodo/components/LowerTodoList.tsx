@@ -41,10 +41,12 @@ const LowerTodoList: React.FC<Props> = ({
           checked={!subtask.status}
           onChange={handleStatusChange}
         />
-        <h5 className="lowerTitle">{subtask.title}</h5>
-        <div onClick={handleDelete}>
-          <XmarkBtnIcon size={15} />
-        </div>{" "}
+        <div className="lowerTitleContainer">
+          <h5 className="lowerTitle">{subtask.title}</h5>
+          <div onClick={handleDelete}>
+            <XmarkBtnIcon size={15} />
+          </div>{" "}
+        </div>
       </div>
       <span className="lowerDate">
         {subtask.startDate} - {subtask.endDate}

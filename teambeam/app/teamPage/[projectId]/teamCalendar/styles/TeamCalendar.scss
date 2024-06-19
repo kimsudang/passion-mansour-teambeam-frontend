@@ -83,14 +83,17 @@ html {
   background: white;
   padding: 70px 40px;
   border-radius: 10px;
-  width: 400px;
-  height: 600px;
-  max-height: 90vh;
+  width: 450px;
+  height: 680px;
+  max-height: 110vh;
   overflow-y: auto;
   position: relative;
 }
 
 .modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   align-content: center;
   margin-top: 20%;
 }
@@ -134,7 +137,7 @@ html {
   margin-bottom: 20px;
 }
 
-.inputGroup:not(.eventMemo) {
+.inputGroup:not(.inputBoxGroup) {
   display: flex;
   justify-content: space-between;
 }
@@ -149,12 +152,25 @@ html {
 }
 
 .selectBox {
-  width: 252px;
+  width: 100%;
 
   div {
     display: flex;
     justify-content: flex-start !important;
   }
+}
+
+.inputPlace {
+  width: 80%;
+  // margin-left: 10%;
+}
+
+.placeButton {
+  background-color: #007bff;
+  color: #f1f1f1;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
 }
 
 .modalButtons {

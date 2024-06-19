@@ -69,9 +69,16 @@
   gap: 10px;
 }
 
+.lowerTitleContainer {
+  display: flex;
+  justify-items: center;
+  align-content: center;
+}
+
 .lowerTitle {
   font-size: 15px;
   text-align: start;
+  margin-right: 10px;
 }
 
 .lowerDate {

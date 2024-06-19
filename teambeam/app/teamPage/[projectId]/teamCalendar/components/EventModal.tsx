@@ -158,7 +158,7 @@ const EventModal: React.FC<EventModalProps> = ({
               required
             />
           </div>
-          <div className="inputGroup">
+          <div className="inputBoxGroup">
             <label>참석자</label>
             <Select
               isMulti
@@ -175,19 +175,22 @@ const EventModal: React.FC<EventModalProps> = ({
           </div>
           <div className="inputGroup">
             <label>장소</label>
-            <input
-              type="text"
-              placeholder="장소를 입력하세요."
-              value={location}
-              readOnly
-            />
-            <button
-              type="button"
-              onClick={openDaumPostcode}
-              disabled={readonly}
-            >
-              검색
-            </button>
+            <div className="inputPlace">
+              <input
+                type="text"
+                placeholder="장소를 입력하세요."
+                value={location}
+                readOnly
+              />
+              <button
+                className="placeButton"
+                type="button"
+                onClick={openDaumPostcode}
+                disabled={readonly}
+              >
+                검색
+              </button>
+            </div>
           </div>
           <div className="inputGroup">
             <label>링크</label>
@@ -201,7 +204,7 @@ const EventModal: React.FC<EventModalProps> = ({
             />
           </div>
           <hr />
-          <div className="inputGroup eventMemo">
+          <div className="inputBoxGroup eventMemo">
             <label>내용</label>
             <textarea
               placeholder="메모할 내용을 입력해주세요."
