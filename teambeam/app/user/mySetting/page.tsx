@@ -34,11 +34,12 @@ const PrivateSetting = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null); 
   const [refreshToken, setRefreshToken] = useState<string | null>(null); 
 
-  const [startPage, setStartPage] = useState("PROJECT_SELECTION_PAGE");
+  const [startPage, setStartPage] = useState(memberInfo.startPage);
   const [memberName, setMemberName] = useState(memberInfo.memberName);
   const [newProfileImage, setNewProfileImage] = useState("");
   const [profileImage, setProfileImage] = useState(memberInfo.profileImage);
   const [imageChagne, setImageChange] = useState(false);
+  const [screenMode, setScreenMode] = useState("light");
 
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -58,16 +59,24 @@ const PrivateSetting = () => {
         setStartPage(initialStartPage);
 
         setMemberName(memberData.memberName || memberInfo.memberName);
-        setProfileImage(memberData.profileImage);
+        setProfileImage(memberData.profileImage || memberInfo.profileImage);
 
       } catch (error) {
         console.error('Error fetching member info:', error);
         alert('회원 정보를 불러오는 중 오류가 발생했습니다.');
       }
     };
+
+    const loadScreenMode = () => {
+      const savedScreenMode = localStorage.getItem('screenMode');
+      if (savedScreenMode) {
+        setScreenMode(savedScreenMode);
+      }
+    };
   
     loadMemberInfo();
-  }, [startPage, memberInfo.memberName]);
+    loadScreenMode();
+  }, [startPage, memberInfo.memberName, memberInfo.profileImage]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -76,23 +85,28 @@ const PrivateSetting = () => {
     setProfileImage(imageName);
     setMemberInfo((prevState) => ({
       ...prevState,
-      // newProfileImage: image,
       profileImage: imageName,
     }));
+    console.log(profileImage);
     setImageChange(true);
   };
 
-    // 회원 탈퇴 처리 함수
-    const handleDeleteAccount = async () => {
-      try {
-        await deleteAccount();
-        alert('회원 탈퇴가 완료되었습니다.');
-        localStorage.clear();
-        router.push('/');
-      } catch (error) {
-        alert('회원 탈퇴에 실패했습니다.');
-      }
-    };
+  // 회원 탈퇴 처리 함수
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+      alert('회원 탈퇴가 완료되었습니다.');
+      localStorage.clear();
+      router.push('/');
+    } catch (error) {
+      alert('회원 탈퇴에 실패했습니다.');
+    }
+  };
+
+  const handleModeChange = (mode: string) => {
+    setScreenMode(mode);
+    localStorage.setItem('screenMode', mode);
+  };
 
   return (
     <div className='mySettingContainer'>
@@ -157,6 +171,33 @@ const PrivateSetting = () => {
                     onChange={(e) => setStartPage(e.target.value)} 
                   />
                   개인 대시보드
+                </label>
+              </div>
+            </div>
+            <div className="pageSettings">
+              <p className="pageTitle">화면 설정</p>
+              <div>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="screenMode" 
+                    value="light" 
+                    checked={screenMode === "light"} 
+                    onChange={() => handleModeChange("light")} 
+                  />
+                  라이트모드 (default)
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="screenMode" 
+                    value="dark" 
+                    checked={screenMode === "dark"} 
+                    onChange={() => handleModeChange("dark")} 
+                  />
+                  다크모드
                 </label>
               </div>
             </div>
