@@ -24,6 +24,7 @@ const PrivatePage: React.FC = () => {
     new Date().toISOString().split("T")[0]
   );
   const [userId, setUserId] = useState<string>();
+  const [projectId, setProjectId] = useState<number>(0);
   const [projectTodos, setProjectTodos] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +45,9 @@ const PrivatePage: React.FC = () => {
         console.log("Fetched todos:", todos);
 
         setProjectTodos(todos);
+        if (todos.length > 0 && todos[0].projectId) {
+          setProjectId(todos[0].projectId); // 프로젝트 ID 설정
+        }
       } catch (err) {
         console.log(err);
         setError('할 일을 가져오는 중 오류가 발생했습니다.');
@@ -55,14 +59,14 @@ const PrivatePage: React.FC = () => {
   const fetchEvents = useCallback(
     async (userId: string, year: number, month: number) => {
       try {
-        const events = await fetchCalendarEvents(userId, year, month);
+        const events = await fetchCalendarEvents(userId, year, month, projectId);
         setEvents(events);
       } catch (error) {
         console.error("Error fetching events:", error);
         setError('일정을 가져오는 중 오류가 발생했습니다.');
       }
     },
-    []
+    [projectId]
   );
 
   // 투두 상태 변경 핸들러
@@ -83,11 +87,14 @@ const PrivatePage: React.FC = () => {
     }
   };
 
-  const handleTodoClick = (todoId: number) => {
+  // 투두 항목 클릭 핸들러
+  const handleTodoClick = (e: React.MouseEvent, todoId: number) => {
+    e.stopPropagation();
     setSelectedTodoId(todoId);
     setIsModalOpen(true);
   };
 
+  // 모달 닫기 핸들러
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedTodoId(null);
@@ -121,16 +128,25 @@ const PrivatePage: React.FC = () => {
 
   // 캘린더 이벤트를 클릭할 때 호출되는 함수
   const handleEventClick = (clickInfo: any) => {
-    const eventId = clickInfo.event.id || clickInfo.event.extendedProps.id;
-    const projectId = clickInfo.event.extendedProps.projectId;
-    if (clickInfo.event.extendedProps.schedule) {
-      router.push(`/teamPage/${projectId}/teamCalendar`);
+    console.log("Clicked event:", clickInfo);
+    console.log("Clicked event:", clickInfo.event);
+    console.log("Extended props:", clickInfo.event._def.extendedProps);
+    console.log("Extended props id:", clickInfo.event._def.extendedProps.id);
+    console.log("projectId: ", projectId);
+
+    const eventId = clickInfo.event.id || clickInfo.event._def.extendedProps.id;
+
+    if (!projectId) {
+      console.error("Project ID is undefined");
+      return;
     }
+  
     if (clickInfo.event.extendedProps.todo) {
-      // 투두 이벤트 클릭 시 투두리스트 페이지로 이동
       router.push(`/teamPage/${projectId}/teamTodo?todoId=${eventId}`);
-    } else if (eventId || projectId) {
-      console.error("Event ID is undefined");
+    } else if (clickInfo.event.extendedProps) {
+      router.push(`/teamPage/${projectId}/teamCalendar`);
+    } else {
+      console.error("Event ID or Project ID is undefined");
     }
   };
 
@@ -174,12 +190,7 @@ const PrivatePage: React.FC = () => {
                               handleTodoStatusChange(projectIndex, todoIndex)
                             }
                           />
-                          <p
-                            className='bottomTodoTitle'
-                            onClick={() => handleTodoClick(todo.bottomTodoId)}
-                          >
-                            {todo.title}
-                          </p>
+                          <p className='bottomTodoTitle'>{todo.title}</p>
                         </div>
                         <p className='bottomTodoDate'>
                           {todo.startDate} ~ {todo.endDate}

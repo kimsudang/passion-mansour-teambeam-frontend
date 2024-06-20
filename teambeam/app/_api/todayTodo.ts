@@ -66,18 +66,7 @@ export const getTodos = async (userId: string, date: string): Promise<Project[]>
 export const updateTodoStatus = async (todo: Todo, bottomTodoId: number, status: boolean) => {
   try {
     const response = await api.patch(`/my/main/${bottomTodoId}`,
-      { 
-        // middleTodoId: todo.middleTodoId,
-        // title: todo.title,
-        // startDate: todo.startDate,
-        // endDate: todo.endDate,
-        // memo: todo.memo,
-        status,
-        // member: todo.assignees.memberId,
-      },
-      {
-        headers: getTokenHeaders(),
-      }
+      { status, },{ headers: getTokenHeaders(), }
     );
     return response.data;
   } catch (error) {
@@ -95,12 +84,13 @@ export const fetchCalendarEvents = async (
   userId: string,
   year: number,
   month: number,
-) => {
+  projectId: number,
+): Promise<any[]>  => {
   try {
     const response = await api.get(
       `/my/main/schedule/${userId}`,
       {
-        params: { year, month, userId }, 
+        params: { year, month, userId, projectId }, 
         headers: getTokenHeaders(),
       }
     );
@@ -121,6 +111,11 @@ export const fetchCalendarEvents = async (
           (member: any) => member.memberId
         ),
         projectId: schedule.projectId,
+        extendedProps: {
+          projectId: schedule.projectId,
+          schedule: true,
+          todo: false
+        }
       }));
 
       const todoEvents = data.topTodos.map((todo: any) => ({
@@ -128,11 +123,14 @@ export const fetchCalendarEvents = async (
         title: todo.title,
         start: todo.startDate,
         end: todo.endDate,
-        todo: true,
-        projectId: todo.projectId,
+        extendedProps: {
+          projectId: todo.projectId,
+          todo: true,
+          schedule: false
+        }
       }));
 
-      console.log("Calendar response:", scheduleEvents);
+      console.log("Calendar response:", [...scheduleEvents, ...todoEvents]);
 
       return [...scheduleEvents, ...todoEvents]; // 일정과 할일 데이터를 합쳐 반환
     } else {
