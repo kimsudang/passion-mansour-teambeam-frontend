@@ -91,7 +91,7 @@ nav {
 
         &.menuLink {
           .boardUtilBtn {
-            color: var(--txtColor);
+            color: var(--primary);
           }
         }
       }
@@ -115,7 +115,7 @@ nav {
           align-items: center;
           border: none;
           background: transparent;
-          color: var(--txtColor);
+          color: #242424;
           font-size: 20px;
           font-weight: 400;
           cursor: pointer;
@@ -157,6 +157,18 @@ nav {
 
         svg {
           fill: var(--primary);
+        }
+
+        &.menuLink {
+          .boardUtilBtn {
+            color: var(--primary);
+          }
+        }
+      }
+
+      &.menuLink {
+        .boardUtilBtn {
+          color: #888;
         }
       }
     }

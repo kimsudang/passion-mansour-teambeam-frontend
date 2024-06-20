@@ -14,7 +14,6 @@
 
 .calendarContainer {
   flex: 1;
-  padding: 20px;
 }
 
 .calendarTitle {
@@ -112,6 +111,12 @@
   padding: 8px;
   box-sizing: border-box;
   border: none;
+}
+
+.modal .modalActions {
+  button {
+    color: var(--txtColor);
+  }
 }
 
 .modalButtons {

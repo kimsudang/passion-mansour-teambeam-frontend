@@ -26,8 +26,6 @@ const useSocketStore = create<ISocketState>((set, get) => ({
 
       socket.on("connect", () => {
         console.log("socket URL : ", socketUrl);
-        console.log("Connected to socket with ID : ", socket.id);
-        console.log("Connected to memberId : ", memberId);
       });
 
       socket.on("connect_error", (error) => {

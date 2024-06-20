@@ -13,7 +13,7 @@
   // 팀원 초대
   .inviteModalContent {
     position: relative;
-    background-color: #F1F1F1;
+    background-color: var(--mdBg);
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -44,14 +44,14 @@
         height: 50px;
         padding: 10px;
         margin-bottom: 20px;
-        border: 1px solid #D5D5D5;
+        border: 1px solid #d5d5d5;
         border-radius: 10px;
       }
 
       & button {
         padding: 10px;
         height: 50px;
-        background-color: #FFC300;
+        background-color: #ffc300;
         color: #242424;
         font-size: medium;
         font-weight: bold;
@@ -61,7 +61,7 @@
         margin-bottom: 20px;
 
         &:hover {
-          background-color: #E6B411;
+          background-color: #e6b411;
         }
       }
 
@@ -74,7 +74,7 @@
 
   & .addTagModalContainer {
     position: relative;
-    background-color: #F1F1F1;
+    background-color: var(--mdBg);
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -89,7 +89,7 @@
       height: 45px;
       padding: 10px;
       margin-bottom: 10px;
-      border: 1px solid #D5D5D5;
+      border: 1px solid #d5d5d5;
       border-radius: 10px;
     }
 
@@ -102,12 +102,12 @@
     & .buttonBundle {
       display: flex;
       justify-content: space-around;
-      
+
       & .addTagButton {
         padding: 10px;
         width: 150px;
         height: 45px;
-        background-color: #FFC300;
+        background-color: #ffc300;
         color: #242424;
         font-size: medium;
         font-weight: bold;
@@ -117,7 +117,7 @@
         margin-bottom: 20px;
 
         &:hover {
-          background-color: #E6B411;
+          background-color: #e6b411;
         }
       }
 
@@ -125,7 +125,7 @@
         padding: 10px;
         width: 150px;
         height: 45px;
-        background-color: #E0E0E0;
+        background-color: #e0e0e0;
         color: #242424;
         font-size: medium;
         font-weight: bold;
@@ -135,17 +135,15 @@
         margin-bottom: 20px;
 
         &:hover {
-          background-color: #DADADA;
+          background-color: #dadada;
         }
       }
-
     }
-    
   }
-  
+
   & .showTodoModalContent {
     position: relative;
-    background-color: #F1F1F1;
+    background-color: var(--mdBg);
     padding: 20px;
     border-radius: 10px;
     width: 400px;
@@ -173,7 +171,7 @@
       padding: 10px;
       width: 100%;
       height: 50px;
-      background-color: #FFC300;
+      background-color: #ffc300;
       color: #242424;
       font-size: medium;
       font-weight: bold;
@@ -183,9 +181,8 @@
       margin: 20px 0px;
 
       &:hover {
-        background-color: #E6B411;
+        background-color: #e6b411;
       }
     }
-
   }
 }

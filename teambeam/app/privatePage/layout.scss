@@ -5,7 +5,7 @@
 }
 
 .layout-container {
-  width: calc(100% - var(--sideSize));
+  width: calc(100% - var(--sideSize) - 14px);
   padding: 48px 28px;
   margin-top: var(--headerSize);
   margin-left: var(--sideSize);

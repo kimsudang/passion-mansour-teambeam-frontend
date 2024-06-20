@@ -324,7 +324,7 @@
 
 //캘린더에서 상위 투두 클릭시, 하이라이트 css
 .upperTodoList {
-  border: 1px solid #d5d5d5;
+  border: 1px solid var(--brColor);
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

@@ -114,6 +114,10 @@
 
 .mailArea {
   padding: 10px;
+
+  span {
+    color: var(--txtColor);
+  }
 }
 
 .changePassword {

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from 'next/link';
+import Link from "next/link";
 import "./layout.scss";
 import {
   fetchCalendarEvents,
@@ -16,7 +16,7 @@ import {
   fetchProjectInfo,
   fetchNotices,
   ProjectInfo,
-  Notice
+  Notice,
 } from "./_components/TeamMainInfo";
 import { Participant } from "@/app/teamPage/[projectId]/teamTodo/types";
 
@@ -29,14 +29,13 @@ const FullCalendarComponent = dynamic(
   }
 );
 
-
-const TeamPage: React.FC = () => { 
+const TeamPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   // 프로젝트 정보 & 공지사항
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     projectName: "",
     description: "",
-  }); 
+  });
   const [notices, setNotices] = useState<Notice[]>([]);
   // 캘린더
   const [events, setEvents] = useState<any[]>([]);
@@ -48,7 +47,13 @@ const TeamPage: React.FC = () => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   const fetchEvents = useCallback(
-    async (projectId: string, year: number, month: number, token: string, refreshToken: string) => {
+    async (
+      projectId: string,
+      year: number,
+      month: number,
+      token: string,
+      refreshToken: string
+    ) => {
       try {
         const events = await fetchCalendarEvents(
           projectId,
@@ -76,11 +81,10 @@ const TeamPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-
     if (typeof window !== "undefined") {
       const savedAccessToken = localStorage.getItem("Authorization");
       const savedRefreshToken = localStorage.getItem("RefreshToken");
-      
+
       setToken(savedAccessToken);
       setRefreshToken(savedRefreshToken);
     }
@@ -88,7 +92,11 @@ const TeamPage: React.FC = () => {
     // 프로젝트 데이터를 불러오는 함수
     const getProjectData = async () => {
       if (projectId && token && refreshToken) {
-        const projectData = await fetchProjectInfo(projectId, token, refreshToken);
+        const projectData = await fetchProjectInfo(
+          projectId,
+          token,
+          refreshToken
+        );
         if (projectData) {
           setProjectInfo(projectData);
         }
@@ -111,7 +119,15 @@ const TeamPage: React.FC = () => {
       getProjectData();
       getNotices();
     }
-  }, [year, month, token, refreshToken, fetchEvents, fetchParticipantsList, projectId]);
+  }, [
+    year,
+    month,
+    token,
+    refreshToken,
+    fetchEvents,
+    fetchParticipantsList,
+    projectId,
+  ]);
 
   const handleEventClick = (clickInfo: any) => {
     const eventId = clickInfo.event.id || clickInfo.event.extendedProps.id;
@@ -125,21 +141,24 @@ const TeamPage: React.FC = () => {
   };
 
   return (
-    <div className="teamDashContainer">
-      <div className="title">
+    <div className='teamDashContainer'>
+      <div className='top-box'>
         <h1>{projectInfo.projectName}</h1>
       </div>
-      <div className="description">
-        <p className="subTitle">프로젝트 설명</p>
+      <div className='description'>
+        <p className='subTitle'>프로젝트 설명</p>
         <p>{projectInfo.description}</p>
       </div>
-      <div className="notices">
-        <p  className="subTitle">공지사항</p>
+      <div className='notices'>
+        <p className='subTitle'>공지사항</p>
         <ul>
-          {notices.map(notice => (
+          {notices.map((notice) => (
             <li key={notice.postId}>
-              <Link className="link" href={`/teamPage/${projectId}/teamBoard/${projectId}/${notice.postId}`}>
-                <div className="noticeBox">
+              <Link
+                className='link'
+                href={`/teamPage/${projectId}/teamBoard/${projectId}/${notice.postId}`}
+              >
+                <div className='noticeBox'>
                   <p>{notice.title}</p>
                   <p>{notice.createDate}</p>
                 </div>
@@ -148,9 +167,12 @@ const TeamPage: React.FC = () => {
           ))}
         </ul>
       </div>
-      <div className="calendar">
-        <Link className="link" href={`/teamPage/${projectId}/teamCalendar`}>
-          <FullCalendarComponent events={events} eventClick={handleEventClick} />
+      <div className='calendar'>
+        <Link className='link' href={`/teamPage/${projectId}/teamCalendar`}>
+          <FullCalendarComponent
+            events={events}
+            eventClick={handleEventClick}
+          />
         </Link>
       </div>
     </div>
