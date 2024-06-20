@@ -95,3 +95,11 @@ textarea {
 [data-theme="dark"] textarea {
   border-color: #282828;
 }
+
+.top-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 30px;
+}

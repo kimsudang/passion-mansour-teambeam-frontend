@@ -190,10 +190,10 @@ const TeamCalendar: React.FC = () => {
   };
 
   return (
-    <div className="calendarContainer">
-      <div className="calendarHeader">
-        <h2 className="calendarTitle">캘린더</h2>
-        <button className="addButton" onClick={handleAddButtonClick}>
+    <div className='calendarContainer'>
+      <div className='top-box'>
+        <h1>캘린더</h1>
+        <button className='addButton' onClick={handleAddButtonClick}>
           일정 추가
         </button>
       </div>
@@ -209,7 +209,7 @@ const TeamCalendar: React.FC = () => {
           initialEvent={selectedEvent}
         />
       )}
-      {isLoading && <div className="loadingIndicator">Loading...</div>}
+      {isLoading && <div className='loadingIndicator'>Loading...</div>}
     </div>
   );
 };

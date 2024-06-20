@@ -498,9 +498,11 @@ const TeamTodo: React.FC = () => {
   };
 
   return (
-    <div className="todoContainer">
+    <div className='todoContainer'>
       <ToastContainer />
-      <h2>투두리스트</h2>
+      <div className='top-box'>
+        <h1>투두리스트</h1>
+      </div>
       {todoLists.map((list) => (
         <UpperTodoList
           key={list.topTodoId}

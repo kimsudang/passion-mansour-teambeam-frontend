@@ -18,7 +18,10 @@ interface Assignee {
 
 // 캘린더
 const FullCalendarComponent = dynamic(
-  () => import("../../teamPage/[projectId]/teamCalendar/components/FullCalendarComponent"),
+  () =>
+    import(
+      "../../teamPage/[projectId]/teamCalendar/components/FullCalendarComponent"
+    ),
   {
     ssr: false,
   }
@@ -30,7 +33,9 @@ const handleEventClick = () => {
 };
 
 const PrivatePage: React.FC = () => {
-  const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
   const [userId, setUserId] = useState<string>();
   const [projectTodos, setProjectTodos] = useState<ProjectTodos[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -43,25 +48,24 @@ const PrivatePage: React.FC = () => {
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
-  
+
   const fetchEvents = useCallback(
-    async (userId:string, year: number, month: number) => {
+    async (userId: string, year: number, month: number) => {
       try {
-        const events = await fetchCalendarEvents(
-          userId,
-          year,
-          month,
-        );
+        const events = await fetchCalendarEvents(userId, year, month);
         setEvents(events);
       } catch (error) {
         console.error("Error fetching events:", error);
-        setError('일정을 가져오는 중 오류가 발생했습니다.');
+        setError("일정을 가져오는 중 오류가 발생했습니다.");
       }
     },
     []
   );
 
-  const handleTodoStatusChange = async (projectIndex: number, todoIndex: number) => {
+  const handleTodoStatusChange = async (
+    projectIndex: number,
+    todoIndex: number
+  ) => {
     const updatedTodos = [...projectTodos];
     const todo = updatedTodos[projectIndex].todos[todoIndex];
     todo.status = !todo.status;
@@ -94,7 +98,7 @@ const PrivatePage: React.FC = () => {
           setProjectTodos(todos);
         } catch (err) {
           console.log(err);
-          setError('할 일을 가져오는 중 오류가 발생했습니다.');
+          setError("할 일을 가져오는 중 오류가 발생했습니다.");
         }
       };
 
@@ -107,8 +111,12 @@ const PrivatePage: React.FC = () => {
     if (!userId) return "사용자";
     for (const project of projectTodos) {
       for (const todo of project.todos) {
-        const assignees = Array.isArray(todo.assignees) ? todo.assignees : [todo.assignees];
-        const assignee = assignees.find(assignee => assignee.memberId.toString() === userId);
+        const assignees = Array.isArray(todo.assignees)
+          ? todo.assignees
+          : [todo.assignees];
+        const assignee = assignees.find(
+          (assignee) => assignee.memberId.toString() === userId
+        );
         if (assignee) {
           return assignee.memberName;
         }
@@ -130,61 +138,83 @@ const PrivatePage: React.FC = () => {
   };
 
   return (
-    <div className="privateContainer">
-      <div className="header">
-        <p>{getUserName()}님</p>        
+    <div className='privateContainer'>
+      <div className='header'>
+        <h1>{getUserName()}님</h1>
         <p>{date}</p>
-        <div className="dateNavigation">
+        <div className='dateNavigation'>
           <button onClick={handlePreviousDay}>전날</button>
-          <button onClick={() => setDate(new Date().toISOString().split("T")[0])}>오늘</button>
+          <button
+            onClick={() => setDate(new Date().toISOString().split("T")[0])}
+          >
+            오늘
+          </button>
           <button onClick={handleNextDay}>다음날</button>
         </div>
       </div>
-      <div className="todoContainerWrapper">
-        <div className="myTodoContainer">
-        {projectTodos.length === 0 || projectTodos.every(project => project.todos.length === 0) ? (
-            <p className="noTodos"> {date} 할 일이 존재하지 않습니다.</p>
+      <div className='todoContainerWrapper'>
+        <div className='myTodoContainer'>
+          {projectTodos.length === 0 ||
+          projectTodos.every((project) => project.todos.length === 0) ? (
+            <p className='noTodos'> {date} 할 일이 존재하지 않습니다.</p>
           ) : (
-          projectTodos
-          .filter(project => project.todos.length > 0)
-          .map((project, projectIndex) => (
-            <div key={projectIndex} className="projectContainer">
-              <h2 className="todoTitle">{project.projectName}</h2>
-              <div className="todoList">
-                {project.todos.map((todo, todoIndex) => (
-                  <button 
-                    key={todo.topTodoId} 
-                    className={`todoItem ${todo.status ? 'completed' : ''}`}
-                  >
-                     <div className="checkTodoTitle">
-                      <input 
-                        type="checkbox" 
-                        checked={todo.status} 
-                        onChange={() => handleTodoStatusChange(projectIndex, todoIndex)} 
-                        />
-                      <p className="bottomTodoTitle" onClick={() => handleTodoClick(todo.bottomTodoId)}>{todo.title}</p>
-                    </div>
-                    <p className="bottomTodoDate">{todo.startDate} ~ {todo.endDate}</p>
-                    <div className="assignees">
-                      {Array.isArray(todo.assignees) ? (
-                        todo.assignees.map(assignee => <p key={assignee.memberId}>{assignee.memberName}</p>)
-                      ) : (
-                        <p>{todo.assignees.memberName}</p>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))
+            projectTodos
+              .filter((project) => project.todos.length > 0)
+              .map((project, projectIndex) => (
+                <div key={projectIndex} className='projectContainer'>
+                  <h2 className='todoTitle'>{project.projectName}</h2>
+                  <div className='todoList'>
+                    {project.todos.map((todo, todoIndex) => (
+                      <button
+                        key={todo.topTodoId}
+                        className={`todoItem ${todo.status ? "completed" : ""}`}
+                      >
+                        <div className='checkTodoTitle'>
+                          <input
+                            type='checkbox'
+                            checked={todo.status}
+                            onChange={() =>
+                              handleTodoStatusChange(projectIndex, todoIndex)
+                            }
+                          />
+                          <p
+                            className='bottomTodoTitle'
+                            onClick={() => handleTodoClick(todo.bottomTodoId)}
+                          >
+                            {todo.title}
+                          </p>
+                        </div>
+                        <p className='bottomTodoDate'>
+                          {todo.startDate} ~ {todo.endDate}
+                        </p>
+                        <div className='assignees'>
+                          {Array.isArray(todo.assignees) ? (
+                            todo.assignees.map((assignee) => (
+                              <p key={assignee.memberId}>
+                                {assignee.memberName}
+                              </p>
+                            ))
+                          ) : (
+                            <p>{todo.assignees.memberName}</p>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
           )}
         </div>
       </div>
-      <div className="calendar">
+      <div className='calendar'>
         <FullCalendarComponent events={events} eventClick={handleEventClick} />
       </div>
       {selectedTodoId && (
-        <TodoMemoModal isOpen={isModalOpen} onClose={handleCloseModal} bottomTodoId={selectedTodoId} />
+        <TodoMemoModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          bottomTodoId={selectedTodoId}
+        />
       )}
     </div>
   );

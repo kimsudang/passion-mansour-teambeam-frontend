@@ -6,6 +6,36 @@
   & p {
     margin-bottom: 10px;
   }
+
+  .dateNavigation {
+    display: flex;
+    align-items: center;
+
+    button {
+      display: block;
+      color: var(--txtColor);
+      border: 1px solid var(--brColor);
+      background: var(--boxBg);
+      margin-right: 8px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--boxBgHover);
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  [data-theme="dark"] .dateNavigation {
+    button {
+      border-color: #444;
+    }
+  }
 }
 
 .header p:first-child {
@@ -20,7 +50,7 @@
 .todoContainerWrapper {
   margin: 30px 0px;
   padding: 15px;
-  width: 95%;
+  width: 100%;
   overflow-x: auto;
   border: 2px solid var(--brColor);
   border-radius: 10px;
@@ -152,7 +182,7 @@
 }
 
 .calendar {
-  width: 95%;
+  width: 100%;
   background-color: #e0e0e0;
   padding: 20px;
   border-radius: 5px;
