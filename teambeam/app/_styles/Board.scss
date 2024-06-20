@@ -6,8 +6,8 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  background: #fff;
-  border: 1px solid #d5d5d5;
+  background: var(--bg);
+  border: 1px solid var(--brColor);
   border-radius: 10px;
   margin-bottom: 14px;
   padding: 20px 24px;
@@ -32,7 +32,7 @@
   }
 
   &:hover {
-    background: #f9f9f9;
+    background: var(--bgHover);
   }
 
   &:last-child {
@@ -54,7 +54,7 @@
       background: #e0e0e0;
       border-radius: 5px;
       font-size: 11px;
-      color: #242424;
+      color: var(--txtColor);
 
       &:last-child {
         margin-right: 0;
@@ -70,7 +70,7 @@
     overflow: hidden;
     font-size: 20px;
     font-weight: 600;
-    color: #242424;
+    color: var(--txtColor);
     margin-bottom: 8px;
   }
 
@@ -82,7 +82,7 @@
     overflow: hidden;
     font-size: 15px;
     font-weight: 500;
-    color: #464646;
+    color: var(--pColor);
     margin-bottom: 16px;
   }
 
@@ -91,6 +91,59 @@
     align-items: center;
     font-size: 12px;
     font-weight: 400;
+    color: var(--sColor);
+  }
+
+  .bookmarkBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &.active {
+      svg {
+        fill: var(--primary);
+      }
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+[data-theme="dark"] .board-item {
+  &.noticePost {
+    border: 1px solid #242424;
+    background: #242424;
+
+    &:hover {
+      background: #343434;
+    }
+
+    .tags {
+      .tag {
+        background: #503e00;
+
+        &.notice {
+          background: var(--primary);
+        }
+      }
+    }
+  }
+
+  .tags {
+    .tag {
+      background: #444;
+      color: var(--txtColor);
+    }
+  }
+
+  .board-info {
     color: #565656;
   }
 
@@ -132,7 +185,7 @@
   h2 {
     font-size: 34px;
     font-weight: 700;
-    color: #242424;
+    color: var(--txtColor);
   }
 }
 
@@ -147,7 +200,7 @@
     display: flex;
     align-items: center;
     font-size: 13px;
-    color: #565656;
+    color: var(--sColor);
   }
 
   .bookmarkBtn {
@@ -173,11 +226,64 @@
     justify-content: center;
     align-items: center;
     padding: 4px 12px;
-    background: #e0e0e0;
+    background: #444;
     border-radius: 5px;
     margin-right: 8px;
     font-size: 11px;
-    color: #242424;
+    color: var(--txtColor);
+
+    &.notice {
+      background: var(--primary);
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+[data-theme="dark"] .view-info-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 34px;
+  margin-bottom: 18px;
+
+  .view-info {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--sColor);
+  }
+
+  .bookmarkBtn {
+    border: none;
+    cursor: pointer;
+
+    &.active {
+      svg {
+        fill: var(--primary);
+      }
+    }
+  }
+}
+
+.view-tags {
+  display: flex;
+  align-items: center;
+  padding: 0 34px;
+  margin-bottom: 42px;
+
+  .tag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 12px;
+    background: #444;
+    border-radius: 5px;
+    margin-right: 8px;
+    font-size: 11px;
+    color: var(--txtColor);
 
     &.notice {
       background: var(--primary);
@@ -199,7 +305,7 @@
 }
 
 .comment-wrap {
-  border-top: 1px solid #d5d5d5;
+  border-top: 1px solid var(--brColor);
   margin: 0 34px;
 }
 
@@ -211,9 +317,9 @@
     display: block;
     width: 100%;
     min-height: 140px;
-    border: 1px solid #d5d5d5;
+    border: 1px solid var(--brColor);
     font-size: 16px;
-    color: #242424;
+    color: var(--txtColor);
     border-radius: 10px;
     padding: 24px;
     overflow-y: scroll;
@@ -227,7 +333,7 @@
     background: var(--primary);
     font-size: 16px;
     font-weight: 500;
-    color: #242424;
+    color: var(--txtColor);
     position: absolute;
     right: 24px;
     bottom: 10px;
@@ -240,7 +346,7 @@
 .comment-info {
   font-size: 20px;
   font-weight: 600;
-  color: #242424;
+  color: var(--txtColor);
   margin: 16px 0 24px;
 
   span {
@@ -262,20 +368,26 @@
 
     th {
       min-width: 200px;
-      border: 1px solid #d5d5d5;
+      border: 1px solid var(--brColor);
       text-align: center;
     }
   }
 
   tbody tr {
     height: 64px;
-    background: #fff;
+    background: var(--bg);
 
     td {
       min-width: 200px;
-      border: 1px solid #d5d5d5;
+      border: 1px solid var(--brColor);
       text-align: center;
     }
+  }
+}
+
+[data-theme="dark"] .viewTable {
+  thead tr {
+    background: #444;
   }
 }
 
@@ -290,7 +402,7 @@
     align-items: center;
     width: 52px;
     height: 52px;
-    border: 1px solid #d5d5d5;
+    border: 1px solid var(--brColor);
     border-radius: 10px;
     cursor: pointer;
 
@@ -387,7 +499,7 @@
   h4 {
     font-size: 18px;
     font-weight: 600;
-    color: #242424;
+    color: var(--txtColor);
     margin-bottom: 8px;
   }
 
@@ -399,8 +511,8 @@
       flex-direction: column;
       align-items: center;
       padding: 24px 0;
-      background: #fff;
-      border: 1px solid #d5d5d5;
+      background: var(--bg);
+      border: 1px solid var(--brColor);
       border-radius: 10px;
       cursor: pointer;
 
@@ -412,7 +524,7 @@
       span {
         font-size: 16px;
         font-weight: 500;
-        color: #242424;
+        color: var(--txtColor);
       }
 
       &.active {
@@ -424,7 +536,7 @@
       }
 
       &:hover:not(&.active) {
-        background: #f9f9f9;
+        background: var(--bgHover);
         border: 1px solid #c0c0c0;
 
         svg {
@@ -445,8 +557,8 @@
     padding: 28px 24px;
     font-size: 20px;
     font-weight: 600;
-    color: #242424;
-    border: 1px solid #d5d5d5;
+    color: var(--txtColor);
+    border: 1px solid var(--brColor);
     margin-bottom: 24px;
 
     &::placeholder {
@@ -465,7 +577,7 @@
     align-items: center;
     margin-bottom: 24px;
     font-size: 18px;
-    color: #242424;
+    color: var(--txtColor);
 
     label {
       margin-left: 8px;
@@ -480,7 +592,7 @@
 
       .ql-container {
         height: calc(100% - 42px);
-        background: #fff;
+        background: var(--bg);
       }
     }
   }
@@ -532,7 +644,7 @@
   max-height: 300px;
   padding: 14px 0;
   overflow-y: auto;
-  background: #fff;
+  background: var(--mdBg);
   border-radius: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.35);
   z-index: 10;
@@ -572,7 +684,7 @@
 
     th {
       min-width: 200px;
-      border: 1px solid #d5d5d5;
+      border: 1px solid var(--brColor);
 
       input {
         display: block;
@@ -583,18 +695,18 @@
         padding: 0 4px;
         font-size: 20px;
         font-weight: 700;
-        color: #242424;
+        color: var(--txtColor);
         text-align: center;
       }
     }
   }
 
   tbody tr {
-    background: #fff;
+    background: var(--bg);
 
     td {
       min-width: 200px;
-      border: 1px solid #d5d5d5;
+      border: 1px solid var(--brColor);
 
       input {
         display: block;
@@ -605,10 +717,16 @@
         padding: 0 4px;
         font-size: 16px;
         font-weight: 500;
-        color: #242424;
+        color: var(--txtColor);
         text-align: center;
       }
     }
+  }
+}
+
+[data-theme="dark"] .writerTable {
+  thead tr {
+    background: #242424;
   }
 }
 

@@ -6,10 +6,10 @@
   border-radius: 10px;
   font-size: large;
   font-weight: bold;
-  background-color: #FFC300;
+  background-color: #ffc300;
 
   &:hover {
-    background-color: #E6B411;
+    background-color: #e6b411;
   }
 }
 
@@ -23,7 +23,6 @@
 }
 
 @mixin input_with_button_styled {
-
   & input {
     width: 48%;
     height: 50px;
@@ -42,10 +41,11 @@
     border-radius: 10px;
     font-size: small;
     font-weight: bold;
-    background-color: #FFC300;
-  
+    background-color: #ffc300;
+    color: #242424;
+
     &:hover {
-      background-color: #E6B411;
+      background-color: #e6b411;
     }
   }
 }
@@ -67,15 +67,20 @@
       font-weight: bolder;
       margin-bottom: 30px;
     }
-    
+
     & .emailJoinForm {
       width: 100%;
-      
-        & .emailButton {
-          @include input_with_button_styled;
-        }
-    }
 
+      & .emailButton {
+        @include input_with_button_styled;
+      }
+
+      button {
+        p {
+          color: #242424;
+        }
+      }
+    }
 
     & .submitButton {
       @include button_styled;
@@ -85,5 +90,4 @@
   & input {
     @include input_styled;
   }
-
 }

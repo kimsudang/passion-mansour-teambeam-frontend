@@ -14,7 +14,7 @@
 }
 
 .modal-wrap {
-  background: #ffffff;
+  background: var(--mdBg);
   position: relative;
   max-width: 720px;
   width: 100%;
@@ -32,14 +32,14 @@
     display: block;
     font-size: 12px;
     font-weight: 400;
-    color: #565656;
+    color: var(--sColor);
     margin-bottom: 8px;
   }
 
   h2 {
     font-size: 34px;
     font-weight: 700;
-    color: #242424;
+    color: var(--txtColor);
   }
 }
 
@@ -48,13 +48,14 @@
   flex-direction: column;
   height: 412px;
   margin-bottom: 24px;
-  color: #242424;
+  color: var(--txtColor);
 
   input {
     display: block;
     margin-bottom: 24px;
     height: 62px;
     border-radius: 10px;
+    background: var(--mdBg);
     border: 1px solid #d5d5d5;
     padding: 20px;
     font-size: 20px;
@@ -71,6 +72,7 @@
     line-height: 1.6;
     height: 360px;
     border-radius: 10px;
+    background: var(--mdBg);
     border: 1px solid #d5d5d5;
     padding: 20px;
     resize: none;
@@ -78,6 +80,13 @@
     &::placeholder {
       color: #909090;
     }
+  }
+}
+
+[data-theme="dark"] .modal-content {
+  input,
+  textarea {
+    border-color: #444;
   }
 }
 
@@ -91,13 +100,24 @@
     border-radius: 10px;
     background: #e0e0e0;
     font-size: 16px;
-    color: #242424;
+    color: var(--txtColor);
     border: none;
     cursor: pointer;
 
     &:last-child {
       margin-left: 24px;
       background: var(--primary);
+    }
+  }
+}
+
+[data-theme="dark"] .buttons {
+  button {
+    background: #343434;
+
+    &:last-child {
+      background: var(--primary);
+      color: #242424;
     }
   }
 }

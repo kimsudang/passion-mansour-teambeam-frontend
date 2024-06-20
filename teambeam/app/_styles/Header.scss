@@ -8,8 +8,8 @@ header {
   width: 100%;
   height: var(--headerSize);
   padding: 0 28px;
-  border-bottom: 1px solid #d5d5d5;
-  background: #f1f1f1;
+  border-bottom: 1px solid var(--brColor);
+  background: var(--bg);
   z-index: 5;
 }
 
@@ -19,7 +19,7 @@ header {
   justify-content: space-between;
 
   & a {
-    color: #242424;
+    color: var(--txtColor);
     font-size: 18px;
     font-weight: 600;
   }
@@ -62,7 +62,7 @@ header {
   right: 0;
   width: 140px;
   padding: 8px 0;
-  background: #fff;
+  background: var(--mdBg);
   border-radius: 10px;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35);
 
@@ -80,7 +80,7 @@ header {
       cursor: pointer;
 
       &:hover {
-        background: #e9e9e9;
+        background: var(--boxBgHover);
       }
     }
   }

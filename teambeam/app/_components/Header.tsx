@@ -42,10 +42,16 @@ export default function Header() {
     setUser,
     setImgSrc,
     clearUser,
+    initializeScreenMode,
+    screenMode,
   } = useUserStore();
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
 
   const router = useRouter();
+
+  useEffect(() => {
+    initializeScreenMode();
+  }, [initializeScreenMode]);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("Authorization");
@@ -54,6 +60,12 @@ export default function Header() {
 
     if (storedToken && storedMemberId) {
       setUser(storedToken, storedRefreshToken, storedMemberId);
+    }
+
+    if (screenMode) {
+      document.documentElement.setAttribute("data-theme", screenMode);
+    } else {
+      document.documentElement.removeAttribute("data-theme");
     }
 
     const fetchData = async () => {
@@ -69,7 +81,7 @@ export default function Header() {
     };
 
     fetchData();
-  }, [token, memberId, setUser, setImgSrc]);
+  }, [token, memberId, setUser, setImgSrc, screenMode]);
 
   useEffect(() => {
     if (!token) return;
@@ -199,12 +211,12 @@ export default function Header() {
       {token && refreshToken ? (
         <>
           <Link href='/main'>
-            <Logo size={88}></Logo>
+            <Logo size={88} theme={screenMode}></Logo>
           </Link>
         </>
       ) : (
         <Link href='/'>
-          <Logo size={88}></Logo>
+          <Logo size={88} theme={screenMode}></Logo>
         </Link>
       )}
 

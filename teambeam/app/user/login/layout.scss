@@ -43,11 +43,11 @@
           height: 50px;
         }
       }
-      
+
       & .pageLink {
         font-size: small;
         margin: 20px;
-        color: #242424;
+        color: var(--txtColor);
       }
 
       & .warningMsg {
@@ -69,25 +69,25 @@
   @include input_styled;
 }
 
- .submitPassword {
+.submitPassword {
   @include input_styled;
 }
 
 .loginWithEmail {
   @include button_styled;
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
 
   &:hover {
-    background-color: #DADADA;
+    background-color: #dadada;
   }
 }
 
 .loginWithKakao {
   @include button_styled;
-  background-color: #FFC300;
+  background-color: #ffc300;
 
   &:hover {
-    background-color: #E6B411;
+    background-color: #e6b411;
   }
 }
 
@@ -95,4 +95,3 @@
   font-weight: bold;
   margin-bottom: 15px;
 }
-

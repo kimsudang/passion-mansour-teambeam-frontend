@@ -28,7 +28,7 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
   return (
     <FullCalendar
       plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-      initialView="dayGridMonth"
+      initialView='dayGridMonth'
       headerToolbar={{
         left: "prev,next today",
         center: "title",

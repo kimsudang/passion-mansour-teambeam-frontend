@@ -6,9 +6,17 @@ nav {
   height: auto;
   min-height: calc(100dvh - var(--headerSize));
   background: var(--bg);
-  border-right: 1px solid #d5d5d5;
+  border-right: 1px solid var(--brColor);
   padding: 40px 24px;
   z-index: 5;
+
+  h2 {
+    color: var(--txtColor);
+  }
+
+  [data-theme="dark"] svg {
+    fill: var(--txtColor);
+  }
 
   &.noActive {
     h2 {
@@ -36,10 +44,14 @@ nav {
   height: 44px;
   margin-bottom: 12px;
   padding: 0 0 12px;
-  border-bottom: 1px solid #d5d5d5;
+  border-bottom: 1px solid var(--brColor);
 
   h2 {
+    width: 160px;
     font-size: 24px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   button {
@@ -61,7 +73,7 @@ nav {
       height: 50px;
       font-size: 18px;
       font-weight: 600;
-      color: #242424;
+      color: var(--txtColor);
       padding: 0 8px;
       border-radius: 10px;
 
@@ -79,7 +91,7 @@ nav {
 
         &.menuLink {
           .boardUtilBtn {
-            color: #fff;
+            color: var(--txtColor);
           }
         }
       }
@@ -103,7 +115,7 @@ nav {
           align-items: center;
           border: none;
           background: transparent;
-          color: #242424;
+          color: var(--txtColor);
           font-size: 20px;
           font-weight: 400;
           cursor: pointer;
@@ -121,6 +133,31 @@ nav {
       span {
         display: block;
         margin-left: 4px;
+      }
+    }
+  }
+}
+
+[data-theme="dark"] .side-menu {
+  li {
+    a {
+      color: #888;
+
+      svg {
+        fill: #888;
+      }
+
+      &:hover {
+        background: #343434;
+      }
+
+      &.active {
+        background-color: #242424;
+        color: var(--primary);
+
+        svg {
+          fill: var(--primary);
+        }
       }
     }
   }

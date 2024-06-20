@@ -21,7 +21,7 @@
 .title {
   padding: 10px;
   border-radius: 5px;
-  
+
   p {
     font-weight: bold;
   }
@@ -35,7 +35,7 @@
 
 .description {
   margin-top: 20px;
-  background-color: #f1f1f1;
+  background-color: var(--bg);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -43,7 +43,7 @@
 
 .notices {
   margin-top: 20px;
-  background-color: #f1f1f1;
+  background-color: var(--bg);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -59,7 +59,7 @@
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    border-bottom: 1px solid #D5D5D5;
+    border-bottom: 1px solid var(--brColor);
 
     p {
       margin: 0;
@@ -68,7 +68,7 @@
 
   .noticeBox {
     height: 50px;
-    border: 1px solid #D5D5D5;
+    border: 1px solid var(--brColor);
     border-radius: 10px;
     padding: 20px;
     margin: 15px 0px;
@@ -78,14 +78,20 @@
     justify-content: space-between;
 
     &:hover {
-      background-color: #DADADA;
+      background-color: #dadada;
+    }
+  }
+
+  [data-theme="dark"] .noticeBox {
+    &:hover {
+      background-color: #343434;
     }
   }
 }
 
 .calendar {
   margin-top: 20px;
-  background-color: #f1f1f1;
+  background-color: var(--bg);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

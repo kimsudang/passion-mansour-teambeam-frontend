@@ -14,7 +14,7 @@
 }
 
 .modal-wrap {
-  background: #ffffff;
+  background: var(--mdBg);
   position: relative;
   max-width: 720px;
   width: 100%;
@@ -32,14 +32,14 @@
     display: block;
     font-size: 12px;
     font-weight: 400;
-    color: #565656;
+    color: var(--sColor);
     margin-bottom: 8px;
   }
 
   h2 {
     font-size: 34px;
     font-weight: 700;
-    color: #242424;
+    color: var(--txtColor);
   }
 }
 
@@ -69,7 +69,7 @@
       align-items: center;
       width: 48px;
       height: 48px;
-      border: 1px solid #d5d5d5;
+      border: 1px solid var(--brColor);
       border-radius: 10px;
       background: #fff;
       cursor: pointer;
@@ -83,7 +83,7 @@
       }
 
       &.editBtn {
-        border: 1px solid #d5d5d5;
+        border: 1px solid var(--brColor);
 
         svg {
           fill: #0b9218;

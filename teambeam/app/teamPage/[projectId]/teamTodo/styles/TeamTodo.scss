@@ -7,7 +7,7 @@
 }
 
 .upperTodoList {
-  border: 1px solid #d5d5d5;
+  border: 1px solid var(--brColor);
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -30,11 +30,11 @@
 
 .upperDate {
   font-size: 12px;
-  color: #464646;
+  color: var(--pColor);
 }
 
 .middleTodoList {
-  border: 1px solid #d5d5d5;
+  border: 1px solid var(--brColor);
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -54,13 +54,14 @@
 
 .middleDate {
   font-size: 12px;
-  color: #464646;
+  color: var(--pColor);
 }
 
 .middleTodoHeader h4 {
   background-color: #ffc300;
   padding: 5px 15px;
   border-radius: 5px;
+  color: #242424;
 }
 
 .lowerTodoContainer {
@@ -83,7 +84,7 @@
 
 .lowerDate {
   font-size: 12px;
-  color: #464646;
+  color: var(--pColor);
 }
 
 .lowerTodoList,
@@ -91,7 +92,7 @@
   width: 100%;
   height: auto;
   margin-bottom: 5px;
-  background: #ffffff;
+  background: var(--boxBg);
   border-radius: 5px;
   padding: 5px;
 }
@@ -121,21 +122,25 @@
   border-radius: 5px;
   padding: 3px 10px;
   font-size: 12px;
-  color: #242424;
+  color: var(--txtColor);
   margin-top: 30px;
+}
+
+[data-theme="dark"] .assigneeTag {
+  background: #444;
 }
 
 .lowAddSubtask {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px dashed #d5d5d5;
+  border: 2px dashed var(--brColor);
   border-radius: 8px;
   cursor: pointer;
 }
 
 .lowAddSubtask:hover {
-  background: #e0e0e0;
+  background: var(--boxBgHover);
 }
 
 .addSubtask {
@@ -144,14 +149,14 @@
   align-items: center;
   width: 100%;
   height: 50px;
-  border: 2px dashed #d5d5d5;
+  border: 2px dashed var(--brColor);
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
 }
 
 .addSubtask:hover {
-  background: #e0e0e0;
+  background: var(--boxBgHover);
 }
 
 .modalOverlay {
@@ -168,7 +173,7 @@
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--mdBg);
   padding: 20px;
   border-radius: 8px;
   width: 450px;
@@ -191,6 +196,7 @@
   justify-content: space-between;
   align-content: center;
   gap: 10px;
+  color: var(--txtColor);
 }
 
 .eventTitle {
@@ -261,7 +267,7 @@
 }
 
 .dropdownItem:not(:last-child) {
-  border-bottom: 1px solid #d5d5d5;
+  border-bottom: 1px solid var(--brColor);
 }
 
 .dropdownItem:hover {

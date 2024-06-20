@@ -15,19 +15,19 @@
   & h2 {
     font-size: 48px;
     font-weight: 800;
-    color: #242424;
+    color: var(--txtColor);
   }
 
   & select {
     display: block;
     border-radius: 10px;
-    background: #fff;
-    border: 1px solid #d5d5d5;
+    background: var(--bg);
+    border: 1px solid var(--brColor);
     width: 190px;
     height: 60px;
     font-size: 16px;
     font-weight: 500;
-    color: #242424;
+    color: var(--txtColor);
     padding: 0 12px;
   }
 }
@@ -45,20 +45,20 @@
     justify-content: center;
     align-items: center;
     height: 230px;
-    border: 1px dashed #d5d5d5;
+    border: 1px dashed var(--brColor);
     border-radius: 10px;
     cursor: pointer;
 
     p {
       font-size: 24px;
       font-weight: 600;
-      color: #242424;
+      color: var(--txtColor);
     }
 
     span {
       font-size: 64px;
       font-weight: 900;
-      color: #242424;
+      color: var(--txtColor);
     }
   }
 }
@@ -66,18 +66,18 @@
 .project-item {
   display: block;
   height: 230px;
-  background: #fff;
-  border: 1px solid #d5d5d5;
+  background: var(--bg);
+  border: 1px solid var(--brColor);
   border-radius: 10px;
   padding: 30px 38px;
 
   &:hover {
-    background: #f9f9f9;
+    background: var(--bgHover);
   }
 }
 
 .project-list-wrap {
-  color: #242424;
+  color: var(--txtColor);
 
   .progress {
     display: inline-block;
@@ -108,7 +108,7 @@
       display: block;
       font-size: 16px;
       font-weight: 500;
-      color: #565656;
+      color: var(--sColor);
       margin-bottom: 10px;
     }
 
@@ -120,7 +120,17 @@
       overflow: hidden;
       font-size: 14px;
       font-weight: 400;
-      color: #464646;
+      color: var(--pColor);
     }
+  }
+}
+
+[data-theme="dark"] .projects_wrap {
+  .progress {
+    background: #950000;
+  }
+
+  .end {
+    background: #006889;
   }
 }

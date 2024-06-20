@@ -1,10 +1,3 @@
-body,
-html {
-  height: 100%;
-  margin: 0;
-  background-color: #f1f1f1;
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -48,28 +41,28 @@ html {
   padding: 10px;
   position: fixed;
   bottom: 0;
-  left: 240px; 
+  left: 240px;
   width: calc(100% - 240px);
   box-sizing: border-box;
-  z-index: 100; 
+  z-index: 100;
 
   .quillEditor {
     flex: 1;
 
     .ql-toolbar {
-      background-color: #f1f1f1;
+      background-color: var(--bg);
     }
 
     .ql-container {
       height: auto;
       min-height: 100px;
-      background-color: #ffffff;
+      background-color: var(--boxBg);
     }
   }
 
   .submitButton {
     margin-left: 10px;
-    background-color: #ffc300;
+    background-color: var(--primary);
     border: none;
     cursor: pointer;
     border-radius: 10px;
@@ -141,6 +134,7 @@ html {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: var(--txtColor);
   }
 
   .username {
@@ -150,7 +144,7 @@ html {
 
   .timestamp {
     font-size: 0.85em;
-    color: #464646;
+    color: var(--sColor);
   }
 
   .replyButton {
@@ -162,7 +156,7 @@ html {
 
   .comments {
     margin-top: 10px;
-    border-top: 1px solid #d5d5d5;
+    border-top: 1px solid var(--brColor);
     padding-top: 10px;
 
     .comment {

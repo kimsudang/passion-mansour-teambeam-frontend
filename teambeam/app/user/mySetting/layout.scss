@@ -12,7 +12,7 @@
   margin-top: 10px;
   margin-left: 10px;
   border: 0px;
-  border-radius: 10px;   
+  border-radius: 10px;
   font-size: medium;
   font-weight: 200;
 }
@@ -21,7 +21,7 @@
   height: 50px;
   margin-top: 10px;
   border: 0px;
-  border-radius: 10px;   
+  border-radius: 10px;
   font-size: medium;
   font-weight: 200;
 }
@@ -58,7 +58,7 @@
         @include button_styled_b;
         width: 200px;
         font-weight: bold;
-        background-color: #FFC300;
+        background-color: #ffc300;
       }
     }
 
@@ -73,20 +73,24 @@
           margin-left: 10px;
         }
       }
+
+      label {
+        color: var(--txtColor);
+      }
     }
   }
-   
+
   & input {
     @include input_styled();
   }
 
   & .changeMail {
     @include button_styled_a();
-    background-color: #FFC300;
+    background-color: #ffc300;
     font-weight: bold;
 
     &:hover {
-      background-color: #E6B411;
+      background-color: #e6b411;
     }
   }
 
@@ -98,8 +102,7 @@
   & .pageTitle {
     margin: 10px 0px;
   }
-
-} 
+}
 
 .otherInfo {
   margin-bottom: 30px;
@@ -107,13 +110,11 @@
   & h2 {
     margin-bottom: 20px;
   }
-  
 }
 
 .mailArea {
   padding: 10px;
 }
-
 
 .changePassword {
   padding: 10px;
@@ -121,16 +122,15 @@
   & .passwordArea {
     padding: 10px;
   }
-
 }
 
 .changePart {
   @include button_styled_b();
   font-weight: bold;
-  background-color: #FFC300;
+  background-color: #ffc300;
 
   &:hover {
-    background-color: #E6B411;
+    background-color: #e6b411;
   }
 
   &:first-child {
@@ -138,18 +138,18 @@
   }
 
   &:last-child {
-    width: 50%
+    width: 50%;
   }
 }
 
 .deleteAccount {
   @include button_styled_b();
   width: 15%;
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
   margin-left: 70%;
   margin-top: 30px;
 
   &:hover {
-    background-color: #DADADA;
+    background-color: #dadada;
   }
-} 
+}
