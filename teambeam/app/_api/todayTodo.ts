@@ -1,8 +1,12 @@
 import api from "@/app/_api/api";
 import { AxiosError } from "axios";
 
+const getTokenHeaders = () => ({
+  Authorization: localStorage.getItem('Authorization')
+});
+
 // 받아온 정보를 저장하는 interface
-interface Project {
+export interface Project {
   projectId: number;
   projectName: string;
   todos: Todo[];
@@ -20,17 +24,13 @@ export interface Todo {
   assignees: Assignee | Assignee[];
 }
 
-interface Assignee {
+export interface Assignee {
   memberId: number;
   memberName: string;
 }
 
-const getTokenHeaders = () => ({
-  Authorization: localStorage.getItem('Authorization'),
-  RefreshToken: localStorage.getItem('RefreshToken'),
-});
-
-export const getTodos = async (userId: string, date: string): Promise<{ projectName: string, todos: Todo[] }[]> => {
+// 특정 날짜의 투두 리스트를 가져오는 함수
+export const getTodos = async (userId: string, date: string): Promise<Project[]> => {
   try {
     const response = await api.get(`/my/main/todo/${userId}?date=${date}`, {
       headers: getTokenHeaders(),
@@ -41,8 +41,9 @@ export const getTodos = async (userId: string, date: string): Promise<{ projectN
     const projectsWithBottomTodos = data.map(project => {
       const bottomTodos = project.todos
       .filter(todo => todo.bottomTodoId !== null)
-      .filter(todo => todo.startDate <= date && todo.endDate >= date);      return {
-        projectName: project.projectName,
+      .filter(todo => todo.startDate <= date && todo.endDate >= date);      
+      return {
+        ...project,
         todos: bottomTodos.map(todo => ({
           ...todo,
           assignees: Array.isArray(todo.assignees) ? todo.assignees : [todo.assignees],
@@ -61,6 +62,34 @@ export const getTodos = async (userId: string, date: string): Promise<{ projectN
   }
 };
 
+// 투두 상태를 업데이트하는 함수
+export const updateTodoStatus = async (todo: Todo, bottomTodoId: number, status: boolean) => {
+  try {
+    const response = await api.patch(`/my/main/${bottomTodoId}`,
+      { 
+        // middleTodoId: todo.middleTodoId,
+        // title: todo.title,
+        // startDate: todo.startDate,
+        // endDate: todo.endDate,
+        // memo: todo.memo,
+        status,
+        // member: todo.assignees.memberId,
+      },
+      {
+        headers: getTokenHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error('Error updating todo status:', error.response?.data);
+    } else {
+      console.error('Unknown error:', error);
+    }
+    throw error;
+  }
+};
+
 // 캘린더 이벤트 조회 함수
 export const fetchCalendarEvents = async (
   userId: string,
@@ -71,7 +100,7 @@ export const fetchCalendarEvents = async (
     const response = await api.get(
       `/my/main/schedule/${userId}`,
       {
-        params: { year, month }, 
+        params: { year, month, userId }, 
         headers: getTokenHeaders(),
       }
     );
@@ -91,9 +120,8 @@ export const fetchCalendarEvents = async (
         assignees: schedule.scheduleMembers.map(
           (member: any) => member.memberId
         ),
-      })); // 일정 데이터를 필요한 형태로 변환
-
-      
+        projectId: schedule.projectId,
+      }));
 
       const todoEvents = data.topTodos.map((todo: any) => ({
         id: todo.topTodoId,
@@ -101,9 +129,9 @@ export const fetchCalendarEvents = async (
         start: todo.startDate,
         end: todo.endDate,
         todo: true,
-      })); // 할일 데이터를 필요한 형태로 변환
+        projectId: todo.projectId,
+      }));
 
-      
       console.log("Calendar response:", scheduleEvents);
 
       return [...scheduleEvents, ...todoEvents]; // 일정과 할일 데이터를 합쳐 반환

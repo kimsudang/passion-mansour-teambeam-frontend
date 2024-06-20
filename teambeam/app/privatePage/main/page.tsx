@@ -2,19 +2,10 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import "./layout.scss";
-import { getTodos, Todo, fetchCalendarEvents } from "@/app/_api/todayTodo";
+import { getTodos, Project, Todo, Assignee, fetchCalendarEvents, updateTodoStatus } from "@/app/_api/todayTodo";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import TodoMemoModal from "../_components/TodoMemoModal";
-
-interface ProjectTodos {
-  projectName: string;
-  todos: Todo[];
-}
-
-interface Assignee {
-  memberId: number;
-  memberName: string;
-}
 
 // 캘린더
 const FullCalendarComponent = dynamic(
@@ -27,17 +18,13 @@ const FullCalendarComponent = dynamic(
   }
 );
 
-// 캘린더 이벤트를 클릭할 때 호출되는 함수
-const handleEventClick = () => {
-  console.log("Event clicked, but no action taken.");
-};
-
 const PrivatePage: React.FC = () => {
+  const router = useRouter();
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   const [userId, setUserId] = useState<string>();
-  const [projectTodos, setProjectTodos] = useState<ProjectTodos[]>([]);
+  const [projectTodos, setProjectTodos] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // 캘린더
@@ -49,6 +36,22 @@ const PrivatePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
 
+   // 투두 데이터를 가져오는 함수
+   const fetchTodos = useCallback(
+    async (userId: string, date: string) => {
+      try {
+        const todos = await getTodos(userId, date);
+        console.log("Fetched todos:", todos);
+
+        setProjectTodos(todos);
+      } catch (err) {
+        console.log(err);
+        setError('할 일을 가져오는 중 오류가 발생했습니다.');
+      }
+    },
+    []
+  );
+
   const fetchEvents = useCallback(
     async (userId: string, year: number, month: number) => {
       try {
@@ -56,20 +59,28 @@ const PrivatePage: React.FC = () => {
         setEvents(events);
       } catch (error) {
         console.error("Error fetching events:", error);
-        setError("일정을 가져오는 중 오류가 발생했습니다.");
+        setError('일정을 가져오는 중 오류가 발생했습니다.');
       }
     },
     []
   );
 
-  const handleTodoStatusChange = async (
-    projectIndex: number,
-    todoIndex: number
-  ) => {
+  // 투두 상태 변경 핸들러
+  const handleTodoStatusChange = async (projectIndex: number, todoIndex: number) => {
     const updatedTodos = [...projectTodos];
     const todo = updatedTodos[projectIndex].todos[todoIndex];
-    todo.status = !todo.status;
-    setProjectTodos(updatedTodos);
+    const newStatus = !todo.status;
+
+    try {
+      await updateTodoStatus(todo, todo.bottomTodoId, newStatus);
+      todo.status = newStatus;
+      setProjectTodos(updatedTodos);
+      console.log(`Todo status changed: ${todo.title}, new status: ${todo.status}`);
+      await fetchTodos(userId!, date);
+    } catch (error) {
+      console.error("Error updating todo status:", error);
+      setError('투두 상태를 업데이트하는 중 오류가 발생했습니다.');
+    }
   };
 
   const handleTodoClick = (todoId: number) => {
@@ -91,39 +102,10 @@ const PrivatePage: React.FC = () => {
 
   useEffect(() => {
     if (userId) {
-      const fetchTodos = async (userId: string, date: string) => {
-        try {
-          const todos = await getTodos(userId, date);
-          console.log("Fetched todos:", todos);
-          setProjectTodos(todos);
-        } catch (err) {
-          console.log(err);
-          setError("할 일을 가져오는 중 오류가 발생했습니다.");
-        }
-      };
-
       fetchTodos(userId, date);
       fetchEvents(userId, year, month);
     }
-  }, [userId, date, year, month, fetchEvents]);
-
-  const getUserName = () => {
-    if (!userId) return "사용자";
-    for (const project of projectTodos) {
-      for (const todo of project.todos) {
-        const assignees = Array.isArray(todo.assignees)
-          ? todo.assignees
-          : [todo.assignees];
-        const assignee = assignees.find(
-          (assignee) => assignee.memberId.toString() === userId
-        );
-        if (assignee) {
-          return assignee.memberName;
-        }
-      }
-    }
-    return "사용자";
-  };
+  }, [userId, date, year, month, fetchTodos, fetchEvents]);
 
   const handlePreviousDay = () => {
     const previousDay = new Date(date);
@@ -137,19 +119,34 @@ const PrivatePage: React.FC = () => {
     setDate(nextDay.toISOString().split("T")[0]);
   };
 
+  // 캘린더 이벤트를 클릭할 때 호출되는 함수
+  const handleEventClick = (clickInfo: any) => {
+    const eventId = clickInfo.event.id || clickInfo.event.extendedProps.id;
+    const projectId = clickInfo.event.extendedProps.projectId;
+    if (clickInfo.event.extendedProps.schedule) {
+      router.push(`/teamPage/${projectId}/teamCalendar`);
+    }
+    if (clickInfo.event.extendedProps.todo) {
+      // 투두 이벤트 클릭 시 투두리스트 페이지로 이동
+      router.push(`/teamPage/${projectId}/teamTodo?todoId=${eventId}`);
+    } else if (eventId || projectId) {
+      console.error("Event ID is undefined");
+    }
+  };
+
   return (
     <div className='privateContainer'>
       <div className='header'>
-        <h1>{getUserName()}님</h1>
         <p>{date}</p>
         <div className='dateNavigation'>
-          <button onClick={handlePreviousDay}>전날</button>
+          <button className="before" onClick={handlePreviousDay}>전날</button>
           <button
+            className="today" 
             onClick={() => setDate(new Date().toISOString().split("T")[0])}
           >
             오늘
           </button>
-          <button onClick={handleNextDay}>다음날</button>
+          <button className="after" onClick={handleNextDay}>다음날</button>
         </div>
       </div>
       <div className='todoContainerWrapper'>
@@ -167,12 +164,12 @@ const PrivatePage: React.FC = () => {
                     {project.todos.map((todo, todoIndex) => (
                       <button
                         key={todo.topTodoId}
-                        className={`todoItem ${todo.status ? "completed" : ""}`}
+                        className={`todoItem ${!todo.status ? "completed" : ""}`}
                       >
                         <div className='checkTodoTitle'>
                           <input
                             type='checkbox'
-                            checked={todo.status}
+                            checked={!todo.status}
                             onChange={() =>
                               handleTodoStatusChange(projectIndex, todoIndex)
                             }
