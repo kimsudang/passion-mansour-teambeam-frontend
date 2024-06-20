@@ -139,6 +139,7 @@ const PrivateSetting = () => {
         <div className='title'>
           <h2>정보 관리</h2>
         </div>
+
         <div className='otherInfo'>
           <div className='profileImgArea'>
             {!imageChagne ? (
@@ -162,6 +163,7 @@ const PrivateSetting = () => {
               프로필 이미지 변경하기
             </button>
           </div>
+
           <div className='subInfo'>
             <div className='settingName'>
               <p className='pageTitle'>이름 : </p>
@@ -175,56 +177,60 @@ const PrivateSetting = () => {
             </div>
             <div className='pageSettings'>
               <p className='pageTitle'>페이지 설정</p>
-              <div>
-                <label>
-                  <input
-                    type='radio'
-                    name='initialStartPage'
-                    value='PROJECT_SELECTION_PAGE'
-                    checked={startPage === "PROJECT_SELECTION_PAGE"}
-                    onChange={(e) => setStartPage(e.target.value)}
-                  />
-                  팀 대시보드
-                </label>
-              </div>
-              <div>
-                <label>
-                  <input
-                    type='radio'
-                    name='initialStartPage'
-                    value='MY_PAGE'
-                    checked={startPage === "MY_PAGE"}
-                    onChange={(e) => setStartPage(e.target.value)}
-                  />
-                  개인 대시보드
-                </label>
+              <div className='radiosWrap'>
+                <div className='radioCont'>
+                  <label>
+                    <input
+                      type='radio'
+                      name='initialStartPage'
+                      value='PROJECT_SELECTION_PAGE'
+                      checked={startPage === "PROJECT_SELECTION_PAGE"}
+                      onChange={(e) => setStartPage(e.target.value)}
+                    />
+                    팀 대시보드
+                  </label>
+                </div>
+                <div className='radioCont'>
+                  <label>
+                    <input
+                      type='radio'
+                      name='initialStartPage'
+                      value='MY_PAGE'
+                      checked={startPage === "MY_PAGE"}
+                      onChange={(e) => setStartPage(e.target.value)}
+                    />
+                    개인 대시보드
+                  </label>
+                </div>
               </div>
             </div>
             <div className='pageSettings'>
               <p className='pageTitle'>화면 설정</p>
-              <div>
-                <label>
-                  <input
-                    type='radio'
-                    name='screenMode'
-                    value='light'
-                    checked={screenMode === "light"}
-                    onChange={() => handleModeChange("light")}
-                  />
-                  라이트모드 (default)
-                </label>
-              </div>
-              <div>
-                <label>
-                  <input
-                    type='radio'
-                    name='screenMode'
-                    value='dark'
-                    checked={screenMode === "dark"}
-                    onChange={() => handleModeChange("dark")}
-                  />
-                  다크모드
-                </label>
+              <div className='radiosWrap'>
+                <div className='radioCont'>
+                  <label>
+                    <input
+                      type='radio'
+                      name='screenMode'
+                      value='light'
+                      checked={screenMode === "light"}
+                      onChange={() => handleModeChange("light")}
+                    />
+                    라이트모드 (default)
+                  </label>
+                </div>
+                <div className='radioCont'>
+                  <label>
+                    <input
+                      type='radio'
+                      name='screenMode'
+                      value='dark'
+                      checked={screenMode === "dark"}
+                      onChange={() => handleModeChange("dark")}
+                    />
+                    다크모드
+                  </label>
+                </div>
               </div>
             </div>
             <form className='mailArea'>
@@ -296,6 +302,7 @@ const PrivateSetting = () => {
             </form>
           </div>
         </div>
+
         <div className='changePassword'>
           <form
             onSubmit={(e) =>

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { fetchProfileImages, ProfileImage } from '@/app/_api/mySetting';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { fetchProfileImages, ProfileImage } from "@/app/_api/mySetting";
+import "@/app/_styles/Modal.scss";
 
 export interface ProfileImageModalProps {
   closeModal: () => void;
@@ -8,7 +9,11 @@ export interface ProfileImageModalProps {
   selectedImageName?: string;
 }
 
-const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updateProfileImage, selectedImageName  }) => {
+const ProfileImageModal: React.FC<ProfileImageModalProps> = ({
+  closeModal,
+  updateProfileImage,
+  selectedImageName,
+}) => {
   const [profileImages, setProfileImages] = useState<ProfileImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<ProfileImage | null>(null);
 
@@ -18,7 +23,7 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
         const images = await fetchProfileImages();
         setProfileImages(images);
       } catch (error) {
-        console.error('Error fetching profile images:', error);
+        console.error("Error fetching profile images:", error);
       }
     };
 
@@ -27,11 +32,12 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
 
   useEffect(() => {
     if (selectedImageName) {
-      const initialSelectedImage = profileImages.find(image => image.imageName === selectedImageName);
+      const initialSelectedImage = profileImages.find(
+        (image) => image.imageName === selectedImageName
+      );
       setSelectedImage(initialSelectedImage || null);
     }
   }, [selectedImageName, profileImages]);
-
 
   const handleImageSelect = (image: ProfileImage) => {
     setSelectedImage(image);
@@ -47,10 +53,10 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
   };
 
   return (
-    <div className="modal">
-      <div className="modalContent">
+    <div className='profileChangeModal'>
+      <div className='profileChangeWrap'>
         <h2>프로필 이미지 선택</h2>
-        <div className="imageGrid">
+        <div className='imageGrid'>
           {profileImages.map((image) => (
             <Image
               key={image.imageName}
@@ -58,14 +64,22 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ closeModal, updat
               alt={image.imageName}
               width={100}
               height={100}
-              className={`profileImage ${selectedImage?.imageName === image.imageName ? 'selected' : ''}`}
+              className={`profileImage ${
+                selectedImage?.imageName === image.imageName ? "selected" : ""
+              }`}
               onClick={() => handleImageSelect(image)}
             />
           ))}
         </div>
-        <div className="modalActions">
+        <div className='profileChangeButtons'>
           <button onClick={closeModal}>취소</button>
-          <button onClick={handleConfirm} disabled={!selectedImage}>확인</button>
+          <button
+            onClick={handleConfirm}
+            disabled={!selectedImage}
+            className='confirmBtn'
+          >
+            확인
+          </button>
         </div>
       </div>
     </div>

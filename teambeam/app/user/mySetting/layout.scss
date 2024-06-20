@@ -18,6 +18,7 @@
 }
 
 @mixin button_styled_b {
+  width: 100%;
   height: 50px;
   margin-top: 10px;
   border: 0px;
@@ -28,27 +29,36 @@
 
 .mySettingContainer {
   display: flex;
+  justify-content: center;
   width: 100vw;
   margin-top: 84px;
 }
 
 .layoutContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: 100%;
-  padding: 48px 28px;
+  max-width: 720px;
   font-size: large;
   font-weight: bold;
+  padding: 44px 24px 88px;
 
   & .otherInfo {
     display: flex;
+    flex-direction: column;
     margin-top: 20px;
 
     & .profileImgArea {
-      width: 250px;
-      height: 100%;
-      margin-right: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 24px 0;
+      border: 1px solid var(--brColor);
+      border-radius: 10px;
+      margin-bottom: 34px;
 
       & .memberProfileImage {
         border-radius: 10px;
@@ -63,19 +73,50 @@
     }
 
     & .subInfo {
-      width: 70%;
+      width: 100%;
 
       & .settingName {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 44px;
 
         & input {
-          margin-left: 10px;
+          width: 100%;
+          border: 1px solid #d5d5d5;
+          background: var(--boxBg);
         }
       }
+    }
 
-      label {
-        color: var(--txtColor);
+    .pageSettings {
+      margin-bottom: 44px;
+
+      .radiosWrap {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .radioCont {
+          width: 100%;
+          margin-bottom: 12px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          label {
+            display: flex;
+            align-items: center;
+            color: var(--txtColor);
+
+            input {
+              display: block;
+              width: 50px;
+              margin-right: 24px;
+            }
+          }
+        }
       }
     }
   }
@@ -113,18 +154,22 @@
 }
 
 .mailArea {
-  padding: 10px;
+  width: 100%;
 
   span {
     color: var(--txtColor);
   }
+
+  input {
+    width: 85%;
+  }
 }
 
 .changePassword {
-  padding: 10px;
+  width: 100%;
 
-  & .passwordArea {
-    padding: 10px;
+  input {
+    width: 100%;
   }
 }
 
@@ -140,20 +185,20 @@
   &:first-child {
     width: 80%;
   }
-
-  &:last-child {
-    width: 50%;
-  }
 }
 
 .deleteAccount {
-  @include button_styled_b();
-  width: 15%;
-  background-color: #e0e0e0;
-  margin-left: 70%;
-  margin-top: 30px;
+  width: 100%;
+  margin-top: 44px;
+  background: transparent;
+  color: #aaa;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
 
   &:hover {
-    background-color: #dadada;
+    color: #555;
+    text-decoration: underline;
   }
 }
