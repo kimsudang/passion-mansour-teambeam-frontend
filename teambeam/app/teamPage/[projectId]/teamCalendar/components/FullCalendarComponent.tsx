@@ -20,6 +20,12 @@ type FullCalendarComponentProps = {
   eventClick: (event: any) => void;
 };
 
+const addOneDay = (date: string) => {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + 1);
+  return newDate.toISOString().split("T")[0];
+};
+
 const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
   events,
   eventClick,
@@ -38,7 +44,7 @@ const FullCalendarComponent: React.FC<FullCalendarComponentProps> = ({
         id: event.id,
         title: event.title,
         start: event.start,
-        end: event.end,
+        end: addOneDay(event.end),
         className: event.todo ? "todo-event" : "schedule-event",
         extendedProps: {
           id: event.id,
