@@ -54,14 +54,25 @@
 }
 
 .projectTitle,
-.projectDis,
-select {
+.projectDis {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
   margin-bottom: 10px;
-  border: 1px solid #d5d5d5;
+  border: 1px solid var(--brColor);
   border-radius: 10px;
+  color: var(--pColor);
+}
+
+.memberManagement select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid var(--brColor);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--txtColor);
 }
 
 input[type="radio"] {
