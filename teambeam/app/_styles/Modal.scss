@@ -289,3 +289,98 @@
     }
   }
 }
+
+.addTagModalContainer {
+  background: var(--mdBg);
+  position: relative;
+  max-width: 720px;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 34px;
+
+  h2 {
+    margin-bottom: 14px;
+  }
+
+  .close {
+    color: var(--txtColor);
+  }
+
+  input {
+    height: 44px;
+    background: var(--boxBg);
+    border: 1px solid #d5d5d5;
+    border-radius: 10px;
+    padding: 0 24px;
+    margin-bottom: 12px;
+  }
+
+  select {
+    height: 44px;
+    background: var(--boxBg);
+    border: 1px solid #d5d5d5;
+    border-radius: 10px;
+    padding: 0 24px;
+    margin-bottom: 24px;
+    color: var(--txtColor);
+  }
+
+  .buttonBundle {
+    display: flex;
+    justify-content: center;
+
+    button {
+      display: block;
+      padding: 8px 16px;
+      border-radius: 5px;
+      margin-right: 14px;
+      background: #e0e0e0;
+      color: #242424;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+
+      &.confirmBtn {
+        margin-right: 0;
+        background: var(--primary);
+      }
+    }
+  }
+}
+
+.showTodoModalContent {
+  background: var(--mdBg);
+  position: relative;
+  max-width: 720px;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 34px;
+
+  h2 {
+    margin-bottom: 14px;
+  }
+
+  .close {
+    color: var(--txtColor);
+  }
+
+  button {
+    display: block;
+    margin-top: 24px;
+    padding: 8px 0;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #242424;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #e6b411;
+    }
+  }
+}

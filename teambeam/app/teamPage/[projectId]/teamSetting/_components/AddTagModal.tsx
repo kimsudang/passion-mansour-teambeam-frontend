@@ -64,7 +64,7 @@ const AddTagModal: React.FC<AddTagModalProps> = ({ projectId, onClose, onTagAdde
         </select>
         <div className="buttonBundle">
           <button className='closeTagButton' onClick={onClose}>취소</button>
-          <button className='addTagButton' onClick={handleAddTag}>추가</button>
+          <button className='confirmBtn' onClick={handleAddTag}>추가</button>
         </div>
       </div>
     </div>
