@@ -83,6 +83,10 @@ const TeamSetting: React.FC = () => {
     getTagsData();
   }, [projectId, userId]);
 
+  useEffect(() => {
+    console.log("showInviteModal state: ", showInviteModal);
+  }, [showInviteModal]);
+
   // 프로젝트 정보 저장
   const handleProjectSaveSettings = async () => {
     try {
@@ -104,8 +108,6 @@ const TeamSetting: React.FC = () => {
 
   // 멤버 초대
   const handleInviteMember = async (mail: string) => {
-    setShowInviteModal(false);
-
     const membersData = await fetchMembersInfo(projectId);
     setMembers(
       membersData.sort((a: MemberInfo, b: MemberInfo) =>
@@ -137,7 +139,7 @@ const TeamSetting: React.FC = () => {
     const updatedMembers = members.map((member) =>
       member.memberId === memberId
         ? { ...member, host: newAuthority === "leader" }
-        : { ...member, host: false }
+        : member
     );
     setMembers(updatedMembers);
   };
@@ -232,19 +234,29 @@ const TeamSetting: React.FC = () => {
     }
   };
 
+  const openInviteModal = () => {
+    console.log("Opening invite modal");
+    setShowInviteModal(true);
+  };
+
+  const closeInviteModal = () => {
+    console.log("Closing invite modal");
+    setShowInviteModal(false);
+  };
+
   return (
-    <div className='projectSettingContainer'>
-      <div className='top-box'>
+    <div className="projectSettingContainer">
+      <div className="top-box">
         <h1>프로젝트 관리</h1>
       </div>
-      <div className='projectInfoSetting'>
+      <div className="projectInfoSetting">
         <form>
-          <div className='projectName'>
+          <div className="projectName">
             <h3>프로젝트 이름</h3>
             {isHost ? (
               <input
-                className='projectTitle'
-                type='text'
+                className="projectTitle"
+                type="text"
                 value={projectInfo.projectName}
                 onChange={(e) =>
                   setProjectInfo({
@@ -254,15 +266,15 @@ const TeamSetting: React.FC = () => {
                 }
               />
             ) : (
-              <div className='projectTitle'>{projectInfo.projectName}</div>
+              <div className="projectTitle">{projectInfo.projectName}</div>
             )}
           </div>
-          <div className='projectDescription'>
+          <div className="projectDescription">
             <h3>프로젝트 설명</h3>
             {isHost ? (
               <input
-                className='projectDis'
-                type='textarea'
+                className="projectDis"
+                type="textarea"
                 value={projectInfo.description}
                 onChange={(e) =>
                   setProjectInfo({
@@ -272,18 +284,18 @@ const TeamSetting: React.FC = () => {
                 }
               />
             ) : (
-              <div className='projectDis'>{projectInfo.description}</div>
+              <div className="projectDis">{projectInfo.description}</div>
             )}
           </div>
-          <div className='projectStatus'>
+          <div className="projectStatus">
             <h3>프로젝트 상태</h3>
-            <div className='projectStateRadio'>
+            <div className="projectStateRadio">
               {isHost ? (
                 <>
-                  <div className='progressRadio'>
+                  <div className="progressRadio">
                     <input
-                      type='radio'
-                      name='projectState'
+                      type="radio"
+                      name="projectState"
                       checked={projectInfo.projectStatus === "PROGRESS"}
                       onChange={() =>
                         setProjectInfo({
@@ -294,10 +306,10 @@ const TeamSetting: React.FC = () => {
                     />
                     <label>진행중인 프로젝트</label>
                   </div>
-                  <div className='endRadio'>
+                  <div className="endRadio">
                     <input
-                      type='radio'
-                      name='projectState'
+                      type="radio"
+                      name="projectState"
                       checked={projectInfo.projectStatus === "END"}
                       onChange={() =>
                         setProjectInfo({ ...projectInfo, projectStatus: "END" })
@@ -308,19 +320,19 @@ const TeamSetting: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <div className='progressRadio'>
+                  <div className="progressRadio">
                     <input
-                      type='radio'
-                      name='projectState'
+                      type="radio"
+                      name="projectState"
                       checked={projectInfo.projectStatus === "PROGRESS"}
                       disabled
                     />
                     <label>진행중인 프로젝트</label>
                   </div>
-                  <div className='endRadio'>
+                  <div className="endRadio">
                     <input
-                      type='radio'
-                      name='projectState'
+                      type="radio"
+                      name="projectState"
                       checked={projectInfo.projectStatus === "END"}
                       disabled
                     />
@@ -332,8 +344,8 @@ const TeamSetting: React.FC = () => {
           </div>
           {isHost && (
             <button
-              className='settingButton'
-              type='button'
+              className="settingButton"
+              type="button"
               onClick={handleProjectSaveSettings}
             >
               변경한 설정 저장하기
@@ -341,8 +353,8 @@ const TeamSetting: React.FC = () => {
           )}
           {isHost && (
             <button
-              className='deleteButton'
-              type='button'
+              className="deleteButton"
+              type="button"
               onClick={handleDeleteProject}
             >
               프로젝트 삭제
@@ -350,23 +362,23 @@ const TeamSetting: React.FC = () => {
           )}
         </form>
       </div>
-      <div className='memberManagement'>
+      <div className="memberManagement">
         <form>
-          <div className='title'>
+          <div className="title">
             <h3>프로젝트 팀원 관리</h3>
             {isHost ? (
-              <div className='memberButtons'>
+              <div className="memberButtons">
                 <button
-                  className='memberButton'
-                  type='button'
+                  className="memberButton"
+                  type="button"
                   onClick={handleDeleteMembers}
                 >
                   팀원 삭제
                 </button>
                 <button
-                  className='memberButton'
-                  type='button'
-                  onClick={() => setShowInviteModal(true)}
+                  className="memberButton"
+                  type="button"
+                  onClick={openInviteModal}
                 >
                   팀원 초대
                 </button>
@@ -376,12 +388,12 @@ const TeamSetting: React.FC = () => {
             )}
           </div>
           <div>
-            <ul className='memberList'>
+            <ul className="memberList">
               {members.map((member) => (
-                <li key={member.memberId} className='memberItem'>
+                <li key={member.memberId} className="memberItem">
                   {isHost ? (
                     <input
-                      type='checkbox'
+                      type="checkbox"
                       checked={selectedMembers.has(member.memberId)}
                       onChange={() => handleCheckboxChange(member.memberId)}
                     />
@@ -391,11 +403,11 @@ const TeamSetting: React.FC = () => {
                   <Image
                     src={`data:image/png;base64,${member.profileImage}`}
                     alt={`${member.memberName} profile`}
-                    className='memberProfileImage'
+                    className="memberProfileImage"
                     width={40}
                     height={40}
                   />
-                  <p className='memberName'>{member.memberName}</p>
+                  <p className="memberName">{member.memberName}</p>
                   <select
                     value={member.host ? "leader" : "follower"}
                     onChange={(e) =>
@@ -403,8 +415,8 @@ const TeamSetting: React.FC = () => {
                     }
                     disabled={!isHost}
                   >
-                    <option value='leader'>팀장</option>
-                    <option value='follower'>팀원</option>
+                    <option value="leader">팀장</option>
+                    <option value="follower">팀원</option>
                   </select>
                   <select
                     value={member.memberRole || ""}
@@ -413,14 +425,14 @@ const TeamSetting: React.FC = () => {
                     }
                     disabled={!isHost}
                   >
-                    <option value='' disabled>
+                    <option value="" disabled>
                       직무
                     </option>
-                    <option value='PM'>PM</option>
-                    <option value='기획'>기획</option>
-                    <option value='FE'>FE</option>
-                    <option value='BE'>BE</option>
-                    <option value='디자인'>디자인</option>
+                    <option value="PM">PM</option>
+                    <option value="기획">기획</option>
+                    <option value="FE">FE</option>
+                    <option value="BE">BE</option>
+                    <option value="디자인">디자인</option>
                   </select>
                   <p>{member.mail}</p>
                 </li>
@@ -430,8 +442,8 @@ const TeamSetting: React.FC = () => {
           {isHost ? (
             <>
               <button
-                className='settingButton'
-                type='button'
+                className="settingButton"
+                type="button"
                 onClick={handleMemberSaveSettings}
               >
                 변경한 설정 저장하기
@@ -442,22 +454,22 @@ const TeamSetting: React.FC = () => {
           )}
         </form>
       </div>
-      <div className='tagManagement'>
-        <div className='title'>
+      <div className="tagManagement">
+        <div className="title">
           <h3>프로젝트 태그 관리</h3>
           <button
-            className='tagAddButton'
-            type='button'
+            className="tagAddButton"
+            type="button"
             onClick={() => setShowAddTagModal(true)}
           >
             태그 추가
           </button>
         </div>
-        <div className='tagList'>
+        <div className="tagList">
           {tags.map((tag) => (
             <div
               key={tag.tagId}
-              className='tagItem'
+              className="tagItem"
               onClick={() => handleTagClick(tag)}
             >
               {tag.tagName}
@@ -468,8 +480,10 @@ const TeamSetting: React.FC = () => {
       {showInviteModal && (
         <InviteMemberModal
           projectId={projectId}
-          onClose={() => setShowInviteModal(false)}
-          onInvite={handleInviteMember}
+          onClose={closeInviteModal}
+          onInvite={(mail: string) => {
+            handleInviteMember(mail);
+          }}
         />
       )}
       {showAddTagModal && (

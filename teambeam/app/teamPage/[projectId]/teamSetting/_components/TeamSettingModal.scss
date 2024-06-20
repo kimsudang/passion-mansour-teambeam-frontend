@@ -4,13 +4,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.3); // 반투명 배경
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; // 모달이 다른 요소들 위에 오도록 z-index 설정
+  z-index: 1000;
 
-  // 팀원 초대
   .inviteModalContent {
     position: relative;
     background-color: var(--mdBg);
@@ -18,6 +17,7 @@
     border-radius: 10px;
     width: 400px;
     max-width: 90%;
+    z-index: 1001; // 추가 - 다른 요소 위에 오도록 설정
 
     .close {
       position: absolute;
@@ -70,43 +70,21 @@
         color: red;
       }
     }
-  }
 
-  & .addTagModalContainer {
-    position: relative;
-    background-color: var(--mdBg);
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    max-width: 90%;
-
-    & h2 {
-      margin: 15px 0px;
-    }
-
-    & input {
-      width: 100%;
-      height: 45px;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #d5d5d5;
-      border-radius: 10px;
-    }
-
-    & select {
-      margin-bottom: 15px;
-      border-radius: 10px;
-      padding-left: 5px;
-    }
-
-    & .buttonBundle {
+    .inviteModalResult {
       display: flex;
-      justify-content: space-around;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
 
-      & .addTagButton {
+      & p {
+        margin: 15px 0;
+        color: green; // 성공 메시지 색상
+      }
+
+      & button {
         padding: 10px;
-        width: 150px;
-        height: 45px;
+        height: 50px;
         background-color: #ffc300;
         color: #242424;
         font-size: medium;
@@ -119,69 +97,6 @@
         &:hover {
           background-color: #e6b411;
         }
-      }
-
-      & .closeTagButton {
-        padding: 10px;
-        width: 150px;
-        height: 45px;
-        background-color: #e0e0e0;
-        color: #242424;
-        font-size: medium;
-        font-weight: bold;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-bottom: 20px;
-
-        &:hover {
-          background-color: #dadada;
-        }
-      }
-    }
-  }
-
-  & .showTodoModalContent {
-    position: relative;
-    background-color: var(--mdBg);
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    max-width: 90%;
-
-    & h2 {
-      margin: 15px 0px;
-    }
-
-    & p {
-      font-size: large;
-      font-weight: 500;
-      margin: 10px 0px;
-    }
-
-    .close {
-      position: absolute;
-      top: 25px;
-      right: 20px;
-      font-size: xx-large;
-      cursor: pointer;
-    }
-
-    & button {
-      padding: 10px;
-      width: 100%;
-      height: 50px;
-      background-color: #ffc300;
-      color: #242424;
-      font-size: medium;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin: 20px 0px;
-
-      &:hover {
-        background-color: #e6b411;
       }
     }
   }
