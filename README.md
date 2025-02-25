@@ -20,31 +20,27 @@
 
 **팀 소개**
 
-> 팀명: 열정 만수르
-> <br>
-> 프로젝트 기간: 2024.04.29-2024.06.20
-> <br >
-> 팀구성: 프론트엔드 3명, 백엔드 3명
-> <br >
+> 팀명: 열정 만수르  
+> 프로젝트 기간: 2024.04.29-2024.06.20  
+> 팀구성: 프론트엔드 3명, 백엔드 3명  
 > 배포 도구: 카카오 크램폴린, Vercel
-> <br >
 
-**기술 스택**
+**기술 스택**  
 <br >
 <img src="https://img.shields.io/badge/typescript-%233178C6.svg?&style=for-the-badge&logo=typescript&logoColor=black" alt="typescript image"/>
-<img src="https://img.shields.io/badge/next.js-%23000000.svg?&style=for-the-badge&logo=nextdotjs&logoColor=white" alt="nextdotjs image"/>
-<img src="https://img.shields.io/badge/ZUSTAND-%23B24240.svg?&style=for-the-badge&logo=ZUSTAND&logoColor=black" alt="ZUSTAND image"/>
-<img src="https://img.shields.io/badge/sass-%23CC6699.svg?&style=for-the-badge&logo=sass&logoColor=black" alt="sass image"/>
-<img src="https://img.shields.io/badge/docker-%232496ED.svg?&style=for-the-badge&logo=docker&logoColor=black" alt="docker image"/>
+<img src="https://img.shields.io/badge/next.js-%23000000.svg?&style=for-the-badge&logo=nextdotjs&logoColor=white"  alt="nextdotjs image"/>
+<img src="https://img.shields.io/badge/ZUSTAND-%23B24240.svg?&style=for-the-badge&logo=ZUSTAND&logoColor=black"  alt="ZUSTAND image"/>
+<img src="https://img.shields.io/badge/sass-%23CC6699.svg?&style=for-the-badge&logo=sass&logoColor=black"  alt="sass image"/>
+<img src="https://img.shields.io/badge/docker-%232496ED.svg?&style=for-the-badge&logo=docker&logoColor=black"  alt="docker image"/>
 <br >
 
-**기술 아키텍쳐**
-<img src="./readme_img/팀글벙글 아키텍쳐.png" alt="team architecture">
+**기술 아키텍쳐**  
+<img src="./readme_img/팀글벙글 아키텍쳐.png" alt="team architecture" width="400" />
 
 <br >
 
-**플로우차트**
-<img src="./readme_img/팀글벙글 플로우차트.png" alt="team flowchart">
+**플로우차트**  
+<img src="./readme_img/팀글벙글 플로우차트.png" alt="team flowchart" width="400" />
 
 [FlowChart 보러가기](https://drive.google.com/file/d/1JG81Rf_rpDNDYg5JewITa1XByOeQ2vfv/view?usp=sharing)
 
@@ -52,11 +48,11 @@
 
 ## 핵심 기능
 
-<img src="./readme_img/팀글벙글 핵심기능.png" alt="team functions">
+<img src="./readme_img/팀글벙글 핵심기능.png" alt="team functions" width="400" />
 
 <br >
 
-**기능 명세서**
+**기능 명세서**  
 <br >
 <a href="https://docs.google.com/spreadsheets/d/1IqObxnf-xE6a5nByHkdvglMo5WBRS6srKPRVryxgZo0/edit?usp=sharing" alt="google spreadaheets">
 <img src="https://img.shields.io/badge/spreadsheets-%23000000.svg?&style=for-the-badge&logo=spreadsheets&logoColor=white" alt="spreadsheets image"/>
@@ -68,51 +64,50 @@
 
 ### 회원가입, 로그인
 
-**회원가입**
-
+**회원가입**  
 **로그인**
 
 ### 카카오 로그인
 
-![Image](https://github.com/user-attachments/assets/b8ffef68-021c-4808-b7c3-101e987aa17c)
+<img src="https://github.com/user-attachments/assets/b8ffef68-021c-4808-b7c3-101e987aa17c" width="400" />
 
 ### 개인 대시보드 관리
 
-![Image](https://github.com/user-attachments/assets/b440c207-6147-425e-8584-8f6fdeeaffe4)
+<img src="https://github.com/user-attachments/assets/b440c207-6147-425e-8584-8f6fdeeaffe4" width="400" />
 
 ### 팀 대시보드
 
-![Image](https://github.com/user-attachments/assets/4baaf60e-40da-444a-b83a-088f60d9c352)
+<img src="https://github.com/user-attachments/assets/4baaf60e-40da-444a-b83a-088f60d9c352" width="400" />
 
 ### 프로젝트 환경설정
 
-**팀원 초대**
-![Image](https://github.com/user-attachments/assets/557d4b13-e035-4e7a-9878-204e93d3a643)
+**팀원 초대**  
+<img src="https://github.com/user-attachments/assets/557d4b13-e035-4e7a-9878-204e93d3a643" width="400" />
 
-**팀원 관리**
-![Image](https://github.com/user-attachments/assets/fe683a10-9b29-4d0b-bfdb-ea3ecbdc27f5)
+**팀원 관리**  
+<img src="https://github.com/user-attachments/assets/fe683a10-9b29-4d0b-bfdb-ea3ecbdc27f5" width="400" />
 
-**초대된 팀원 프로젝트 참가**
-![Image](https://github.com/user-attachments/assets/8338c619-1277-4084-aa9c-750c253e31db)
+**초대된 팀원 프로젝트 참가**  
+<img src="https://github.com/user-attachments/assets/8338c619-1277-4084-aa9c-750c253e31db" width="400" />
 
-**초대된 팀원 참가 확인**
-![Image](https://github.com/user-attachments/assets/57e18ac9-b811-4986-987c-1f99e0d2175a)
+**초대된 팀원 참가 확인**  
+<img src="https://github.com/user-attachments/assets/57e18ac9-b811-4986-987c-1f99e0d2175a" width="400" />
 
-**팀원 상태 관리**
-![Image](https://github.com/user-attachments/assets/abd1357e-b53d-4fe5-8eb0-341b59a67b5d)
+**팀원 상태 관리**  
+<img src="https://github.com/user-attachments/assets/abd1357e-b53d-4fe5-8eb0-341b59a67b5d" width="400" />
 
-**프로젝트 상태 변경**
-![Image](https://github.com/user-attachments/assets/0a2fe4ef-46a9-44e4-9e12-f20d2fbe158e)
+**프로젝트 상태 변경**  
+<img src="https://github.com/user-attachments/assets/0a2fe4ef-46a9-44e4-9e12-f20d2fbe158e" width="400" />
 
-**프로젝트 정보 수정**
-![Image](https://github.com/user-attachments/assets/ece47edb-7e7d-4b34-9d77-352688bc4b49)
+**프로젝트 정보 수정**  
+<img src="https://github.com/user-attachments/assets/ece47edb-7e7d-4b34-9d77-352688bc4b49" width="400" />
 
 ### 회원정보 수정
 
-![Image](https://github.com/user-attachments/assets/2e1a6014-988d-4d11-bc97-334bcd07404b)
+<img src="https://github.com/user-attachments/assets/2e1a6014-988d-4d11-bc97-334bcd07404b" width="400" />
 
 ## 성과
 
 **구름 풀스택 부트캠프 5회차 인기상 수상**
 
-<img src="./readme_img/팀글벙글 인기상.png" alt="team ">
+<img src="./readme_img/팀글벙글 인기상.png" alt="team" width="400" />
